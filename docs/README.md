@@ -58,5 +58,5 @@ OPTIONS
   --config=config
 ```
 
-_See code: [src/commands/run.ts](https://github.com/endquote/laundryd/blob/v0.0.0/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/endquote/laundryd/blob/master/src/commands/run.ts)_
 <!-- commandsstop -->

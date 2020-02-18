@@ -43,6 +43,7 @@
   "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
+    "repositoryPrefix": "<%- repo %>/blob/master/<%- commandPath %>",
     "bin": "laundry",
     "plugins": [
       "@oclif/plugin-help"
