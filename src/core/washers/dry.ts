@@ -25,8 +25,8 @@ export class Dry extends Washer {
 
   readonly query: string;
 
-  constructor(settings: any = {}) {
-    super(settings);
+  constructor(settings: any = {}, memory: any = {}) {
+    super(settings, memory);
 
     this.schedule = Dry.settings.schedule.parse(settings.schedule);
 

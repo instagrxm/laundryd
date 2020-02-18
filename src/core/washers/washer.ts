@@ -12,11 +12,11 @@ export class Washer {
     })
   };
 
-  protected id: string;
+  readonly id: string;
 
-  private memory: object;
+  readonly memory: object;
 
-  constructor(settings: any = {}) {
+  constructor(settings: any = {}, memory: any = {}) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }
@@ -27,8 +27,10 @@ export class Washer {
     }
     this.id = id;
 
-    this.memory = this.loadMemory();
+    this.memory = memory;
   }
+
+  protected init(settings: any = {}) {}
 
   private loadMemory(): object {
     return {};

@@ -14,19 +14,33 @@ export class Wash extends Washer {
     schedule: Setting.cron({
       def: new CronJob("0 * * * *", () => {}),
       description: "when to run the washer"
+    }),
+
+    begin: Setting.number({
+      def: 7,
+      description: "the number of days to load in the first run"
+    }),
+
+    retain: Setting.number({
+      description: "the number of days to keep items"
     })
   };
 
   readonly schedule: CronJob;
+  readonly begin: number;
+  readonly retain?: number;
 
-  constructor(settings: any = {}) {
-    super(settings);
+  constructor(settings: any = {}, memory: any = {}) {
+    super(settings, memory);
 
     const schedule = Wash.settings.schedule.parse(settings.schedule);
     if (!schedule) {
       throw new Error(`${this.id}: missing schedule`);
     }
     this.schedule = schedule;
+
+    this.begin = Wash.settings.begin.parse(settings.begin) as number;
+    this.retain = Wash.settings.retain.parse(settings.retain);
   }
 
   async run(): Promise<Item[]> {
