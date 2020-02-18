@@ -1,0 +1,18 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "Launch Program",
+      "args": ["run", "--config=${workspaceRoot}/recipes/config.ts"],
+      "type": "node",
+      "request": "launch",
+      "runtimeExecutable": "${workspaceRoot}/.vscode/debug.sh",
+      "program": "${workspaceFolder}/bin/run",
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/lib/**/*.js"],
+      "internalConsoleOptions": "openOnSessionStart",
+      // "preLaunchTask": "tsc: build - tsconfig.json",
+      "outputCapture": "std"
+    }
+  ]
+}
