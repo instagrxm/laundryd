@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import { Item } from "../Item";
-import { Memory } from "../memory";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";
@@ -14,29 +13,28 @@ export class Dry extends Washer {
     ...Washer.settings,
 
     schedule: Setting.cron({
-      def: new CronJob("0 * * * *", () => {}),
       description: "when to run the washer"
     }),
 
-    query: Setting.query({
-      description: "items to listen for"
+    subscribe: Setting.string({
+      description: "listen for items from this washer id"
     })
   };
 
   readonly schedule?: CronJob;
 
-  readonly query: string;
+  readonly subscribe: string;
 
-  constructor(settings: Settings, memory: Memory) {
-    super(settings, memory);
+  constructor(settings: Settings) {
+    super(settings);
 
     this.schedule = Dry.settings.schedule.parse(settings.schedule);
 
-    const query = Dry.settings.query.parse(settings.query);
-    if (!query) {
-      throw new Error(`${this.id}: missing query`);
+    const subscribe = Dry.settings.subscribe.parse(settings.subscribe);
+    if (!subscribe) {
+      throw new Error(`${this.id}: missing subscribe`);
     }
-    this.query = query;
+    this.subscribe = subscribe;
   }
 
   async run(items: Item[]): Promise<void> {

@@ -1,6 +1,5 @@
 import { CronJob } from "cron";
 import { Item } from "../Item";
-import { Memory } from "../memory";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";
@@ -8,7 +7,7 @@ import { Washer } from "./washer";
 export class Wash extends Washer {
   static readonly title: string = "wash";
   static readonly description: string =
-    "retrieve data from a remote API on a schedule and parse it into a normalized format";
+    "retrieve data on a schedule and parse it into a normalized format";
 
   static settings = {
     ...Washer.settings,
@@ -19,12 +18,13 @@ export class Wash extends Washer {
     }),
 
     begin: Setting.number({
-      def: 7,
-      description: "the number of days to load in the first run"
+      def: 0,
+      description: "the number of days of past items to load in the first run"
     }),
 
     retain: Setting.number({
-      description: "the number of days to keep items"
+      description:
+        "the number of days to keep items, 0 to keep forever or empty to not keep at all"
     })
   };
 
@@ -32,8 +32,8 @@ export class Wash extends Washer {
   readonly begin: number;
   readonly retain?: number;
 
-  constructor(settings: Settings, memory: Memory) {
-    super(settings, memory);
+  constructor(settings: Settings) {
+    super(settings);
 
     const schedule = Wash.settings.schedule.parse(settings.schedule);
     if (!schedule) {

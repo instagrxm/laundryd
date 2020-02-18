@@ -3,10 +3,21 @@ import { Setting } from "../setting";
 import { Settings } from "../settings";
 
 export class Washer {
+  /**
+   * The remote API that this washer works with, like "twitter".
+   * Washers using the same source will be run in sequence in order to avoid API rate limits.
+   */
   static readonly source: string;
+
+  /**
+   * A human-readable title for this washer, like "tweets from a user".
+   */
   static readonly title: string;
+
+  /**
+   * A longer description for the washer.
+   */
   static readonly description: string;
-  static readonly help: string;
 
   static settings = {
     id: Setting.string({
@@ -16,9 +27,9 @@ export class Washer {
 
   readonly id: string;
 
-  readonly memory: Memory;
+  memory!: Memory;
 
-  constructor(settings: Settings, memory: Memory) {
+  constructor(settings: Settings) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }
@@ -28,9 +39,5 @@ export class Washer {
       throw new Error("missing id");
     }
     this.id = id;
-
-    this.memory = memory;
   }
-
-  protected init(settings: any = {}) {}
 }

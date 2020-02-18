@@ -67,7 +67,7 @@ export interface Item {
   embed?: string;
 
   /**
-   * A description ofwhere this item came from.
+   * A description of where this item came from.
    */
   source?: ItemSource;
 }

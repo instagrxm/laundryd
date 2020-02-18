@@ -1,21 +1,138 @@
 import { Command, flags } from "@oclif/command";
+import * as Globby from "globby";
+import path from "path";
+import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
 
+type WasherType = typeof Wash | typeof Rinse | typeof Dry;
+type WasherInstance = Wash | Rinse | Dry;
+
 export default class Run extends Command {
   static description = "";
 
-  static flags = { config: flags.string() };
+  static flags = {
+    config: flags.string({
+      required: true,
+      description: 'path to a javascript file exporting a "washers" array'
+    })
+  };
 
   static args = [];
 
+  private washerTypes!: Record<string, WasherType>;
+  private washers!: Record<string, WasherInstance>;
+
   async run() {
     const { args, flags } = this.parse(Run);
+    this.washerTypes = await this.loadWasherTypes();
+    const settings = await this.loadSettings(flags.config);
+    this.washers = this.createWashers(this.washerTypes, settings);
+  }
 
-    const s: any = { id: "bar", query: "foo" };
-    const w = new Wash(s);
-    const r = new Rinse(s);
-    const d = new Dry(s);
+  /**
+   * Find files which could contain washers.
+   */
+  async loadWasherTypes(): Promise<Record<string, WasherType>> {
+    const patterns = [
+      "**/*.+(js|ts|tsx)",
+      "!**/*.+(d.ts|test.ts|test.js|spec.ts|spec.js)?(x)"
+    ];
+
+    // Eventually add plugin paths here.
+    const dirs = [path.join(__dirname, "../washers")];
+    const files: {
+      dir: string;
+      file: string;
+      name: string;
+      exported: any;
+    }[] = [];
+
+    for (const dir of dirs) {
+      for (const file of Globby.sync(patterns, { cwd: dir })) {
+        let exported;
+        try {
+          exported = await require(path.join(dir, file));
+        } catch {
+          continue;
+        }
+        const parsedFile = path.parse(file);
+        const name = `${parsedFile.dir}/${parsedFile.name}`;
+        files.push({ dir, file, name, exported });
+      }
+    }
+
+    const types = [Wash, Rinse, Dry];
+    const washers: Record<string, WasherType> = {};
+
+    // Search each file for Washers.
+    for (const file of files) {
+      for (const key of Object.keys(file.exported)) {
+        const exported = file.exported[key] as Function;
+        let prototype = Object.getPrototypeOf(exported);
+        while (prototype) {
+          if (types.includes(prototype)) {
+            washers[file.name] = exported as WasherType;
+            break;
+          }
+          prototype = Object.getPrototypeOf(prototype);
+        }
+      }
+    }
+
+    return washers;
+  }
+
+  /**
+   * Load settings from a file.
+   * @param file a script which exports an array of washer settings
+   */
+  async loadSettings(file: string): Promise<Settings[]> {
+    let config: Settings[];
+    try {
+      config = await require(file);
+    } catch {
+      throw new Error("couldn't read config file");
+    }
+
+    if (Object.getPrototypeOf(config) !== Object.getPrototypeOf([])) {
+      throw new Error("washers array not found in config file");
+    }
+
+    return config;
+  }
+
+  /**
+   * Given information about the washers on disk and the desired settings,
+   * instantiate the washers.
+   * @param types the washer types detected on disk, associated with a name derived from their file path
+   * @param settings the settings loaded from the settings file
+   */
+  createWashers(
+    types: Record<string, WasherType>,
+    settings: Settings[]
+  ): Record<string, WasherInstance> {
+    // Washer IDs must be unique
+    const ids = settings.map(c => c.id).filter(c => c);
+    for (const id of ids) {
+      const dupes = ids.filter(i => i === id);
+      if (dupes.length > 1) {
+        throw new Error(`duplicate id "${id}"`);
+      }
+    }
+
+    const washers: Record<string, WasherInstance> = {};
+
+    for (const setting of settings) {
+      if (!types[setting.name]) {
+        console.warn(`washer "${setting.name}" was not found`);
+        continue;
+      }
+
+      washers[setting.id] = new types[setting.name](setting);
+    }
+
+    return washers;
   }
 }

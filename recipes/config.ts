@@ -29,301 +29,258 @@ const auth = {
 };
 
 const retention = {
-  default: {
-    start: 90,
-    retain: 0
-  }
-};
-
-const sync = {
-  default: 90
+  begin: 90,
+  retain: 0
 };
 
 const schedule = {
   default: "* * * * *"
 };
 
-export const database = {
-  connection: "couchdb://"
-};
-
-export const triggers = [
+const washers: any[] = [
   {
+    name: "foo/bar",
+    subscribe: "bar"
+  },
+  {
+    name: "foo/foo",
+    subscribe: "foo"
+  },
+  {
+    name: "wash/mixcloud/uploads",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/mixcloud/uploads",
-        auth: auth.mixcloud,
-        retention: retention.default
-      },
-      {
-        name: "wash/mixcloud/user",
-        retention: retention.default,
-        user: "redbullradio"
-      }
-    ]
+    auth: auth.mixcloud,
+    begin: retention.begin,
+    retain: retention.retain
   },
   {
+    name: "wash/mixcloud/user",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/instagram/timeline",
-        auth: auth.instagram,
-        retention: retention.default
-      },
-      {
-        name: "wash/instagram/user",
-        auth: auth.instagram,
-        retention: retention.default,
-        user: "foo"
-      },
-      {
-        name: "wash/instagram/hashtag",
-        auth: auth.instagram,
-        retention: retention.default,
-        hashtag: "foo"
-      },
-      {
-        name: "wash/instagram/likes",
-        auth: auth.instagram,
-        sync: sync.default
-      }
-    ]
+    begin: retention.begin,
+    retain: retention.retain,
+    user: "redbullradio"
   },
   {
+    name: "wash/instagram/timeline",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/twitter/timeline",
-        auth: auth.twitter,
-        retention: retention.default
-      },
-      {
-        name: "wash/twitter/user",
-        auth: auth.twitter,
-        retention: retention.default,
-        user: "foo"
-      },
-      {
-        name: "wash/twitter/list",
-        auth: auth.twitter,
-        retention: retention.default,
-        list: "foo"
-      },
-      {
-        name: "wash/twitter/hashtag",
-        auth: auth.twitter,
-        retention: retention.default,
-        hashtag: "foo"
-      },
-      {
-        name: "wash/twitter/likes",
-        auth: auth.twitter,
-        sync: sync.default
-      }
-    ]
+    auth: auth.instagram,
+    begin: retention.begin,
+    retain: retention.retain
   },
   {
+    name: "wash/instagram/user",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/soundcloud/user",
-        user: "foo",
-        auth: auth.soundcloud,
-        retention: retention.default,
-        media: "audio"
-      },
-      {
-        name: "wash/soundcloud/playlist",
-        playlist: "foo",
-        auth: auth.soundcloud,
-        retention: retention.default,
-        media: "audio"
-      },
-      {
-        name: "wash/soundcloud/timeline",
-        auth: auth.soundcloud,
-        retention: retention.default,
-        media: "audio"
-      }
-    ]
+    auth: auth.instagram,
+    begin: retention.begin,
+    retain: retention.retain,
+    user: "foo"
   },
   {
+    name: "wash/instagram/hashtag",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/youtube/subscriptions",
-        auth: auth.youtube,
-        retention: retention.default
-      },
-      {
-        name: "wash/youtube/channel",
-        auth: auth.youtube,
-        retention: retention.default,
-        channel: "foo",
-        media: "audio"
-      },
-      {
-        name: "wash/youtube/playlist",
-        auth: auth.youtube,
-        retention: retention.default,
-        playlist: "foo",
-        media: "video"
-      }
-    ]
+    auth: auth.instagram,
+    begin: retention.begin,
+    retain: retention.retain,
+    hashtag: "foo"
   },
   {
+    name: "wash/instagram/likes",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/vimeo/timeline",
-        auth: auth.vimeo,
-        retention: retention.default
-      },
-      {
-        name: "wash/vimeo/channel",
-        channel: "foo",
-        auth: auth.vimeo,
-        retention: retention.default
-      },
-      {
-        name: "wash/vimeo/group",
-        group: "foo",
-        auth: auth.vimeo,
-        retention: retention.default
-      },
-      {
-        name: "wash/vimeo/user",
-        user: "foo",
-        auth: auth.vimeo,
-        retention: retention.default
-      }
-    ]
+    auth: auth.instagram
   },
   {
+    name: "wash/twitter/timeline",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/feedbin/likes",
-        auth: auth.feedbin,
-        sync: sync.default
-      }
-    ]
+    auth: auth.twitter,
+    begin: retention.begin,
+    retain: retention.retain
   },
   {
+    name: "wash/twitter/user",
     schedule: schedule.default,
-    wash: [
-      {
-        name: "wash/podcast/likes",
-        auth: auth.podcast,
-        sync: sync.default
-      }
-    ]
+    auth: auth.twitter,
+    begin: retention.begin,
+    retain: retention.retain,
+    user: "foo"
   },
   {
-    subscription: "on new feedbin like matching instagram",
-    dry: [
-      {
-        name: "dry/instagram/like",
-        auth: auth.instagram
-      },
-      {
-        name: "dry/feedbin/unlike",
-        auth: auth.feedbin
-      }
-    ]
+    name: "wash/twitter/list",
+    schedule: schedule.default,
+    auth: auth.twitter,
+    begin: retention.begin,
+    retain: retention.retain,
+    list: "foo"
   },
   {
-    subscription: "on new feedbin like matching youtube",
-    dry: [
-      {
-        name: "dry/youtube/like",
-        auth: auth.youtube
-      },
-      {
-        name: "dry/feedbin/unlike",
-        auth: auth.feedbin
-      }
-    ]
+    name: "wash/twitter/hashtag",
+    schedule: schedule.default,
+    auth: auth.twitter,
+    begin: retention.begin,
+    retain: retention.retain,
+    hashtag: "foo"
   },
   {
-    subscription: "on new feedbin like matching vimeo",
-    dry: [
-      {
-        name: "dry/vimeo/like",
-        auth: auth.vimeo
-      },
-      {
-        name: "dry/feedbin/unlike",
-        auth: auth.feedbin
-      }
-    ]
+    name: "wash/twitter/likes",
+    schedule: schedule.default,
+    auth: auth.twitter
   },
   {
-    subscription: "on new feedbin like matching twitter",
-    dry: [
-      {
-        name: "dry/twitter/like",
-        auth: auth.twitter
-      },
-      {
-        name: "dry/feedbin/unlike",
-        auth: auth.feedbin
-      }
-    ]
+    name: "wash/soundcloud/user",
+    schedule: schedule.default,
+    user: "foo",
+    auth: auth.soundcloud,
+    begin: retention.begin,
+    retain: retention.retain,
+    media: "audio"
   },
   {
-    subscription: "on new podcast like matching youtube",
-    dry: [
-      {
-        name: "dry/youtube/like",
-        auth: auth.youtube
-      },
-      {
-        name: "dry/podcast/unlike",
-        auth: auth.podcast
-      }
-    ]
+    name: "wash/soundcloud/playlist",
+    schedule: schedule.default,
+    playlist: "foo",
+    auth: auth.soundcloud,
+    begin: retention.begin,
+    retain: retention.retain,
+    media: "audio"
   },
   {
-    subscription: "on new podcast like matching soundcloud",
-    dry: [
-      {
-        name: "dry/soundcloud/like",
-        auth: auth.soundcloud
-      },
-      {
-        name: "dry/podcast/unlike",
-        auth: auth.podcast
-      }
-    ]
+    name: "wash/soundcloud/timeline",
+    schedule: schedule.default,
+    auth: auth.soundcloud,
+    begin: retention.begin,
+    retain: retention.retain,
+    media: "audio"
   },
   {
-    subscription: "on new instagram like matching instagram",
-    dry: [
-      {
-        name: "dry/instagram/story",
-        auth: auth.instagram
-      }
-    ]
+    name: "wash/youtube/subscribes",
+    schedule: schedule.default,
+    auth: auth.youtube,
+    begin: retention.begin,
+    retain: retention.retain
   },
   {
-    subscription: "on new instagram post matching endquote",
-    dry: [
-      {
-        name: "dry/twitter/tweet",
-        auth: auth.twitter
-      }
-    ]
+    name: "wash/youtube/channel",
+    schedule: schedule.default,
+    auth: auth.youtube,
+    begin: retention.begin,
+    retain: retention.retain,
+    channel: "foo",
+    media: "audio"
   },
   {
-    subscription: "on new log error",
-    dry: [
-      {
-        name: "dry/email",
-        to: "foo",
-        auth: auth.email
-      }
-    ]
+    name: "wash/youtube/playlist",
+    schedule: schedule.default,
+    auth: auth.youtube,
+    begin: retention.begin,
+    retain: retention.retain,
+    playlist: "foo",
+    media: "video"
+  },
+  {
+    name: "wash/vimeo/timeline",
+    schedule: schedule.default,
+    auth: auth.vimeo,
+    begin: retention.begin,
+    retain: retention.retain
+  },
+  {
+    name: "wash/vimeo/channel",
+    schedule: schedule.default,
+    channel: "foo",
+    auth: auth.vimeo,
+    begin: retention.begin,
+    retain: retention.retain
+  },
+  {
+    name: "wash/vimeo/group",
+    schedule: schedule.default,
+    group: "foo",
+    auth: auth.vimeo,
+    begin: retention.begin,
+    retain: retention.retain
+  },
+  {
+    name: "wash/vimeo/user",
+    schedule: schedule.default,
+    user: "foo",
+    auth: auth.vimeo,
+    begin: retention.begin,
+    retain: retention.retain
+  },
+  {
+    name: "wash/feedbin/likes",
+    schedule: schedule.default,
+    auth: auth.feedbin
+  },
+  {
+    name: "dry/feedbin/unlike",
+    subscribe: "wash/feedbin/likes",
+    auth: auth.feedbin
+  },
+  {
+    name: "wash/podcast/likes",
+    schedule: schedule.default,
+    auth: auth.podcast
+  },
+  {
+    name: "dry/podcast/unlike",
+    subscribe: "wash/podcast/likes",
+    auth: auth.podcast
+  },
+  {
+    name: "dry/instagram/like",
+    subscribe: "wash/feedbin/likes",
+    auth: auth.instagram
+  },
+  {
+    id: "dry/youtube/like/feedbin",
+    name: "dry/youtube/like",
+    subscribe: "wash/feedbin/likes",
+    auth: auth.youtube
+  },
+  {
+    name: "dry/vimeo/like",
+    subscribe: "wash/feedbin/likes",
+    auth: auth.vimeo
+  },
+  {
+    name: "dry/twitter/like",
+    subscribe: "wash/feedbin/likes",
+    auth: auth.twitter
+  },
+  {
+    id: "dry/youtube/like/podcast",
+    name: "dry/youtube/like",
+    subscribe: "wash/podcast/likes",
+    auth: auth.youtube
+  },
+  {
+    name: "dry/soundcloud/like",
+    subscribe: "wash/podcast/likes",
+    auth: auth.soundcloud
+  },
+  {
+    name: "dry/mixcloud/like",
+    subscribe: "wash/podcast/likes",
+    auth: auth.soundcloud
+  },
+  {
+    name: "dry/instagram/story",
+    subscribe: "wash/instagram/likes",
+    auth: auth.instagram
+  },
+  {
+    name: "dry/twitter/tweet",
+    subscribe: "wash/instagram/user",
+    auth: auth.twitter
+  },
+  {
+    name: "dry/email",
+    subscribe: "log/error",
+    to: "foo",
+    auth: auth.email
   }
 ];
+
+washers.forEach(w => (w.id = w.id || w.name));
+
+export = washers;
