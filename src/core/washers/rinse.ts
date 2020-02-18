@@ -1,6 +1,8 @@
 import { CronJob } from "cron";
 import { Item } from "../Item";
+import { Memory } from "../memory";
 import { Setting } from "../setting";
+import { Settings } from "../settings";
 import { Washer } from "./washer";
 
 export class Rinse extends Washer {
@@ -25,7 +27,7 @@ export class Rinse extends Washer {
 
   readonly query: string;
 
-  constructor(settings: any = {}, memory: any = {}) {
+  constructor(settings: Settings, memory: Memory) {
     super(settings, memory);
 
     this.schedule = Rinse.settings.schedule.parse(settings.schedule);

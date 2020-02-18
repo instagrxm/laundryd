@@ -1,6 +1,8 @@
 import { CronJob } from "cron";
 import { Item } from "../Item";
+import { Memory } from "../memory";
 import { Setting } from "../setting";
+import { Settings } from "../settings";
 import { Washer } from "./washer";
 
 export class Wash extends Washer {
@@ -30,7 +32,7 @@ export class Wash extends Washer {
   readonly begin: number;
   readonly retain?: number;
 
-  constructor(settings: any = {}, memory: any = {}) {
+  constructor(settings: Settings, memory: Memory) {
     super(settings, memory);
 
     const schedule = Wash.settings.schedule.parse(settings.schedule);

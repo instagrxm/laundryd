@@ -1,4 +1,6 @@
+import { Memory } from "../memory";
 import { Setting } from "../setting";
+import { Settings } from "../settings";
 
 export class Washer {
   static readonly source: string;
@@ -14,9 +16,9 @@ export class Washer {
 
   readonly id: string;
 
-  readonly memory: object;
+  readonly memory: Memory;
 
-  constructor(settings: any = {}, memory: any = {}) {
+  constructor(settings: Settings, memory: Memory) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }
@@ -31,8 +33,4 @@ export class Washer {
   }
 
   protected init(settings: any = {}) {}
-
-  private loadMemory(): object {
-    return {};
-  }
 }
