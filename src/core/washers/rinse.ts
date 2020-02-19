@@ -1,4 +1,4 @@
-import { Item } from "../item";
+import { Item, LoadedItem } from "../item";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";
@@ -28,7 +28,7 @@ export class Rinse extends Washer {
     this.subscribe = subscribe;
   }
 
-  async run(items: Item[]): Promise<Item[]> {
+  async run(items: LoadedItem[]): Promise<Item[]> {
     return [];
   }
 }

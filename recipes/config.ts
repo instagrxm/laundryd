@@ -39,13 +39,19 @@ const schedule = {
 
 const washers: any[] = [
   {
+    id: "test/test-wash/foo",
+    name: "test/test-wash",
+    schedule: "*/5 * * * * *"
+  },
+  {
+    id: "test/test-wash/bar",
     name: "test/test-wash",
     schedule: "*/5 * * * * *"
   },
   {
     name: "test/test-rinse",
     schedule: "*/5 * * * * *",
-    subscribe: ["test/test-wash"]
+    subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
   },
   {
     name: "test/test-dry",

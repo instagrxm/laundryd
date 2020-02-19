@@ -6,7 +6,7 @@ export class TestWash extends Wash {
   static readonly title: string = "test-wash";
 
   async run(): Promise<Item[]> {
-    console.log(`${TestWash.title}`);
+    console.log(`${this.id}`);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.memory.foo) {
@@ -22,7 +22,8 @@ export class TestWash extends Wash {
             url: `http://endquote.com/${this.memory.foo}`
           }
         ];
-        console.log(`${TestWash.title} returning`);
+
+        console.log(`${this.id} returning`);
         console.log(items.map(i => i.url));
         resolve(items);
       }, 3000);

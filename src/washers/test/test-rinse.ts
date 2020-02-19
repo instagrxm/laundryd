@@ -1,12 +1,14 @@
-import { Item } from "../../core/item";
+import { Item, LoadedItem } from "../../core/item";
 import { Rinse } from "../../core/washers/rinse";
 
 export class TestRinse extends Rinse {
   static readonly source: string = "test-source";
   static readonly title: string = "test-rinse";
 
-  async run(items: Item[]): Promise<Item[]> {
-    console.log(`${TestRinse.title} got ${items.length} items`);
+  async run(items: LoadedItem[]): Promise<Item[]> {
+    console.log(
+      `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
+    );
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.memory.foo) {
@@ -18,7 +20,7 @@ export class TestRinse extends Rinse {
           i.extended = i.extended || {};
           i.extended.rinse = this.memory.foo;
         });
-        console.log(`${TestRinse.title} returning`);
+        console.log(`${this.id} returning`);
         console.log(items.map(i => i.url));
         resolve(items);
       }, 1000);

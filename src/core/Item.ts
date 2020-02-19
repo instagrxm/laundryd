@@ -1,8 +1,13 @@
 /**
- * An object created by wash commands and consumed by dry commands.
+ * An object created by washers.
  * Based on @types/rss.
  */
 export interface Item {
+  /**
+   * The date when the item was created.
+   */
+  date: Date;
+
   /**
    * Title of this particular item.
    */
@@ -30,11 +35,6 @@ export interface Item {
    * This is typical except on multi-author blogs.
    */
   author?: string;
-
-  /**
-   * The date and time of when the item was created.
-   */
-  date: Date;
 
   /**
    * The latitude coordinate of the item for GeoRSS.
@@ -116,4 +116,19 @@ export interface Enclosure {
    * The MIME type of the file.
    */
   type: string;
+}
+
+/**
+ * When an item is loaded from the database, it gets properties indicating where it came from.
+ */
+export interface LoadedItem extends Item {
+  /**
+   * The user-defined unique ID for the washer instance.
+   */
+  washerId: string;
+
+  /**
+   * The title of the washer, which is the same for all instances.
+   */
+  washerTitle: string;
 }

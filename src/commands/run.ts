@@ -2,7 +2,7 @@ import { Command, flags } from "@oclif/command";
 import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
-import { Item } from "../core/item";
+import { Item, LoadedItem } from "../core/item";
 import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
@@ -216,17 +216,17 @@ export default class Run extends Command {
    * @param washer the washer to run
    */
   async runSchedule(washer: WasherInstance): Promise<void> {
-    let input: Item[] = [];
+    let input: LoadedItem[] = [];
     let output: Item[] = [];
 
     // Load memory
-    washer.memory = await this.database.loadMemory(washer.id);
+    washer.memory = await this.database.loadMemory(washer);
 
     if (washer instanceof Rinse || washer instanceof Dry) {
       // Load items since memory.lastRun from the database
       for (const id of washer.subscribe) {
         const since = washer.memory.lastRun || new Date();
-        const items = await this.database.loadItems(id, since);
+        const items = await this.database.loadItems(this.washers[id], since);
         input = input.concat(items);
       }
     }
@@ -240,14 +240,14 @@ export default class Run extends Command {
     }
 
     // Write output to the database
-    await this.database.saveItems(washer.id, output);
+    await this.database.saveItems(washer, output);
 
     // Write memory
     washer.memory.lastRun = new Date();
     if (input && input.length) {
       washer.memory.lastItem = input[0];
     }
-    await this.database.saveMemory(washer.id, washer.memory);
+    await this.database.saveMemory(washer);
 
     const queue = this.getQueue(washer);
     queue.shift();
