@@ -11,11 +11,6 @@ export class Wash extends Washer {
   static settings = {
     ...Washer.settings,
 
-    schedule: Setting.string({
-      def: "* * * * * *",
-      description: "when to run the washer"
-    }),
-
     begin: Setting.number({
       def: 0,
       description: "the number of days of past items to load in the first run"
@@ -27,18 +22,11 @@ export class Wash extends Washer {
     })
   };
 
-  readonly schedule: string;
   readonly begin: number;
   readonly retain?: number;
 
   constructor(settings: Settings) {
     super(settings);
-
-    const schedule = Wash.settings.schedule.parse(settings.schedule);
-    if (!schedule) {
-      throw new Error(`${this.id}: missing schedule`);
-    }
-    this.schedule = schedule;
 
     this.begin = Wash.settings.begin.parse(settings.begin) as number;
     this.retain = Wash.settings.retain.parse(settings.retain);

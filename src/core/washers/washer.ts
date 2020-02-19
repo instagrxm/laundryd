@@ -28,10 +28,15 @@ export class Washer {
   static settings = {
     id: Setting.string({
       description: "a unique identifier for this washer"
+    }),
+
+    schedule: Setting.string({
+      description: "when to run the washer"
     })
   };
 
   readonly id: string;
+  readonly schedule?: string;
 
   memory!: Memory;
 
@@ -45,5 +50,7 @@ export class Washer {
       throw new Error("missing id");
     }
     this.id = id;
+
+    this.schedule = Washer.settings.schedule.parse(settings.schedule);
   }
 }

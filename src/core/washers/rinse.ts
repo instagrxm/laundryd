@@ -11,23 +11,15 @@ export class Rinse extends Washer {
   static settings = {
     ...Washer.settings,
 
-    schedule: Setting.string({
-      description: "when to run the washer"
-    }),
-
     subscribe: Setting.strings({
       description: "listen for items from this washer id"
     })
   };
 
-  readonly schedule?: string;
-
   readonly subscribe: string[];
 
   constructor(settings: Settings) {
     super(settings);
-
-    this.schedule = Rinse.settings.schedule.parse(settings.schedule);
 
     const subscribe = Rinse.settings.subscribe.parse(settings.subscribe);
     if (!subscribe || !subscribe.length) {

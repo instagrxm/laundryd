@@ -186,7 +186,6 @@ export default class Run extends Command {
   }
 
   private scheduleQueue: Record<string, Array<WasherInstance>> = {};
-
   /**
    * Given a washer, get the run queue for its source.
    * @param washer a washer that would be placed in the queue
@@ -221,11 +220,15 @@ export default class Run extends Command {
     let output: Item[] = [];
 
     // Load memory
-    washer.memory = await this.database.readMemory(washer);
+    washer.memory = await this.database.loadMemory(washer.id);
 
     if (washer instanceof Rinse || washer instanceof Dry) {
-      // TODO: Load items since memory.lastRun from the database
-      input = [];
+      // Load items since memory.lastRun from the database
+      for (const id of washer.subscribe) {
+        const since = washer.memory.lastRun || new Date();
+        const items = await this.database.loadItems(id, since);
+        input = input.concat(items);
+      }
     }
 
     if (washer instanceof Wash) {
@@ -236,14 +239,15 @@ export default class Run extends Command {
       await washer.run(input);
     }
 
-    // TODO: Write output to the database
+    // Write output to the database
+    await this.database.saveItems(washer.id, output);
 
     // Write memory
     washer.memory.lastRun = new Date();
     if (input && input.length) {
       washer.memory.lastItem = input[0];
     }
-    await this.database.writeMemory(washer);
+    await this.database.saveMemory(washer.id, washer.memory);
 
     const queue = this.getQueue(washer);
     queue.shift();

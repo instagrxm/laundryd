@@ -34,17 +34,23 @@ const retention = {
 };
 
 const schedule = {
-  default: "* * * * *"
+  default: "* * * * * *"
 };
 
 const washers: any[] = [
   {
-    name: "foo/bar",
-    subscribe: ["bar"]
+    name: "test/test-wash",
+    schedule: "*/5 * * * * *"
   },
   {
-    name: "foo/foo",
-    subscribe: ["foo"]
+    name: "test/test-rinse",
+    schedule: "*/5 * * * * *",
+    subscribe: ["test/test-wash"]
+  },
+  {
+    name: "test/test-dry",
+    schedule: "*/5 * * * * *",
+    subscribe: ["test/test-rinse"]
   },
   {
     name: "wash/mixcloud/uploads",
