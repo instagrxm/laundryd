@@ -1,5 +1,3 @@
-import { CronTime } from "cron";
-
 export class Setting<T> {
   def?: T;
   description = "";
@@ -73,25 +71,25 @@ export class Setting<T> {
     });
   }
 
-  static cron({
-    def,
+  static strings({
+    def = [],
     description,
     parser
   }: {
     description: string;
-    def?: CronTime;
-    parser?: (setting: any) => CronTime | undefined;
-  }): Setting<CronTime> {
+    def?: string[];
+    parser?: (setting: any) => string[] | undefined;
+  }): Setting<string[]> {
     if (!parser) {
-      parser = (setting?: any): CronTime | undefined => {
+      parser = (setting?: any): string[] | undefined => {
         if (setting === undefined) {
           return def;
         }
-        return new CronTime(setting);
+        return setting;
       };
     }
 
-    return new Setting<CronTime>({
+    return new Setting<string[]>({
       description,
       def,
       parser

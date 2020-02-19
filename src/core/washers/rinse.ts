@@ -15,14 +15,14 @@ export class Rinse extends Washer {
       description: "when to run the washer"
     }),
 
-    subscribe: Setting.string({
+    subscribe: Setting.strings({
       description: "listen for items from this washer id"
     })
   };
 
   readonly schedule?: string;
 
-  readonly subscribe: string;
+  readonly subscribe: string[];
 
   constructor(settings: Settings) {
     super(settings);
@@ -30,7 +30,7 @@ export class Rinse extends Washer {
     this.schedule = Rinse.settings.schedule.parse(settings.schedule);
 
     const subscribe = Rinse.settings.subscribe.parse(settings.subscribe);
-    if (!subscribe) {
+    if (!subscribe || !subscribe.length) {
       throw new Error(`${this.id}: missing subscribe`);
     }
     this.subscribe = subscribe;

@@ -40,11 +40,11 @@ const schedule = {
 const washers: any[] = [
   {
     name: "foo/bar",
-    subscribe: "bar"
+    subscribe: ["bar"]
   },
   {
     name: "foo/foo",
-    subscribe: "foo"
+    subscribe: ["foo"]
   },
   {
     name: "wash/mixcloud/uploads",
@@ -213,7 +213,7 @@ const washers: any[] = [
   },
   {
     name: "dry/feedbin/unlike",
-    subscribe: "wash/feedbin/likes",
+    subscribe: ["wash/feedbin/likes"],
     auth: auth.feedbin
   },
   {
@@ -223,59 +223,59 @@ const washers: any[] = [
   },
   {
     name: "dry/podcast/unlike",
-    subscribe: "wash/podcast/likes",
+    subscribe: ["wash/podcast/likes"],
     auth: auth.podcast
   },
   {
     name: "dry/instagram/like",
-    subscribe: "wash/feedbin/likes",
+    subscribe: ["wash/feedbin/likes"],
     auth: auth.instagram
   },
   {
     id: "dry/youtube/like/feedbin",
     name: "dry/youtube/like",
-    subscribe: "wash/feedbin/likes",
+    subscribe: ["wash/feedbin/likes"],
     auth: auth.youtube
   },
   {
     name: "dry/vimeo/like",
-    subscribe: "wash/feedbin/likes",
+    subscribe: ["wash/feedbin/likes"],
     auth: auth.vimeo
   },
   {
     name: "dry/twitter/like",
-    subscribe: "wash/feedbin/likes",
+    subscribe: ["wash/feedbin/likes"],
     auth: auth.twitter
   },
   {
     id: "dry/youtube/like/podcast",
     name: "dry/youtube/like",
-    subscribe: "wash/podcast/likes",
+    subscribe: ["wash/podcast/likes"],
     auth: auth.youtube
   },
   {
     name: "dry/soundcloud/like",
-    subscribe: "wash/podcast/likes",
+    subscribe: ["wash/podcast/likes"],
     auth: auth.soundcloud
   },
   {
     name: "dry/mixcloud/like",
-    subscribe: "wash/podcast/likes",
+    subscribe: ["wash/podcast/likes"],
     auth: auth.soundcloud
   },
   {
     name: "dry/instagram/story",
-    subscribe: "wash/instagram/likes",
+    subscribe: ["wash/instagram/likes"],
     auth: auth.instagram
   },
   {
     name: "dry/twitter/tweet",
-    subscribe: "wash/instagram/user",
+    subscribe: ["wash/instagram/user"],
     auth: auth.twitter
   },
   {
     name: "dry/email",
-    subscribe: "log/error",
+    subscribe: ["log/error"],
     to: "foo",
     auth: auth.email
   }
