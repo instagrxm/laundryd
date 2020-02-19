@@ -1,8 +1,8 @@
-import { CronJob } from "cron";
+import { CronTime } from "cron";
 
 export class Setting<T> {
   def?: T;
-  description: string = "";
+  description = "";
   private parser: (setting: any) => T | undefined;
 
   constructor({
@@ -31,9 +31,9 @@ export class Setting<T> {
     description: string;
     def?: string;
     parser?: (setting: any) => string | undefined;
-  }) {
+  }): Setting<string> {
     if (!parser) {
-      parser = (setting?: any) => {
+      parser = (setting?: any): string | undefined => {
         if (setting === undefined) {
           return def;
         }
@@ -56,9 +56,9 @@ export class Setting<T> {
     description: string;
     def?: number;
     parser?: (setting: any) => number | undefined;
-  }) {
+  }): Setting<number> {
     if (!parser) {
-      parser = (setting?: any) => {
+      parser = (setting?: any): number | undefined => {
         if (setting === undefined) {
           return def;
         }
@@ -79,44 +79,19 @@ export class Setting<T> {
     parser
   }: {
     description: string;
-    def?: CronJob;
-    parser?: (setting: any) => CronJob | undefined;
-  }) {
+    def?: CronTime;
+    parser?: (setting: any) => CronTime | undefined;
+  }): Setting<CronTime> {
     if (!parser) {
-      parser = (setting?: any) => {
+      parser = (setting?: any): CronTime | undefined => {
         if (setting === undefined) {
           return def;
         }
-        return new CronJob(setting);
+        return new CronTime(setting);
       };
     }
 
-    return new Setting<CronJob>({
-      description,
-      def,
-      parser
-    });
-  }
-
-  static query({
-    def,
-    description,
-    parser
-  }: {
-    description: string;
-    def?: string;
-    parser?: (setting: any) => string | undefined;
-  }) {
-    if (!parser) {
-      parser = (setting?: any) => {
-        if (setting === undefined) {
-          return def;
-        }
-        return setting + "";
-      };
-    }
-
-    return new Setting<string>({
+    return new Setting<CronTime>({
       description,
       def,
       parser

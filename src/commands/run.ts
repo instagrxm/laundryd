@@ -1,6 +1,8 @@
 import { Command, flags } from "@oclif/command";
+import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
+import { Item } from "../core/Item";
 import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
@@ -8,6 +10,11 @@ import { Wash } from "../core/washers/wash";
 
 type WasherType = typeof Wash | typeof Rinse | typeof Dry;
 type WasherInstance = Wash | Rinse | Dry;
+
+// TODO: Temporary web server
+const server = require("net")
+  .createServer()
+  .listen();
 
 export default class Run extends Command {
   static description = "";
@@ -24,17 +31,18 @@ export default class Run extends Command {
   private washerTypes!: Record<string, WasherType>;
   private washers!: Record<string, WasherInstance>;
 
-  async run() {
+  async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
     this.washers = this.createWashers(this.washerTypes, settings);
+    this.startSchedules(Object.values(this.washers));
   }
 
   /**
    * Find files which could contain washers.
    */
-  async loadWasherTypes(): Promise<Record<string, WasherType>> {
+  private async loadWasherTypes(): Promise<Record<string, WasherType>> {
     const patterns = [
       "**/*.+(js|ts|tsx)",
       "!**/*.+(d.ts|test.ts|test.js|spec.ts|spec.js)?(x)"
@@ -88,7 +96,7 @@ export default class Run extends Command {
    * Load settings from a file.
    * @param file a script which exports an array of washer settings
    */
-  async loadSettings(file: string): Promise<Settings[]> {
+  private async loadSettings(file: string): Promise<Settings[]> {
     let config: Settings[];
     try {
       config = await require(file);
@@ -109,7 +117,7 @@ export default class Run extends Command {
    * @param types the washer types detected on disk, associated with a name derived from their file path
    * @param settings the settings loaded from the settings file
    */
-  createWashers(
+  private createWashers(
     types: Record<string, WasherType>,
     settings: Settings[]
   ): Record<string, WasherInstance> {
@@ -131,8 +139,84 @@ export default class Run extends Command {
       }
 
       washers[setting.id] = new types[setting.name](setting);
+      console.info(`washer "${setting.name}" created`);
     }
 
     return washers;
+  }
+
+  /**
+   * Kick off the cron schedules for any washers that have them.
+   * @param washers all running washers
+   */
+  private startSchedules(washers: WasherInstance[]): void {
+    for (const washer of washers) {
+      if (!washer.schedule) {
+        continue;
+      }
+
+      new CronJob({
+        cronTime: washer.schedule,
+        onTick: async (): Promise<void> => await this.queueSchedule(washer),
+        start: true
+      });
+    }
+  }
+
+  private scheduleQueue: Record<string, Array<WasherInstance>> = {};
+
+  /**
+   * Given a washer, get the run queue for its source.
+   * @param washer a washer that would be placed in the queue
+   */
+  private getQueue(washer: WasherInstance): Array<WasherInstance> {
+    const info: WasherType = Object.getPrototypeOf(washer).constructor;
+    this.scheduleQueue[info.source] = this.scheduleQueue[info.source] || [];
+    return this.scheduleQueue[info.source];
+  }
+
+  /**
+   * When a washer's schedule ticks, put it in a queue to run after others with the same source.
+   * @param washer the washer to put into the queue
+   */
+  private async queueSchedule(washer: WasherInstance): Promise<void> {
+    const queue = this.getQueue(washer);
+    if (queue.includes(washer)) {
+      return;
+    }
+    queue.push(washer);
+    if (queue.length === 1) {
+      await this.runSchedule(washer);
+    }
+  }
+
+  /**
+   * Run a scheduled washer
+   * @param washer the washer to run
+   */
+  async runSchedule(washer: WasherInstance): Promise<void> {
+    let input: Item[] = [];
+    let output: Item[] = [];
+
+    if (washer instanceof Rinse || washer instanceof Dry) {
+      // TODO: Load items since memory.lastRun from the database
+      input = [];
+    }
+
+    if (washer instanceof Wash) {
+      output = await washer.run();
+    } else if (washer instanceof Rinse) {
+      output = await washer.run(input);
+    } else if (washer instanceof Dry) {
+      await washer.run(input);
+    }
+
+    // TODO: Write output to the database
+
+    const queue = this.getQueue(washer);
+    queue.shift();
+    if (queue.length) {
+      await this.runSchedule(queue[0]);
+    }
   }
 }

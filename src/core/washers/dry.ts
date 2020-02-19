@@ -1,4 +1,3 @@
-import { CronJob } from "cron";
 import { Item } from "../Item";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
@@ -12,7 +11,7 @@ export class Dry extends Washer {
   static settings = {
     ...Washer.settings,
 
-    schedule: Setting.cron({
+    schedule: Setting.string({
       description: "when to run the washer"
     }),
 
@@ -21,7 +20,7 @@ export class Dry extends Washer {
     })
   };
 
-  readonly schedule?: CronJob;
+  readonly schedule?: string;
 
   readonly subscribe: string;
 
