@@ -9,6 +9,11 @@ export class Foo extends Wash {
     console.log("foo running " + new Date().getSeconds());
     return new Promise((resolve, reject) => {
       setTimeout(() => {
+        if (!this.memory.foo) {
+          this.memory.foo = 1;
+        } else {
+          this.memory.foo++;
+        }
         resolve([]);
       }, 10000);
     });

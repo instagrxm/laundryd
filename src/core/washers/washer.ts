@@ -1,6 +1,12 @@
 import { Memory } from "../memory";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
+import { Dry } from "./dry";
+import { Rinse } from "./rinse";
+import { Wash } from "./wash";
+
+export type WasherType = typeof Wash | typeof Rinse | typeof Dry;
+export type WasherInstance = Wash | Rinse | Dry;
 
 export class Washer {
   /**

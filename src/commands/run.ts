@@ -7,9 +7,8 @@ import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
-
-type WasherType = typeof Wash | typeof Rinse | typeof Dry;
-type WasherInstance = Wash | Rinse | Dry;
+import { WasherInstance, WasherType } from "../core/washers/washer";
+import { Database } from "../storage/database";
 
 // TODO: Temporary web server
 const server = require("net")
@@ -22,7 +21,13 @@ export default class Run extends Command {
   static flags = {
     config: flags.string({
       required: true,
-      description: 'path to a javascript file exporting a "washers" array'
+      description:
+        "path to a javascript file exporting an array of washer settings"
+    }),
+
+    mongo: flags.string({
+      required: true,
+      description: "mongodb connection string"
     })
   };
 
@@ -30,13 +35,30 @@ export default class Run extends Command {
 
   private washerTypes!: Record<string, WasherType>;
   private washers!: Record<string, WasherInstance>;
+  private database!: Database;
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
+
+    this.database = new Database();
+    await this.database.init(flags.mongo);
+
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
     this.washers = this.createWashers(this.washerTypes, settings);
     this.startSchedules(Object.values(this.washers));
+
+    // const pipeline = [{ $match: { "fullDocument.foo": "bar" } }];
+    // const collection = db.collection("laundry");
+
+    // const changeStream = collection.watch(pipeline);
+    // changeStream.on("change", function(change) {
+    //   console.log(change);
+    // });
+
+    // setTimeout(function() {
+    //   collection.insertOne({ foo: "bar" });
+    // }, 1000);
   }
 
   /**
@@ -198,7 +220,8 @@ export default class Run extends Command {
     let input: Item[] = [];
     let output: Item[] = [];
 
-    // TODO: Load memory
+    // Load memory
+    washer.memory = await this.database.readMemory(washer);
 
     if (washer instanceof Rinse || washer instanceof Dry) {
       // TODO: Load items since memory.lastRun from the database
@@ -215,7 +238,12 @@ export default class Run extends Command {
 
     // TODO: Write output to the database
 
-    // TODO: Write memory to the database
+    // Write memory
+    washer.memory.lastRun = new Date();
+    if (input && input.length) {
+      washer.memory.lastItem = input[0];
+    }
+    await this.database.writeMemory(washer);
 
     const queue = this.getQueue(washer);
     queue.shift();
