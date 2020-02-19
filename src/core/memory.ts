@@ -1,4 +1,4 @@
-import { Item } from "./Item";
+import { Item } from "./item";
 
 export interface Memory {
   [key: string]: any;

@@ -1,4 +1,4 @@
-import { Item } from "../../core/Item";
+import { Item } from "../../core/item";
 import { Wash } from "../../core/washers/wash";
 
 export class Foo extends Wash {

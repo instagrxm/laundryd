@@ -1,4 +1,4 @@
-import { Item } from "../Item";
+import { Item } from "../item";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";

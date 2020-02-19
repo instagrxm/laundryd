@@ -2,7 +2,7 @@ import { Command, flags } from "@oclif/command";
 import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
-import { Item } from "../core/Item";
+import { Item } from "../core/item";
 import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
@@ -198,6 +198,8 @@ export default class Run extends Command {
     let input: Item[] = [];
     let output: Item[] = [];
 
+    // TODO: Load memory
+
     if (washer instanceof Rinse || washer instanceof Dry) {
       // TODO: Load items since memory.lastRun from the database
       input = [];
@@ -212,6 +214,8 @@ export default class Run extends Command {
     }
 
     // TODO: Write output to the database
+
+    // TODO: Write memory to the database
 
     const queue = this.getQueue(washer);
     queue.shift();
