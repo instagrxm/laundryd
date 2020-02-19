@@ -25,6 +25,9 @@ export class Rinse extends Washer {
     if (!subscribe || !subscribe.length) {
       throw new Error(`${this.id}: missing subscribe`);
     }
+    if (subscribe.includes(this.id)) {
+      throw new Error(`${this.id}: can't subscribe to itself`);
+    }
     this.subscribe = subscribe;
   }
 

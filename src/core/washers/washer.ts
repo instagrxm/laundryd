@@ -49,6 +49,13 @@ export class Washer {
     if (!id) {
       throw new Error("missing id");
     }
+
+    if (id.includes("$") || id.startsWith("system.")) {
+      throw new Error(
+        "invalid id https://docs.mongodb.com/manual/reference/limits/#Restriction-on-Collection-Names"
+      );
+    }
+
     this.id = id;
 
     this.schedule = Washer.settings.schedule.parse(settings.schedule);
