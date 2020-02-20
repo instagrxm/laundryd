@@ -185,43 +185,17 @@ export default class Run extends Command {
 
       new CronJob({
         cronTime: washer.schedule,
-        onTick: async (): Promise<void> => await this.queueSchedule(washer),
+        onTick: async (): Promise<void> => await this.runSchedule(washer),
         start: true
       });
     }
   }
 
-  private scheduleQueue: Record<string, Array<WasherInstance>> = {};
   /**
-   * Given a washer, get the run queue for its source.
-   * @param washer a washer that would be placed in the queue
-   */
-  private getQueue(washer: WasherInstance): Array<WasherInstance> {
-    const info: WasherType = Object.getPrototypeOf(washer).constructor;
-    this.scheduleQueue[info.source] = this.scheduleQueue[info.source] || [];
-    return this.scheduleQueue[info.source];
-  }
-
-  /**
-   * When a washer's schedule ticks, put it in a queue to run after others with the same source.
-   * @param washer the washer to put into the queue
-   */
-  private async queueSchedule(washer: WasherInstance): Promise<void> {
-    const queue = this.getQueue(washer);
-    if (queue.includes(washer)) {
-      return;
-    }
-    queue.push(washer);
-    if (queue.length === 1) {
-      await this.runSchedule(washer);
-    }
-  }
-
-  /**
-   * Run a scheduled washer
+   * Run a scheduled washer.
    * @param washer the washer to run
    */
-  async runSchedule(washer: WasherInstance): Promise<void> {
+  private async runSchedule(washer: WasherInstance): Promise<void> {
     // Load items since memory.lastRun from the database
     let input: LoadedItem[] = [];
     if (washer instanceof Rinse || washer instanceof Dry) {
@@ -230,15 +204,12 @@ export default class Run extends Command {
         const items = await this.database.loadItems(this.washers[id], since);
         input = input.concat(items);
       }
+      if (!input.length) {
+        return;
+      }
     }
 
     await this.runWasher(washer, input);
-
-    const queue = this.getQueue(washer);
-    queue.shift();
-    if (queue.length) {
-      await this.runSchedule(queue[0]);
-    }
   }
 
   /**
@@ -262,7 +233,7 @@ export default class Run extends Command {
    * @param washer the washer to run
    * @param input the items the washer should process
    */
-  async runWasher(
+  private async runWasher(
     washer: WasherInstance,
     input: LoadedItem[] = []
   ): Promise<void> {

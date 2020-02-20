@@ -2,7 +2,6 @@ import { LoadedItem } from "../../core/item";
 import { Dry } from "../../core/washers/dry";
 
 export class TestDry extends Dry {
-  static readonly source: string = "test-source";
   static readonly title: string = "test-dry";
 
   async run(items: LoadedItem[]): Promise<void> {

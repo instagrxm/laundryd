@@ -10,12 +10,6 @@ export type WasherInstance = Wash | Rinse | Dry;
 
 export class Washer {
   /**
-   * The remote API that this washer works with, like "twitter".
-   * Washers using the same source will be run in sequence in order to avoid API rate limits.
-   */
-  static readonly source: string;
-
-  /**
    * A human-readable title for this washer, like "tweets from a user".
    */
   static readonly title: string;

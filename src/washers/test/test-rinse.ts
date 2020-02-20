@@ -2,7 +2,6 @@ import { Item, LoadedItem } from "../../core/item";
 import { Rinse } from "../../core/washers/rinse";
 
 export class TestRinse extends Rinse {
-  static readonly source: string = "test-source";
   static readonly title: string = "test-rinse";
 
   async run(items: LoadedItem[]): Promise<Item[]> {
