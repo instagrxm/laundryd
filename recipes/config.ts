@@ -57,7 +57,8 @@ const washers: any[] = [
     name: "test/test-dry",
     schedule: "*/5 * * * * *",
     subscribe: ["test/test-rinse"]
-  },
+  }
+  /*
   {
     name: "wash/mixcloud/uploads",
     schedule: schedule.default,
@@ -291,6 +292,7 @@ const washers: any[] = [
     to: "foo",
     auth: auth.email
   }
+  */
 ];
 
 washers.forEach(w => (w.id = w.id || w.name));

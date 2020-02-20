@@ -132,42 +132,40 @@ export default class Run extends Command {
     types: Record<string, WasherType>,
     settings: Settings[]
   ): Promise<Record<string, WasherInstance>> {
-    // Washer IDs must be unique
-    const ids = settings.map(c => c.id).filter(c => c);
-    for (const id of ids) {
-      const dupes = ids.filter(i => i === id);
-      if (dupes.length > 1) {
-        throw new Error(`duplicate washer id "${id}"`);
-      }
-    }
-
-    // Create washers
-    const washers: Record<string, WasherInstance> = {};
     for (const setting of settings) {
-      if (!types[setting.name]) {
-        console.warn(`washer "${setting.name}" was not found`);
-        continue;
+      if (!setting.id) {
+        throw new Error(`missing id: ${setting.name}`);
       }
-
-      const washer = new types[setting.name](setting);
-      await this.database.loadMemory(washer);
-      washers[setting.id] = washer;
-
-      console.info(`washer "${setting.name}" created`);
-    }
-
-    // Validate subscriptions
-    for (const id in washers) {
-      const washer = washers[id];
-      if (washer instanceof Rinse || washer instanceof Dry) {
-        for (const sub of washer.subscribe) {
-          if (!washers[sub]) {
-            console.warn(
-              `washer ${id} subscribed to ${sub} but it wasn't found`
+      if (!setting.name) {
+        throw new Error(`missing name: ${setting.id}`);
+      }
+      if (settings.filter(s => s.id === setting.id).length > 1) {
+        throw new Error(`duplicate id: ${setting.id}`);
+      }
+      if (!types[setting.name]) {
+        throw new Error(`washer not found: ${setting.name}`);
+      }
+      if (setting.subscribe) {
+        if (!(setting.subscribe instanceof Array)) {
+          throw new Error(`subscribe should be an array: ${setting.name}`);
+        }
+        for (const sub of setting.subscribe) {
+          if (!settings.find(s => s.id === sub)) {
+            throw new Error(
+              `washer ${setting.name} subscribed to ${sub} but ${sub} was not found`
             );
           }
         }
       }
+    }
+
+    // Actually create the instances
+    const washers: Record<string, WasherInstance> = {};
+    for (const setting of settings) {
+      const washer = new types[setting.name](setting);
+      await this.database.loadMemory(washer);
+      washers[setting.id] = washer;
+      console.info(`washer "${setting.name}" created`);
     }
 
     return washers;
