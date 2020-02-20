@@ -27,7 +27,8 @@ export default class Run extends Command {
 
     mongo: flags.string({
       required: true,
-      description: "mongodb connection string"
+      description: "mongodb connection string",
+      default: "mongodb://localhost:27017/laundry"
     })
   };
 
