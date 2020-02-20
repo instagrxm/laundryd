@@ -90,4 +90,23 @@ export class Database {
     await collection.createIndex("date");
     await collection.insertMany(items);
   }
+
+  /**
+   * Receive a callback whenever a washer generates a new item.
+   * @param washer the washer to subscribe to
+   * @param callback a callback to receive new items on
+   */
+  subscribe(washer: Washer, callback: (item: LoadedItem) => void): void {
+    const pipeline = [{ $match: { operationType: "insert" } }];
+    const info: WasherType = Object.getPrototypeOf(washer).constructor;
+
+    const changeStream = this.db.collection(washer.id).watch(pipeline);
+
+    changeStream.on("change", change => {
+      const item: LoadedItem = change.fullDocument;
+      item.washerId = washer.id;
+      item.washerTitle = info.title;
+      callback(item);
+    });
+  }
 }

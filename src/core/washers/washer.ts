@@ -52,7 +52,7 @@ export class Washer {
 
     if (id.includes("$") || id.startsWith("system.")) {
       throw new Error(
-        "invalid id https://docs.mongodb.com/manual/reference/limits/#Restriction-on-Collection-Names"
+        `${id}: invalid id https://docs.mongodb.com/manual/reference/limits/#Restriction-on-Collection-Names`
       );
     }
 

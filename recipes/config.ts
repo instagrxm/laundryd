@@ -50,12 +50,12 @@ const washers: any[] = [
   },
   {
     name: "test/test-rinse",
-    schedule: "*/5 * * * * *",
+    // schedule: "*/5 * * * * *",
     subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
   },
   {
     name: "test/test-dry",
-    schedule: "*/5 * * * * *",
+    // schedule: "*/5 * * * * *",
     subscribe: ["test/test-rinse"]
   },
   {

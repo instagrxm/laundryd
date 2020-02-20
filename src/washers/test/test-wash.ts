@@ -18,8 +18,14 @@ export class TestWash extends Wash {
           {
             date: new Date(),
             title: "from test-wash",
-            description: "foo",
-            url: `http://endquote.com/${this.memory.foo}`
+            description: "foo 1",
+            url: `http://endquote.com/1/${this.memory.foo}`
+          },
+          {
+            date: new Date(),
+            title: "from test-wash",
+            description: "foo 2",
+            url: `http://endquote.com/2/${this.memory.foo}`
           }
         ];
 

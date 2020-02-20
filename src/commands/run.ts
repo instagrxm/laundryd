@@ -45,20 +45,9 @@ export default class Run extends Command {
 
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
-    this.washers = this.createWashers(this.washerTypes, settings);
+    this.washers = await this.createWashers(this.washerTypes, settings);
     this.startSchedules(Object.values(this.washers));
-
-    // const pipeline = [{ $match: { "fullDocument.foo": "bar" } }];
-    // const collection = db.collection("laundry");
-
-    // const changeStream = collection.watch(pipeline);
-    // changeStream.on("change", function(change) {
-    //   console.log(change);
-    // });
-
-    // setTimeout(function() {
-    //   collection.insertOne({ foo: "bar" });
-    // }, 1000);
+    this.startSubscriptions(this.washers);
   }
 
   /**
@@ -139,10 +128,10 @@ export default class Run extends Command {
    * @param types the washer types detected on disk, associated with a name derived from their file path
    * @param settings the settings loaded from the settings file
    */
-  private createWashers(
+  private async createWashers(
     types: Record<string, WasherType>,
     settings: Settings[]
-  ): Record<string, WasherInstance> {
+  ): Promise<Record<string, WasherInstance>> {
     // Washer IDs must be unique
     const ids = settings.map(c => c.id).filter(c => c);
     for (const id of ids) {
@@ -152,16 +141,33 @@ export default class Run extends Command {
       }
     }
 
+    // Create washers
     const washers: Record<string, WasherInstance> = {};
-
     for (const setting of settings) {
       if (!types[setting.name]) {
         console.warn(`washer "${setting.name}" was not found`);
         continue;
       }
 
-      washers[setting.id] = new types[setting.name](setting);
+      const washer = new types[setting.name](setting);
+      washer.memory = await this.database.loadMemory(washer);
+      washers[setting.id] = washer;
+
       console.info(`washer "${setting.name}" created`);
+    }
+
+    // Validate subscriptions
+    for (const id in washers) {
+      const washer = washers[id];
+      if (washer instanceof Rinse || washer instanceof Dry) {
+        for (const sub of washer.subscribe) {
+          if (!washers[sub]) {
+            console.warn(
+              `washer ${id} subscribed to ${sub} but it wasn't found`
+            );
+          }
+        }
+      }
     }
 
     return washers;
@@ -216,14 +222,9 @@ export default class Run extends Command {
    * @param washer the washer to run
    */
   async runSchedule(washer: WasherInstance): Promise<void> {
+    // Load items since memory.lastRun from the database
     let input: LoadedItem[] = [];
-    let output: Item[] = [];
-
-    // Load memory
-    washer.memory = await this.database.loadMemory(washer);
-
     if (washer instanceof Rinse || washer instanceof Dry) {
-      // Load items since memory.lastRun from the database
       for (const id of washer.subscribe) {
         const since = washer.memory.lastRun || new Date();
         const items = await this.database.loadItems(this.washers[id], since);
@@ -231,6 +232,42 @@ export default class Run extends Command {
       }
     }
 
+    await this.runWasher(washer, input);
+
+    const queue = this.getQueue(washer);
+    queue.shift();
+    if (queue.length) {
+      await this.runSchedule(queue[0]);
+    }
+  }
+
+  /**
+   * Set up real-time subscriptions between washers.
+   * @param washers all running washers
+   */
+  private startSubscriptions(washers: Record<string, WasherInstance>): void {
+    for (const washer of Object.values(washers).filter(w => !w.schedule)) {
+      if (washer instanceof Rinse || washer instanceof Dry) {
+        for (const sub of washer.subscribe) {
+          this.database.subscribe(washers[sub], (item: LoadedItem) => {
+            this.runWasher(washer, [item]);
+          });
+        }
+      }
+    }
+  }
+
+  /**
+   * Run washer logic and save its output.
+   * @param washer the washer to run
+   * @param input the items the washer should process
+   */
+  async runWasher(
+    washer: WasherInstance,
+    input: LoadedItem[] = []
+  ): Promise<void> {
+    // Run the washer logic and capture the output
+    let output: Item[] = [];
     if (washer instanceof Wash) {
       output = await washer.run();
     } else if (washer instanceof Rinse) {
@@ -239,20 +276,17 @@ export default class Run extends Command {
       await washer.run(input);
     }
 
+    // Newest items first
+    output.sort((a, b) => b.date.getTime() - a.date.getTime());
+
     // Write output to the database
     await this.database.saveItems(washer, output);
 
-    // Write memory
+    // Write memory to the database
     washer.memory.lastRun = new Date();
     if (input && input.length) {
       washer.memory.lastItem = input[0];
     }
     await this.database.saveMemory(washer);
-
-    const queue = this.getQueue(washer);
-    queue.shift();
-    if (queue.length) {
-      await this.runSchedule(queue[0]);
-    }
   }
 }
