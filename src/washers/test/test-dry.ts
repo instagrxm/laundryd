@@ -1,11 +1,13 @@
 import { LoadedItem } from "../../core/item";
+import { Log } from "../../core/log";
 import { Dry } from "../../core/washers/dry";
 
 export class TestDry extends Dry {
   static readonly title: string = "test-dry";
 
   async run(items: LoadedItem[]): Promise<void> {
-    console.log(
+    Log.info(
+      TestDry.title,
       `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
     );
     return new Promise((resolve, reject) => {
@@ -15,8 +17,8 @@ export class TestDry extends Dry {
         } else {
           this.memory.foo++;
         }
-        console.log(`${this.id} returning`);
-        console.log(items.map(i => i.url));
+        Log.info(TestDry.title, `${this.id} returning`);
+        Log.info(TestDry.title, items.map(i => i.url).join(","));
         resolve();
       }, 2000);
     });

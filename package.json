@@ -50,6 +50,11 @@
     "commands": "./lib/commands",
     "repositoryPrefix": "<%- repo %>/blob/master/<%- commandPath %>",
     "bin": "laundry",
+    "hooks": {
+      "prerun": [
+        "./lib/hooks/prerun/prerun"
+      ]
+    },
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-commands"

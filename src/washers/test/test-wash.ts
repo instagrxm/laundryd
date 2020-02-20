@@ -1,11 +1,12 @@
 import { Item } from "../../core/item";
+import { Log } from "../../core/log";
 import { Wash } from "../../core/washers/wash";
 
 export class TestWash extends Wash {
   static readonly title: string = "test-wash";
 
   async run(): Promise<Item[]> {
-    console.log(`${this.id}`);
+    Log.info(TestWash.title, `${this.id}`);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.memory.foo) {
@@ -28,8 +29,8 @@ export class TestWash extends Wash {
           }
         ];
 
-        console.log(`${this.id} returning`);
-        console.log(items.map(i => i.url));
+        Log.info(TestWash.title, `${this.id} returning`);
+        Log.info(TestWash.title, items.map(i => i.url).join(","));
         resolve(items);
       }, 3000);
     });

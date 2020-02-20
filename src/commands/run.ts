@@ -1,8 +1,10 @@
-import { Command, flags } from "@oclif/command";
+import { flags } from "@oclif/command";
 import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
+import BaseCommand from "../baseCommand";
 import { Item, LoadedItem } from "../core/item";
+import { Log } from "../core/log";
 import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
@@ -15,20 +17,16 @@ const server = require("net")
   .createServer()
   .listen();
 
-export default class Run extends Command {
+export default class Run extends BaseCommand {
   static description = "";
 
   static flags = {
+    ...BaseCommand.flags,
+
     config: flags.string({
       required: true,
       description:
         "path to a javascript file exporting an array of washer settings"
-    }),
-
-    mongo: flags.string({
-      required: true,
-      description: "mongodb connection string",
-      default: "mongodb://localhost:27017/laundry"
     })
   };
 
@@ -36,13 +34,9 @@ export default class Run extends Command {
 
   private washerTypes!: Record<string, WasherType>;
   private washers!: Record<string, WasherInstance>;
-  private database!: Database;
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
-
-    this.database = new Database();
-    await this.database.init(flags.mongo);
 
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
@@ -164,9 +158,9 @@ export default class Run extends Command {
     const washers: Record<string, WasherInstance> = {};
     for (const setting of settings) {
       const washer = new types[setting.name](setting);
-      await this.database.loadMemory(washer);
+      await Database.loadMemory(washer);
       washers[setting.id] = washer;
-      console.info(`washer "${setting.name}" created`);
+      Log.info("init", `washer "${setting.name}" created`);
     }
 
     return washers;
@@ -200,7 +194,7 @@ export default class Run extends Command {
     if (Washer.isInput(washer)) {
       for (const id of washer.subscribe) {
         const since = washer.memory.lastRun || new Date(0);
-        const items = await this.database.loadItems(this.washers[id], since);
+        const items = await Database.loadItems(this.washers[id], since);
         input = input.concat(items);
       }
       if (!input.length) {
@@ -221,7 +215,7 @@ export default class Run extends Command {
         for (const sub of washer.subscribe) {
           const source = washers[sub];
           if (source && Washer.isOutput(source)) {
-            this.database.subscribe(source, (item: LoadedItem) => {
+            Database.subscribe(source, (item: LoadedItem) => {
               this.runWasher(washer, [item]);
             });
           }
@@ -239,43 +233,28 @@ export default class Run extends Command {
     washer: WasherInstance,
     input: LoadedItem[] = []
   ): Promise<void> {
-    if (Washer.isOutput(washer)) {
-      // Run the washer
-      let output: Item[] = [];
-      try {
-        if (Washer.isInput(washer)) {
-          output = await washer.run(input);
-        } else {
-          output = await washer.run();
-        }
-      } catch (error) {
-        console.error(error, washer.id, washer.getInfo().title);
-        return;
-      }
+    let output: Item[] | void;
 
+    try {
+      if (Washer.isInput(washer)) {
+        output = await washer.run(input);
+      } else {
+        output = await washer.run();
+      }
+    } catch (error) {
+      Log.error(washer.getInfo().title, `${washer.id} failed`, {
+        id: washer.id,
+        error
+      });
+      return;
+    }
+
+    if (Washer.isOutput(washer) && output) {
       // Save the output
-      if (output.length) {
-        // Newest items first
-        output.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-        // Write output to the database
-        await this.database.saveItems(washer, output);
-      }
-    } else {
-      // Run the dry washer
-      try {
-        await washer.run(input);
-      } catch (error) {
-        console.error(error, washer.id, washer.getInfo().title);
-        return;
-      }
+      await Database.saveItems(washer, output);
     }
 
-    // Write memory to the database
-    washer.memory.lastRun = new Date();
-    if (input && input.length) {
-      washer.memory.lastItem = input[0];
-    }
-    await this.database.saveMemory(washer);
+    // Save memory
+    await Database.saveMemory(washer);
   }
 }
