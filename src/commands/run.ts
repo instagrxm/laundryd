@@ -219,9 +219,12 @@ export default class Run extends Command {
     for (const washer of Object.values(washers).filter(w => !w.schedule)) {
       if (washer instanceof Rinse || washer instanceof Dry) {
         for (const sub of washer.subscribe) {
-          this.database.subscribe(washers[sub], (item: LoadedItem) => {
-            this.runWasher(washer, [item]);
-          });
+          const source = washers[sub];
+          if (source && (source instanceof Wash || source instanceof Rinse)) {
+            this.database.subscribe(source, (item: LoadedItem) => {
+              this.runWasher(washer, [item]);
+            });
+          }
         }
       }
     }
