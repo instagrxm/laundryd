@@ -12,18 +12,18 @@ export class Rinse extends Washer {
     ...Washer.settings,
 
     subscribe: Setting.strings({
+      def: [],
       description: "listen for items from this washer id"
     }),
 
     retain: Setting.number({
-      description:
-        "the number of days to keep items, 0 to keep forever or empty to not keep at all"
+      def: 0,
+      description: "the number of days to keep items, or 0 to keep forever"
     })
   };
 
-  readonly subscribe: string[];
-  readonly retain?: number;
-  readonly retainDate?: Date;
+  readonly subscribe: string[] = [];
+  readonly retain: number = 0;
 
   constructor(settings: Settings) {
     super(settings);
@@ -37,13 +37,9 @@ export class Rinse extends Washer {
     }
     this.subscribe = subscribe;
 
-    const retain = Rinse.settings.retain.parse(settings.retain);
-    if (retain !== undefined) {
-      this.retain = Math.abs(retain);
-      this.retainDate = this.retain
-        ? new Date(Date.now() - this.retain * 24 * 60 * 60 * 1000)
-        : new Date(0);
-    }
+    this.retain = Math.abs(
+      Rinse.settings.retain.parse(settings.retain) as number
+    );
   }
 
   async run(items: LoadedItem[]): Promise<Item[]> {

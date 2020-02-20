@@ -55,7 +55,32 @@ export class Washer {
     this.schedule = Washer.settings.schedule.parse(settings.schedule);
   }
 
+  /**
+   * Return the static side of a washer so its title and description are accessible.
+   */
   getInfo(): WasherType {
     return Object.getPrototypeOf(this).constructor;
+  }
+
+  /**
+   * A user-defined type guard for washers which accept items
+   * @param washer the washer to check
+   */
+  static isInput(washer: WasherInstance): washer is Rinse | Dry {
+    return (
+      (washer as Rinse).subscribe !== undefined ||
+      (washer as Dry).subscribe !== undefined
+    );
+  }
+
+  /**
+   * A user-defined type guard for washers which create items
+   * @param washer the washer to check
+   */
+  static isOutput(washer: WasherInstance): washer is Rinse | Wash {
+    return (
+      (washer as Rinse).retain !== undefined ||
+      (washer as Wash).retain !== undefined
+    );
   }
 }

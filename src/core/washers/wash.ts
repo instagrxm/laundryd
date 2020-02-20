@@ -17,30 +17,22 @@ export class Wash extends Washer {
     }),
 
     retain: Setting.number({
-      description:
-        "the number of days to keep items, 0 to keep forever or empty to not keep at all"
+      def: 0,
+      description: "the number of days to keep items, or 0 to keep forever"
     })
   };
 
-  readonly begin: number;
-  readonly beginDate: Date;
-  readonly retain?: number;
-  readonly retainDate?: Date;
+  readonly begin: number = 0;
+  readonly retain: number = 0;
 
   constructor(settings: Settings) {
     super(settings);
 
-    const retain = Wash.settings.retain.parse(settings.retain);
-    if (retain !== undefined) {
-      this.retain = Math.abs(retain);
-      this.retainDate = this.retain
-        ? new Date(Date.now() - this.retain * 24 * 60 * 60 * 1000)
-        : new Date(0);
-    }
+    this.begin = Math.abs(Wash.settings.begin.parse(settings.begin) as number);
 
-    const begin = Wash.settings.begin.parse(settings.begin) as number;
-    this.begin = Math.max(Math.abs(begin), retain || 0);
-    this.beginDate = new Date(Date.now() - this.begin * 24 * 60 * 60 * 1000);
+    this.retain = Math.abs(
+      Wash.settings.retain.parse(settings.retain) as number
+    );
   }
 
   async run(): Promise<Item[]> {

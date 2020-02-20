@@ -7,7 +7,7 @@ import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
-import { WasherInstance, WasherType } from "../core/washers/washer";
+import { Washer, WasherInstance, WasherType } from "../core/washers/washer";
 import { Database } from "../storage/database";
 
 // TODO: Temporary web server
@@ -197,7 +197,7 @@ export default class Run extends Command {
   private async runSchedule(washer: WasherInstance): Promise<void> {
     // Load items since memory.lastRun from the database
     let input: LoadedItem[] = [];
-    if (washer instanceof Rinse || washer instanceof Dry) {
+    if (Washer.isInput(washer)) {
       for (const id of washer.subscribe) {
         const since = washer.memory.lastRun || new Date(0);
         const items = await this.database.loadItems(this.washers[id], since);
@@ -217,10 +217,10 @@ export default class Run extends Command {
    */
   private startSubscriptions(washers: Record<string, WasherInstance>): void {
     for (const washer of Object.values(washers).filter(w => !w.schedule)) {
-      if (washer instanceof Rinse || washer instanceof Dry) {
+      if (Washer.isInput(washer)) {
         for (const sub of washer.subscribe) {
           const source = washers[sub];
-          if (source && (source instanceof Wash || source instanceof Rinse)) {
+          if (source && Washer.isOutput(source)) {
             this.database.subscribe(source, (item: LoadedItem) => {
               this.runWasher(washer, [item]);
             });
@@ -239,14 +239,14 @@ export default class Run extends Command {
     washer: WasherInstance,
     input: LoadedItem[] = []
   ): Promise<void> {
-    if (washer instanceof Wash || washer instanceof Rinse) {
+    if (Washer.isOutput(washer)) {
       // Run the washer
       let output: Item[] = [];
       try {
-        if (washer instanceof Wash) {
-          output = await washer.run();
-        } else if (washer instanceof Rinse) {
+        if (Washer.isInput(washer)) {
           output = await washer.run(input);
+        } else {
+          output = await washer.run();
         }
       } catch (error) {
         console.error(error, washer.id, washer.getInfo().title);

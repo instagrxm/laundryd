@@ -12,11 +12,12 @@ export class Dry extends Washer {
     ...Washer.settings,
 
     subscribe: Setting.strings({
+      def: [],
       description: "listen for items from this washer id"
     })
   };
 
-  readonly subscribe: string[];
+  readonly subscribe: string[] = [];
 
   constructor(settings: Settings) {
     super(settings);
