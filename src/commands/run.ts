@@ -199,7 +199,7 @@ export default class Run extends Command {
     let input: LoadedItem[] = [];
     if (washer instanceof Rinse || washer instanceof Dry) {
       for (const id of washer.subscribe) {
-        const since = washer.memory.lastRun || new Date();
+        const since = washer.memory.lastRun || new Date(0);
         const items = await this.database.loadItems(this.washers[id], since);
         input = input.concat(items);
       }
@@ -236,27 +236,37 @@ export default class Run extends Command {
     washer: WasherInstance,
     input: LoadedItem[] = []
   ): Promise<void> {
-    // Run the washer logic and capture the output
-    let output: Item[] = [];
-
-    try {
-      if (washer instanceof Wash) {
-        output = await washer.run();
-      } else if (washer instanceof Rinse) {
-        output = await washer.run(input);
-      } else if (washer instanceof Dry) {
-        await washer.run(input);
+    if (washer instanceof Wash || washer instanceof Rinse) {
+      // Run the washer
+      let output: Item[] = [];
+      try {
+        if (washer instanceof Wash) {
+          output = await washer.run();
+        } else if (washer instanceof Rinse) {
+          output = await washer.run(input);
+        }
+      } catch (error) {
+        console.error(error, washer.id, washer.getInfo().title);
+        return;
       }
-    } catch (error) {
-      console.error(error, washer.id, washer.getInfo().title);
-      return;
+
+      // Save the output
+      if (output.length) {
+        // Newest items first
+        output.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+        // Write output to the database
+        await this.database.saveItems(washer, output);
+      }
+    } else {
+      // Run the dry washer
+      try {
+        await washer.run(input);
+      } catch (error) {
+        console.error(error, washer.id, washer.getInfo().title);
+        return;
+      }
     }
-
-    // Newest items first
-    output.sort((a, b) => b.date.getTime() - a.date.getTime());
-
-    // Write output to the database
-    await this.database.saveItems(washer, output);
 
     // Write memory to the database
     washer.memory.lastRun = new Date();

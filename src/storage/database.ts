@@ -1,5 +1,7 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Item, LoadedItem } from "../core/item";
+import { Rinse } from "../core/washers/rinse";
+import { Wash } from "../core/washers/wash";
 import { Washer, WasherInstance } from "../core/washers/washer";
 
 /**
@@ -87,6 +89,12 @@ export class Database {
     const collection = this.db.collection(washer.id);
     await collection.createIndex("date");
     await collection.insertMany(items);
+
+    if (washer instanceof Wash || washer instanceof Rinse) {
+      if (washer.retainDate) {
+        await collection.deleteMany({ date: { $lt: washer.retainDate } });
+      }
+    }
   }
 
   /**

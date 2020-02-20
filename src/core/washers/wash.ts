@@ -23,13 +23,24 @@ export class Wash extends Washer {
   };
 
   readonly begin: number;
+  readonly beginDate: Date;
   readonly retain?: number;
+  readonly retainDate?: Date;
 
   constructor(settings: Settings) {
     super(settings);
 
-    this.begin = Wash.settings.begin.parse(settings.begin) as number;
-    this.retain = Wash.settings.retain.parse(settings.retain);
+    const retain = Wash.settings.retain.parse(settings.retain);
+    if (retain !== undefined) {
+      this.retain = Math.abs(retain);
+      this.retainDate = this.retain
+        ? new Date(Date.now() - this.retain * 24 * 60 * 60 * 1000)
+        : new Date(0);
+    }
+
+    const begin = Wash.settings.begin.parse(settings.begin) as number;
+    this.begin = Math.max(Math.abs(begin), retain || 0);
+    this.beginDate = new Date(Date.now() - this.begin * 24 * 60 * 60 * 1000);
   }
 
   async run(): Promise<Item[]> {
