@@ -1,7 +1,6 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Item, LoadedItem } from "../core/item";
-import { Memory } from "../core/memory";
-import { Washer, WasherInstance, WasherType } from "../core/washers/washer";
+import { Washer, WasherInstance } from "../core/washers/washer";
 
 /**
  * Helper class for database functions.
@@ -29,9 +28,9 @@ export class Database {
    * Return the memory object for a washer, or an empty object if there isn't one.
    * @param washer the washer
    */
-  async loadMemory(washer: WasherInstance): Promise<Memory> {
+  async loadMemory(washer: WasherInstance): Promise<void> {
     const memory = await this.memory.findOne({ washerId: washer.id });
-    return memory || {};
+    washer.memory = memory || {};
   }
 
   /**
@@ -67,10 +66,9 @@ export class Database {
       )
       .toArray();
 
-    const info: WasherType = Object.getPrototypeOf(washer).constructor;
     items.forEach(i => {
       i.washerId = washer.id;
-      i.washerTitle = info.title;
+      i.washerTitle = washer.getInfo().title;
     });
 
     return items;
@@ -98,14 +96,12 @@ export class Database {
    */
   subscribe(washer: Washer, callback: (item: LoadedItem) => void): void {
     const pipeline = [{ $match: { operationType: "insert" } }];
-    const info: WasherType = Object.getPrototypeOf(washer).constructor;
-
     const changeStream = this.db.collection(washer.id).watch(pipeline);
 
     changeStream.on("change", change => {
       const item: LoadedItem = change.fullDocument;
       item.washerId = washer.id;
-      item.washerTitle = info.title;
+      item.washerTitle = washer.getInfo().title;
       callback(item);
     });
   }

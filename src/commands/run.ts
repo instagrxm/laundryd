@@ -137,7 +137,7 @@ export default class Run extends Command {
     for (const id of ids) {
       const dupes = ids.filter(i => i === id);
       if (dupes.length > 1) {
-        throw new Error(`duplicate id "${id}"`);
+        throw new Error(`duplicate washer id "${id}"`);
       }
     }
 
@@ -150,7 +150,7 @@ export default class Run extends Command {
       }
 
       const washer = new types[setting.name](setting);
-      washer.memory = await this.database.loadMemory(washer);
+      await this.database.loadMemory(washer);
       washers[setting.id] = washer;
 
       console.info(`washer "${setting.name}" created`);
@@ -239,12 +239,18 @@ export default class Run extends Command {
   ): Promise<void> {
     // Run the washer logic and capture the output
     let output: Item[] = [];
-    if (washer instanceof Wash) {
-      output = await washer.run();
-    } else if (washer instanceof Rinse) {
-      output = await washer.run(input);
-    } else if (washer instanceof Dry) {
-      await washer.run(input);
+
+    try {
+      if (washer instanceof Wash) {
+        output = await washer.run();
+      } else if (washer instanceof Rinse) {
+        output = await washer.run(input);
+      } else if (washer instanceof Dry) {
+        await washer.run(input);
+      }
+    } catch (error) {
+      console.error(error, washer.id, washer.getInfo().title);
+      return;
     }
 
     // Newest items first

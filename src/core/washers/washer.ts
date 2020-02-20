@@ -54,4 +54,8 @@ export class Washer {
 
     this.schedule = Washer.settings.schedule.parse(settings.schedule);
   }
+
+  getInfo(): WasherType {
+    return Object.getPrototypeOf(this).constructor;
+  }
 }
