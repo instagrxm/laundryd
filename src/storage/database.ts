@@ -84,7 +84,7 @@ export class Database {
 
     items.forEach(i => {
       i.sourceId = washer.id;
-      i.sourceTitle = washer.getInfo().title;
+      i.sourceTitle = washer.getType().title;
     });
 
     return items;
@@ -131,7 +131,7 @@ export class Database {
     changeStream.on("change", change => {
       const item: LoadedItem = change.fullDocument;
       item.sourceId = washer.id;
-      item.sourceTitle = washer.getInfo().title;
+      item.sourceTitle = washer.getType().title;
       callback(item);
     });
   }

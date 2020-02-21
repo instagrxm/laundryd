@@ -58,6 +58,11 @@ const washers: any[] = [
     title: "test/test-dry",
     schedule: "*/5 * * * * *",
     subscribe: ["test/test-rinse"]
+  },
+  {
+    title: "stdout",
+    subscribe: ["log"],
+    color: true
   }
   /*
   {

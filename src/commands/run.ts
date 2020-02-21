@@ -38,10 +38,6 @@ export default class Run extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
 
-    Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
-      console.log(item);
-    });
-
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
     this.washers = await this.createWashers(this.washerTypes, settings);
@@ -76,7 +72,10 @@ export default class Run extends BaseCommand {
           continue;
         }
         const parsedFile = path.parse(file);
-        const name = `${parsedFile.dir}/${parsedFile.name}`;
+        let name = parsedFile.dir;
+        name = name ? name + "/" : "";
+        name += parsedFile.name;
+
         files.push({ dir, file, name, exported });
       }
     }
@@ -149,7 +148,7 @@ export default class Run extends BaseCommand {
           throw new Error(`subscribe should be an array: ${setting.title}`);
         }
         for (const sub of setting.subscribe) {
-          if (!settings.find(s => s.id === sub)) {
+          if (sub !== Log.collection && !settings.find(s => s.id === sub)) {
             throw new Error(
               `washer ${setting.title} subscribed to ${sub} but ${sub} was not found`
             );
@@ -217,11 +216,19 @@ export default class Run extends BaseCommand {
     for (const washer of Object.values(washers).filter(w => !w.schedule)) {
       if (Washer.isInput(washer)) {
         for (const sub of washer.subscribe) {
-          const source = washers[sub];
-          if (source && Washer.isOutput(source)) {
-            Database.subscribe(source, (item: LoadedItem) => {
+          if (sub === Log.collection) {
+            // Subscribe to logs
+            Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
               this.runWasher(washer, [item]);
             });
+          } else {
+            // Subscribe to other washers
+            const source = washers[sub];
+            if (source && Washer.isOutput(source)) {
+              Database.subscribe(source, (item: LoadedItem) => {
+                this.runWasher(washer, [item]);
+              });
+            }
           }
         }
       }
@@ -240,6 +247,7 @@ export default class Run extends BaseCommand {
     let output: Item[] | void;
 
     try {
+      // Run the washer
       if (Washer.isInput(washer)) {
         output = await washer.run(input);
       } else {

@@ -56,7 +56,7 @@ export class Washer {
   /**
    * Return the static side of a washer so its title and description are accessible.
    */
-  getInfo(): WasherType {
+  getType(): WasherType {
     return Object.getPrototypeOf(this).constructor;
   }
 

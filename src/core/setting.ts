@@ -71,6 +71,31 @@ export class Setting<T> {
     });
   }
 
+  static boolean({
+    def,
+    description,
+    parser
+  }: {
+    description: string;
+    def?: boolean;
+    parser?: (setting: any) => boolean | undefined;
+  }): Setting<boolean> {
+    if (!parser) {
+      parser = (setting?: any): boolean | undefined => {
+        if (setting === undefined) {
+          return def;
+        }
+        return setting ? true : false;
+      };
+    }
+
+    return new Setting<boolean>({
+      description,
+      def,
+      parser
+    });
+  }
+
   static strings({
     def = [],
     description,

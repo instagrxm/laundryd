@@ -1,4 +1,5 @@
 import { Item, LoadedItem } from "../item";
+import { Log } from "../log";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";
@@ -22,20 +23,20 @@ export class Rinse extends Washer {
     })
   };
 
-  readonly subscribe: string[] = [];
-  readonly retain: number = 0;
+  readonly subscribe = Rinse.settings.subscribe.def as string[];
+  readonly retain = Rinse.settings.retain.def as number;
 
   constructor(settings: Settings) {
     super(settings);
 
     const subscribe = Rinse.settings.subscribe.parse(settings.subscribe);
     if (!subscribe || !subscribe.length) {
-      throw new Error(`${this.id}: missing subscribe`);
+      Log.error(this, `missing subscribe`);
+    } else if (subscribe.includes(this.id)) {
+      Log.error(this, `can't subscribe to itself`);
+    } else {
+      this.subscribe = subscribe;
     }
-    if (subscribe.includes(this.id)) {
-      throw new Error(`${this.id}: can't subscribe to itself`);
-    }
-    this.subscribe = subscribe;
 
     this.retain = Math.abs(
       Rinse.settings.retain.parse(settings.retain) as number

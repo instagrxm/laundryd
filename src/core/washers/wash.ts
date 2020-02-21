@@ -22,8 +22,8 @@ export class Wash extends Washer {
     })
   };
 
-  readonly begin: number = 0;
-  readonly retain: number = 0;
+  readonly begin = Wash.settings.begin.def as number;
+  readonly retain = Wash.settings.retain.def as number;
 
   constructor(settings: Settings) {
     super(settings);

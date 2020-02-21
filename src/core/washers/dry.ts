@@ -1,4 +1,5 @@
 import { LoadedItem } from "../item";
+import { Log } from "../log";
 import { Setting } from "../setting";
 import { Settings } from "../settings";
 import { Washer } from "./washer";
@@ -17,19 +18,19 @@ export class Dry extends Washer {
     })
   };
 
-  readonly subscribe: string[] = [];
+  readonly subscribe = Dry.settings.subscribe.def as string[];
 
   constructor(settings: Settings) {
     super(settings);
 
     const subscribe = Dry.settings.subscribe.parse(settings.subscribe);
     if (!subscribe || !subscribe.length) {
-      throw new Error(`${this.id}: missing subscribe`);
+      Log.error(this, `missing subscribe`);
+    } else if (subscribe.includes(this.id)) {
+      Log.error(this, `can't subscribe to itself`);
+    } else {
+      this.subscribe = subscribe;
     }
-    if (subscribe.includes(this.id)) {
-      throw new Error(`${this.id}: can't subscribe to itself`);
-    }
-    this.subscribe = subscribe;
   }
 
   async run(items: LoadedItem[]): Promise<void> {

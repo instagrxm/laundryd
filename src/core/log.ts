@@ -47,12 +47,12 @@ export class Log {
 
     if (source instanceof Washer) {
       sourceType = "washer";
-      title = `${source.getInfo().title}/${source.id}`;
+      title = `${source.getType().title}/${source.id}`;
       sourceId = source.id;
-      sourceTitle = source.getInfo().title;
+      sourceTitle = source.getType().title;
     } else {
       sourceType = "command";
-      title = source.getInfo().id;
+      title = source.getType().id;
       sourceId = title;
       sourceTitle = title;
     }
