@@ -1,6 +1,8 @@
 import { Command } from "@oclif/config";
-import { inspect } from "util";
+import BaseCommand from "../baseCommand";
 import { Database } from "../storage/database";
+import { Item } from "./item";
+import { Washer } from "./washers/washer";
 
 /**
  * A global logger object.
@@ -8,71 +10,51 @@ import { Database } from "../storage/database";
 export class Log {
   private static command: Command.Class;
 
-  /**
-   * Set up the logger before the requested command is run.
-   * @param argv arguments passed to the current command
-   * @param command the current command
-   */
-  static init(command: Command.Class): void {
-    Log.command = command;
-  }
-
-  private static async log(
-    level: string,
-    event: string,
-    msg: string,
-    data?: any,
-    callback?: () => void
+  static async log(
+    level: "debug" | "info" | "warn" | "error",
+    source: Washer | BaseCommand,
+    data?: any
   ): Promise<void> {
-    data = data || {};
-    data.level = level;
-    data.event = event;
-    data.msg = msg;
-    data.command = Log.command.id;
-    process.stdout.write(inspect(data) + "\n");
-    await Database.writeLog(data);
-    if (callback) {
-      callback();
+    let title = "";
+    let sourceType = "";
+    if (source instanceof Washer) {
+      sourceType = "washer";
+      title = `${source.getInfo().title}/${source.id}`;
+    } else {
+      sourceType = "command";
+      title = source.getInfo().id;
     }
+
+    const date = new Date();
+    if (typeof data === "string") {
+      data = { msg: data };
+    }
+
+    const item: Item = {
+      date,
+      title,
+      description: level,
+      extended: data,
+      url: `laundry://${sourceType}/${title}/${date.getTime()}`
+    };
+
+    console.log(item);
+    await Database.writeLog(item);
   }
 
-  /**
-   * Log a message at the debug level
-   * @param event a keyword to group messages from a similar section of code
-   * @param msg a string message to include in the log
-   * @param data interesting data to log
-   */
-  static debug(event: string, msg: string, data?: any): void {
-    Log.log("debug", event, msg, data);
+  static async debug(source: Washer | BaseCommand, data?: any): Promise<void> {
+    await Log.log("debug", source, data);
   }
 
-  /**
-   * Log a message at the info level
-   * @param event a keyword to group messages from a similar section of code
-   * @param msg a string message to include in the log
-   * @param data interesting data to log
-   */
-  static info(event: string, msg: string, data?: any): void {
-    Log.log("info", event, msg, data);
+  static async info(source: Washer | BaseCommand, data?: any): Promise<void> {
+    await Log.log("info", source, data);
   }
 
-  /**
-   * Log a message at the warn level
-   * @param event a keyword to group messages from a similar section of code
-   * @param msg a string message to include in the log
-   * @param data interesting data to log
-   */
-  static warn(event: string, msg: string, data?: any): void {
-    Log.log("warn", event, msg, data);
+  static async warn(source: Washer | BaseCommand, data?: any): Promise<void> {
+    await Log.log("warn", source, data);
   }
 
-  /**
-   * Log a message at the error level and exit the program
-   * @param event a keyword to group messages from a similar section of code
-   * @param msg a string message to include in the log
-   * @param data interesting data to log
-   */
-  static error(event: string, msg: string, data?: any): void {
-    Log.log("error", event, msg, data);
+  static async error(source: Washer | BaseCommand, data?: any): Promise<void> {
+    await Log.log("error", source, data);
   }
 }

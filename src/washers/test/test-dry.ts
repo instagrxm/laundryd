@@ -7,7 +7,7 @@ export class TestDry extends Dry {
 
   async run(items: LoadedItem[]): Promise<void> {
     Log.info(
-      TestDry.title,
+      this,
       `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
     );
     return new Promise((resolve, reject) => {
@@ -17,8 +17,8 @@ export class TestDry extends Dry {
         } else {
           this.memory.foo++;
         }
-        Log.info(TestDry.title, `${this.id} returning`);
-        Log.info(TestDry.title, items.map(i => i.url).join(","));
+        Log.info(this, `${this.id} returning`);
+        Log.info(this, items.map(i => i.url).join(","));
         resolve();
       }, 2000);
     });

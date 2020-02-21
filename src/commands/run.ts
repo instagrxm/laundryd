@@ -160,7 +160,7 @@ export default class Run extends BaseCommand {
       const washer = new types[setting.name](setting);
       await Database.loadMemory(washer);
       washers[setting.id] = washer;
-      Log.info("init", `washer "${setting.name}" created`);
+      Log.info(this, `washer "${setting.name}" created`);
     }
 
     return washers;
@@ -242,10 +242,7 @@ export default class Run extends BaseCommand {
         output = await washer.run();
       }
     } catch (error) {
-      Log.error(washer.getInfo().title, `${washer.id} failed`, {
-        id: washer.id,
-        error
-      });
+      Log.error(washer, { error });
       return;
     }
 

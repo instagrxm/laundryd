@@ -44,10 +44,8 @@ export class Washer {
       throw new Error("missing id");
     }
 
-    if (id.includes("$") || id.startsWith("system.")) {
-      throw new Error(
-        `${id}: invalid id https://docs.mongodb.com/manual/reference/limits/#Restriction-on-Collection-Names`
-      );
+    if (id.startsWith("system.") || id.match(/[\s\r\n\:\$]/g)) {
+      throw new Error(`${id}: invalid id`);
     }
 
     this.id = id;

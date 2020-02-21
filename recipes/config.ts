@@ -58,15 +58,15 @@ const washers: any[] = [
     name: "test/test-dry",
     schedule: "*/5 * * * * *",
     subscribe: ["test/test-rinse"]
-  },
+  }
+  /*
   {
     name: "wash/mixcloud/uploads",
     schedule: schedule.default,
     auth: auth.mixcloud,
     begin: retention.begin,
     retain: retention.retain
-  }
-  /*
+  },
   {
     name: "wash/mixcloud/user",
     schedule: schedule.default,

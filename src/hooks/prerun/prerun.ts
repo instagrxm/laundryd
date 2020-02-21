@@ -1,7 +1,6 @@
 import { Hook } from "@oclif/config";
 import { parse } from "@oclif/parser";
 import { Config } from "../../core/config";
-import { Log } from "../../core/log";
 import { Database } from "../../storage/database";
 
 /**
@@ -16,7 +15,6 @@ const hook: Hook<"prerun"> = async opts => {
 
   await Database.init(flags.mongo);
   Config.init(opts.config);
-  Log.init(opts.Command);
 };
 
 export default hook;

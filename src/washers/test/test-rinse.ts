@@ -7,7 +7,7 @@ export class TestRinse extends Rinse {
 
   async run(items: LoadedItem[]): Promise<Item[]> {
     Log.info(
-      TestRinse.title,
+      this,
       `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
     );
     return new Promise((resolve, reject) => {
@@ -21,8 +21,8 @@ export class TestRinse extends Rinse {
           i.extended = i.extended || {};
           i.extended.rinse = this.memory.foo;
         });
-        Log.info(TestRinse.title, `${this.id} returning`);
-        Log.info(TestRinse.title, items.map(i => i.url).join(","));
+        Log.info(this, `${this.id} returning`);
+        Log.info(this, items.map(i => i.url).join(","));
         resolve(items);
       }, 1000);
     });

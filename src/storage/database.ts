@@ -135,7 +135,7 @@ export class Database {
     });
   }
 
-  static async writeLog(msg: object): Promise<void> {
-    await Database.log.insertOne(msg);
+  static async writeLog(log: Item): Promise<void> {
+    await Database.log.insertOne(log);
   }
 }
