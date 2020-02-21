@@ -1,5 +1,6 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Item, LoadedItem } from "../core/item";
+import { Log, LogItem, LogLevel } from "../core/log";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
 import { WasherInstance } from "../core/washers/washer";
@@ -29,7 +30,7 @@ export class Database {
     Database.memory = memory;
 
     // A collection to save logs
-    Database.log = await Database.db.createCollection("log", {
+    Database.log = await Database.db.createCollection(Log.collection, {
       capped: true,
       size: 1048576 * 10 // 10MB
     });
@@ -82,8 +83,8 @@ export class Database {
       .toArray();
 
     items.forEach(i => {
-      i.washerId = washer.id;
-      i.washerTitle = washer.getInfo().title;
+      i.sourceId = washer.id;
+      i.sourceTitle = washer.getInfo().title;
     });
 
     return items;
@@ -129,13 +130,44 @@ export class Database {
 
     changeStream.on("change", change => {
       const item: LoadedItem = change.fullDocument;
-      item.washerId = washer.id;
-      item.washerTitle = washer.getInfo().title;
+      item.sourceId = washer.id;
+      item.sourceTitle = washer.getInfo().title;
       callback(item);
     });
   }
 
-  static async writeLog(log: Item): Promise<void> {
+  /**
+   * Receive a callback whenever a new log message is saved
+   * @param level get logs at this level and above
+   * @param callback a callback to receive new log messages on
+   */
+  static subscribeLog(
+    level: LogLevel,
+    callback: (item: LogItem) => void
+  ): void {
+    let levels = Object.values(LogLevel);
+    levels = levels.slice(levels.indexOf(level));
+
+    const pipeline = [
+      {
+        $match: {
+          $and: [
+            { operationType: "insert" },
+            { "fullDocument.description": { $in: levels } }
+          ]
+        }
+      }
+    ];
+
+    const changeStream = Database.db.collection(Log.collection).watch(pipeline);
+
+    changeStream.on("change", change => {
+      const item: LogItem = change.fullDocument;
+      callback(item);
+    });
+  }
+
+  static async writeLog(log: LogItem): Promise<void> {
     await Database.log.insertOne(log);
   }
 }

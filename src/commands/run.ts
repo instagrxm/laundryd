@@ -4,7 +4,7 @@ import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../baseCommand";
 import { Item, LoadedItem } from "../core/item";
-import { Log } from "../core/log";
+import { Log, LogItem, LogLevel } from "../core/log";
 import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
@@ -37,6 +37,10 @@ export default class Run extends BaseCommand {
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
+
+    Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
+      console.log(item);
+    });
 
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);

@@ -8,7 +8,7 @@ export class TestRinse extends Rinse {
   async run(items: LoadedItem[]): Promise<Item[]> {
     Log.info(
       this,
-      `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
+      `${this.id} got ${items.length} items from ${items.map(i => i.sourceId)}`
     );
     return new Promise((resolve, reject) => {
       setTimeout(() => {

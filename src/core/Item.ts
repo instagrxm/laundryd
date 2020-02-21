@@ -125,10 +125,10 @@ export interface LoadedItem extends Item {
   /**
    * The user-defined unique ID for the washer instance.
    */
-  washerId: string;
+  sourceId: string;
 
   /**
    * The title of the washer, which is the same for all instances.
    */
-  washerTitle: string;
+  sourceTitle: string;
 }

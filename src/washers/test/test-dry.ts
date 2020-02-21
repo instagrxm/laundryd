@@ -8,7 +8,7 @@ export class TestDry extends Dry {
   async run(items: LoadedItem[]): Promise<void> {
     Log.info(
       this,
-      `${this.id} got ${items.length} items from ${items.map(i => i.washerId)}`
+      `${this.id} got ${items.length} items from ${items.map(i => i.sourceId)}`
     );
     return new Promise((resolve, reject) => {
       setTimeout(() => {
