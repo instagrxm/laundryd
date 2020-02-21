@@ -11,6 +11,10 @@ export class Stdout extends Dry {
   static flags = {
     ...Dry.flags,
 
+    memory: flags.boolean({
+      default: false
+    }),
+
     color: flags.boolean({
       default: false,
       description: "output in color"

@@ -24,22 +24,27 @@ export class Washer {
 
   static flags = {
     id: flags.string({
-      description: "a unique identifier for this washer",
       required: true,
       parse: (input: string) => {
         if (input.startsWith("system.") || input.match(/[\s\r\n\:\$]/g)) {
           throw new Error(`invalid washer id "${input}"`);
         }
         return input;
-      }
+      },
+      description: "a unique identifier for this washer"
+    }),
+
+    memory: flags.boolean({
+      default: true,
+      description: "whether to save memory after each run"
     }),
 
     schedule: flags.string({
-      description: "when to run the washer",
       parse: (input: string) => {
         const time = new CronTime(input);
         return input;
-      }
+      },
+      description: "when to run the washer"
     })
   };
 

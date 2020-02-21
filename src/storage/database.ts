@@ -53,6 +53,9 @@ export class Database {
    * @param memory the memory object
    */
   static async saveMemory(washer: WasherInstance): Promise<void> {
+    if (!washer.config.memory) {
+      return;
+    }
     washer.memory.lastRun = new Date();
     await Database.memory.replaceOne(
       { washerId: washer.config.id },

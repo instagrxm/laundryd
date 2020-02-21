@@ -172,13 +172,14 @@ export default class Run extends BaseCommand {
           return `--${key}=${setting[key]}`;
         });
 
-      // @ts-ignore
+      // @ts-ignore: parse the arguments
       const config = parse(argv, { flags: types[setting.title].flags });
-      const washer = new types[setting.title](config.flags);
 
+      // Create and set up the washer
+      const washer = new types[setting.title](config.flags);
+      washers[setting.id] = washer;
       await Database.loadMemory(washer);
       washer.init();
-      washers[setting.id] = washer;
       Log.info(this, `washer "${setting.title}" created`);
     }
 
