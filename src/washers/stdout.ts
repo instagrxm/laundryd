@@ -1,49 +1,46 @@
+import { flags } from "@oclif/command";
+import { OutputFlags } from "@oclif/parser/lib/parse";
 import util from "util";
 import { LoadedItem } from "../core/item";
-import { Log, LogLevel } from "../core/log";
-import { Setting } from "../core/setting";
-import { Settings } from "../core/settings";
+import { LogLevel } from "../core/log";
 import { Dry } from "../core/washers/dry";
 
 export class Stdout extends Dry {
   static readonly title: string = "stdout";
 
-  static settings = {
-    ...Dry.settings,
+  static flags = {
+    ...Dry.flags,
 
-    color: Setting.boolean({
-      def: false,
+    color: flags.boolean({
+      default: false,
       description: "output in color"
     }),
 
-    level: Setting.string({
-      def: "info",
+    levels: flags.build<LogLevel[]>({
+      default: [LogLevel.info, LogLevel.warn, LogLevel.error],
+      parse: (input: string) => {
+        if (!(input in LogLevel)) {
+          return [LogLevel.info, LogLevel.warn, LogLevel.error];
+        }
+
+        const levels = Object.values(LogLevel);
+        return levels.slice(levels.indexOf(input as LogLevel));
+      },
       description: "get this log level and higher"
-    })
+    })()
   };
 
-  color = Stdout.settings.color.def as boolean;
-  level = Stdout.settings.level.def as string;
-  levels = [Stdout.settings.level.def as string];
-
-  constructor(settings: Settings) {
-    super(settings);
-
-    this.color = Stdout.settings.color.parse(settings.color) as boolean;
-    this.level = Stdout.settings.level.parse(settings.level) as string;
-
-    const levels = Object.values(LogLevel).map(l => l.toString());
-    if (!levels.includes(this.level)) {
-      Log.error(this, "invalid level");
-    }
-
-    this.levels = levels.slice(levels.indexOf(this.level));
-  }
+  config!: OutputFlags<typeof Stdout.flags>;
 
   async run(items: LoadedItem[]): Promise<void> {
     for (const item of items) {
-      if (this.levels.includes(item.description)) {
-        const json = util.inspect(item, undefined, undefined, this.color);
+      if (this.config.levels.includes(item.description)) {
+        const json = util.inspect(
+          item,
+          undefined,
+          undefined,
+          this.config.color
+        );
         process.stdout.write(json + "\n");
       }
     }

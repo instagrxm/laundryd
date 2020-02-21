@@ -1,6 +1,6 @@
+import { flags } from "@oclif/command";
+import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Item } from "../item";
-import { Setting } from "../setting";
-import { Settings } from "../settings";
 import { Washer } from "./washer";
 
 export class Wash extends Washer {
@@ -8,32 +8,23 @@ export class Wash extends Washer {
   static readonly description: string =
     "retrieve data on a schedule and parse it into a normalized format";
 
-  static settings = {
-    ...Washer.settings,
+  static flags = {
+    ...Washer.flags,
 
-    begin: Setting.number({
-      def: 0,
+    begin: flags.integer({
+      default: 0,
+      parse: (input: string) => Math.abs(Math.round(parseFloat(input))),
       description: "the number of days of past items to load in the first run"
     }),
 
-    retain: Setting.number({
-      def: 0,
+    retain: flags.integer({
+      default: 0,
+      parse: (input: string) => Math.abs(Math.round(parseFloat(input))),
       description: "the number of days to keep items, or 0 to keep forever"
     })
   };
 
-  readonly begin = Wash.settings.begin.def as number;
-  readonly retain = Wash.settings.retain.def as number;
-
-  constructor(settings: Settings) {
-    super(settings);
-
-    this.begin = Math.abs(Wash.settings.begin.parse(settings.begin) as number);
-
-    this.retain = Math.abs(
-      Wash.settings.retain.parse(settings.retain) as number
-    );
-  }
+  config!: OutputFlags<typeof Wash.flags>;
 
   async run(): Promise<Item[]> {
     return [];

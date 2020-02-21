@@ -62,7 +62,8 @@ const washers: any[] = [
   {
     title: "stdout",
     subscribe: ["log"],
-    color: true
+    color: true,
+    levels: "debug"
   }
   /*
   {

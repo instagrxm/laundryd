@@ -8,7 +8,9 @@ export class TestRinse extends Rinse {
   async run(items: LoadedItem[]): Promise<Item[]> {
     Log.info(
       this,
-      `${this.id} got ${items.length} items from ${items.map(i => i.sourceId)}`
+      `${this.config.id} got ${items.length} items from ${items.map(
+        i => i.sourceId
+      )}`
     );
     return new Promise((resolve, reject) => {
       setTimeout(() => {
@@ -21,7 +23,7 @@ export class TestRinse extends Rinse {
           i.extended = i.extended || {};
           i.extended.rinse = this.memory.foo;
         });
-        Log.info(this, `${this.id} returning`);
+        Log.info(this, `${this.config.id} returning`);
         Log.info(this, items.map(i => i.url).join(","));
         resolve(items);
       }, 1000);

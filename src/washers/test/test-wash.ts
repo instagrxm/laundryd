@@ -6,7 +6,7 @@ export class TestWash extends Wash {
   static readonly title: string = "test-wash";
 
   async run(): Promise<Item[]> {
-    Log.info(this, `${this.id}`);
+    Log.info(this, `${this.config.id}`);
     return new Promise((resolve, reject) => {
       setTimeout(() => {
         if (!this.memory.foo) {
@@ -29,7 +29,7 @@ export class TestWash extends Wash {
           }
         ];
 
-        Log.info(this, `${this.id} returning`);
+        Log.info(this, `${this.config.id} returning`);
         Log.info(this, items.map(i => i.url).join(","));
         resolve(items);
       }, 3000);

@@ -1,7 +1,7 @@
+import { flags } from "@oclif/command";
+import { OutputFlags } from "@oclif/parser/lib/parse";
 import { LoadedItem } from "../item";
 import { Log } from "../log";
-import { Setting } from "../setting";
-import { Settings } from "../settings";
 import { Washer } from "./washer";
 
 export class Dry extends Washer {
@@ -9,27 +9,23 @@ export class Dry extends Washer {
   static readonly description: string =
     "accept normalized data on a schedule or as it arrives, and take actions on it";
 
-  static settings = {
-    ...Washer.settings,
+  static flags = {
+    ...Washer.flags,
 
-    subscribe: Setting.strings({
-      def: [],
+    subscribe: flags.build<string[]>({
+      default: [],
+      parse: (input: string) => input.split(","),
       description: "listen for items from this washer id"
-    })
+    })()
   };
 
-  readonly subscribe = Dry.settings.subscribe.def as string[];
+  config!: OutputFlags<typeof Dry.flags>;
 
-  constructor(settings: Settings) {
-    super(settings);
-
-    const subscribe = Dry.settings.subscribe.parse(settings.subscribe);
-    if (!subscribe || !subscribe.length) {
+  init(): void {
+    if (!this.config.subscribe.length) {
       Log.error(this, `missing subscribe`);
-    } else if (subscribe.includes(this.id)) {
+    } else if (this.config.subscribe.includes(this.config.id)) {
       Log.error(this, `can't subscribe to itself`);
-    } else {
-      this.subscribe = subscribe;
     }
   }
 

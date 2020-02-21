@@ -1,6 +1,7 @@
+import { flags } from "@oclif/command";
+import { OutputFlags } from "@oclif/parser/lib/parse";
+import { CronTime } from "cron";
 import { Memory } from "../memory";
-import { Setting } from "../setting";
-import { Settings } from "../settings";
 import { Dry } from "./dry";
 import { Rinse } from "./rinse";
 import { Wash } from "./wash";
@@ -19,38 +20,41 @@ export class Washer {
    */
   static readonly description: string;
 
-  static settings = {
-    id: Setting.string({
-      description: "a unique identifier for this washer"
+  memory!: Memory;
+
+  static flags = {
+    id: flags.string({
+      description: "a unique identifier for this washer",
+      required: true,
+      parse: (input: string) => {
+        if (input.startsWith("system.") || input.match(/[\s\r\n\:\$]/g)) {
+          throw new Error(`invalid washer id "${input}"`);
+        }
+        return input;
+      }
     }),
 
-    schedule: Setting.string({
-      description: "when to run the washer"
+    schedule: flags.string({
+      description: "when to run the washer",
+      parse: (input: string) => {
+        const time = new CronTime(input);
+        return input;
+      }
     })
   };
 
-  readonly id: string;
-  readonly schedule?: string;
+  config!: OutputFlags<typeof Washer.flags>;
 
-  memory!: Memory;
-
-  constructor(settings: Settings) {
+  constructor(config: OutputFlags<typeof Washer.flags>) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }
 
-    const id = Washer.settings.id.parse(settings.id);
-    if (!id) {
-      throw new Error("missing id");
-    }
+    this.config = config;
+  }
 
-    if (id.startsWith("system.") || id.match(/[\s\r\n\:\$]/g)) {
-      throw new Error(`${id}: invalid id`);
-    }
-
-    this.id = id;
-
-    this.schedule = Washer.settings.schedule.parse(settings.schedule);
+  init(): void {
+    // do stuff
   }
 
   /**
@@ -65,10 +69,13 @@ export class Washer {
    * @param washer the washer to check
    */
   static isInput(washer: WasherInstance): washer is Rinse | Dry {
-    return (
-      (washer as Rinse).subscribe !== undefined ||
-      (washer as Dry).subscribe !== undefined
-    );
+    const isRinse =
+      Object.getPrototypeOf(washer as Rinse).constructor.flags.subscribe !=
+      undefined;
+    const isDry =
+      Object.getPrototypeOf(washer as Dry).constructor.flags.subscribe !=
+      undefined;
+    return isRinse || isDry;
   }
 
   /**
@@ -76,9 +83,12 @@ export class Washer {
    * @param washer the washer to check
    */
   static isOutput(washer: WasherInstance): washer is Rinse | Wash {
-    return (
-      (washer as Rinse).retain !== undefined ||
-      (washer as Wash).retain !== undefined
-    );
+    const isRinse =
+      Object.getPrototypeOf(washer as Rinse).constructor.flags.retain !=
+      undefined;
+    const isWash =
+      Object.getPrototypeOf(washer as Wash).constructor.flags.retain !=
+      undefined;
+    return isRinse || isWash;
   }
 }

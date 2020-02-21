@@ -47,8 +47,8 @@ export class Log {
 
     if (source instanceof Washer) {
       sourceType = "washer";
-      title = `${source.getType().title}/${source.id}`;
-      sourceId = source.id;
+      title = `${source.getType().title}/${source.config.id}`;
+      sourceId = source.config.id;
       sourceTitle = source.getType().title;
     } else {
       sourceType = "command";

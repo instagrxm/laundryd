@@ -41,7 +41,9 @@ export class Database {
    * @param washer the washer
    */
   static async loadMemory(washer: WasherInstance): Promise<void> {
-    const memory = await Database.memory.findOne({ washerId: washer.id });
+    const memory = await Database.memory.findOne({
+      washerId: washer.config.id
+    });
     washer.memory = memory || {};
   }
 
@@ -53,7 +55,7 @@ export class Database {
   static async saveMemory(washer: WasherInstance): Promise<void> {
     washer.memory.lastRun = new Date();
     await Database.memory.replaceOne(
-      { washerId: washer.id },
+      { washerId: washer.config.id },
       { $set: washer.memory },
       { upsert: true }
     );
@@ -73,7 +75,7 @@ export class Database {
     }
 
     const items: LoadedItem[] = await Database.db
-      .collection(washer.id)
+      .collection(washer.config.id)
       .find(
         {
           date: { $gt: since }
@@ -83,7 +85,7 @@ export class Database {
       .toArray();
 
     items.forEach(i => {
-      i.sourceId = washer.id;
+      i.sourceId = washer.config.id;
       i.sourceTitle = washer.getType().title;
     });
 
@@ -104,13 +106,13 @@ export class Database {
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     washer.memory.lastItem = items[0];
 
-    const collection = Database.db.collection(washer.id);
+    const collection = Database.db.collection(washer.config.id);
     await collection.createIndex("date");
     await collection.insertMany(items);
 
-    if (washer.retain) {
+    if (washer.config.retain) {
       const retainDate = new Date(
-        Date.now() - washer.retain * 24 * 60 * 60 * 1000
+        Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
       );
       await collection.deleteMany({ date: { $lt: retainDate } });
     }
@@ -126,11 +128,13 @@ export class Database {
     callback: (item: LoadedItem) => void
   ): void {
     const pipeline = [{ $match: { operationType: "insert" } }];
-    const changeStream = Database.db.collection(washer.id).watch(pipeline);
+    const changeStream = Database.db
+      .collection(washer.config.id)
+      .watch(pipeline);
 
     changeStream.on("change", change => {
       const item: LoadedItem = change.fullDocument;
-      item.sourceId = washer.id;
+      item.sourceId = washer.config.id;
       item.sourceTitle = washer.getType().title;
       callback(item);
     });

@@ -1,7 +1,7 @@
+import { flags } from "@oclif/command";
+import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
-import { Setting } from "../setting";
-import { Settings } from "../settings";
 import { Washer } from "./washer";
 
 export class Rinse extends Washer {
@@ -9,38 +9,30 @@ export class Rinse extends Washer {
   static readonly description: string =
     "accept normalized data on a schedule or as it arrives, analyze it, and return new data";
 
-  static settings = {
-    ...Washer.settings,
+  static flags = {
+    ...Washer.flags,
 
-    subscribe: Setting.strings({
-      def: [],
+    subscribe: flags.build<string[]>({
+      default: [],
+      parse: (input: string) => input.split(","),
       description: "listen for items from this washer id"
-    }),
+    })(),
 
-    retain: Setting.number({
-      def: 0,
+    retain: flags.integer({
+      default: 0,
+      parse: (input: string) => Math.abs(Math.round(parseFloat(input))),
       description: "the number of days to keep items, or 0 to keep forever"
     })
   };
 
-  readonly subscribe = Rinse.settings.subscribe.def as string[];
-  readonly retain = Rinse.settings.retain.def as number;
+  config!: OutputFlags<typeof Rinse.flags>;
 
-  constructor(settings: Settings) {
-    super(settings);
-
-    const subscribe = Rinse.settings.subscribe.parse(settings.subscribe);
-    if (!subscribe || !subscribe.length) {
+  init(): void {
+    if (!this.config.subscribe.length) {
       Log.error(this, `missing subscribe`);
-    } else if (subscribe.includes(this.id)) {
+    } else if (this.config.subscribe.includes(this.config.id)) {
       Log.error(this, `can't subscribe to itself`);
-    } else {
-      this.subscribe = subscribe;
     }
-
-    this.retain = Math.abs(
-      Rinse.settings.retain.parse(settings.retain) as number
-    );
   }
 
   async run(items: LoadedItem[]): Promise<Item[]> {

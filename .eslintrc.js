@@ -12,6 +12,7 @@ module.exports = {
   extends: ["plugin:@typescript-eslint/recommended"],
   rules: {
     "no-console": "warn",
+    "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off"
   }

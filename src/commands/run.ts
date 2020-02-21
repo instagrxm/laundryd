@@ -1,11 +1,11 @@
 import { flags } from "@oclif/command";
+import { parse } from "@oclif/parser";
 import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../baseCommand";
 import { Item, LoadedItem } from "../core/item";
 import { Log, LogItem, LogLevel } from "../core/log";
-import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
@@ -105,8 +105,8 @@ export default class Run extends BaseCommand {
    * Load settings from a file.
    * @param file a script which exports an array of washer settings
    */
-  private async loadSettings(file: string): Promise<Settings[]> {
-    let config: Settings[];
+  private async loadSettings(file: string): Promise<Record<string, any>[]> {
+    let config: Record<string, any>[];
     try {
       config = await require(file);
     } catch {
@@ -128,7 +128,7 @@ export default class Run extends BaseCommand {
    */
   private async createWashers(
     types: Record<string, WasherType>,
-    settings: Settings[]
+    settings: Record<string, any>[]
   ): Promise<Record<string, WasherInstance>> {
     for (const setting of settings) {
       if (!setting.title) {
@@ -160,8 +160,24 @@ export default class Run extends BaseCommand {
     // Actually create the instances
     const washers: Record<string, WasherInstance> = {};
     for (const setting of settings) {
-      const washer = new types[setting.title](setting);
+      // Convert the settings into something that looks like command-line args,
+      // since that's what the oclif parser is expecting.
+      const argv = Object.keys(setting)
+        .filter(key => key !== "title")
+        .map(key => {
+          const val = setting[key];
+          if (typeof val === "boolean") {
+            return val ? `--${key}` : "";
+          }
+          return `--${key}=${setting[key]}`;
+        });
+
+      // @ts-ignore
+      const config = parse(argv, { flags: types[setting.title].flags });
+      const washer = new types[setting.title](config.flags);
+
       await Database.loadMemory(washer);
+      washer.init();
       washers[setting.id] = washer;
       Log.info(this, `washer "${setting.title}" created`);
     }
@@ -175,12 +191,12 @@ export default class Run extends BaseCommand {
    */
   private startSchedules(washers: WasherInstance[]): void {
     for (const washer of washers) {
-      if (!washer.schedule) {
+      if (!washer.config.schedule) {
         continue;
       }
 
       new CronJob({
-        cronTime: washer.schedule,
+        cronTime: washer.config.schedule,
         onTick: async (): Promise<void> => await this.runSchedule(washer),
         start: true
       });
@@ -195,7 +211,7 @@ export default class Run extends BaseCommand {
     // Load items since memory.lastRun from the database
     let input: LoadedItem[] = [];
     if (Washer.isInput(washer)) {
-      for (const id of washer.subscribe) {
+      for (const id of washer.config.subscribe) {
         const since = washer.memory.lastRun || new Date(0);
         const items = await Database.loadItems(this.washers[id], since);
         input = input.concat(items);
@@ -213,9 +229,11 @@ export default class Run extends BaseCommand {
    * @param washers all running washers
    */
   private startSubscriptions(washers: Record<string, WasherInstance>): void {
-    for (const washer of Object.values(washers).filter(w => !w.schedule)) {
+    for (const washer of Object.values(washers).filter(
+      w => !w.config.schedule
+    )) {
       if (Washer.isInput(washer)) {
-        for (const sub of washer.subscribe) {
+        for (const sub of washer.config.subscribe) {
           if (sub === Log.collection) {
             // Subscribe to logs
             Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
