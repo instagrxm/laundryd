@@ -1,3 +1,4 @@
+import util from "util";
 import BaseCommand from "../baseCommand";
 import { Database } from "../storage/database";
 import { LoadedItem } from "./item";
@@ -74,6 +75,10 @@ export class Log {
       sourceId,
       sourceTitle
     };
+
+    if (process.env.NODE_ENV === "development") {
+      throw new Error(util.inspect(item));
+    }
 
     // console.log(item);
     await Database.writeLog(item);

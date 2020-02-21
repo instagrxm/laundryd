@@ -1,0 +1,304 @@
+import AWS from "aws-sdk";
+import { ListObjectsV2Request } from "aws-sdk/clients/s3";
+import { PromiseResult } from "aws-sdk/lib/request";
+import filenamifyUrl from "filenamify-url";
+import fs from "fs-extra";
+import mime from "mime";
+import path from "path";
+import urlUtils from "url";
+import { Log } from "../core/log";
+import { Download, DownloadResult } from "./download";
+import { FileStore } from "./fileStore";
+
+export class S3 extends FileStore {
+  static urlFormat =
+    "S3 connection string should be s3://[key]:[secret]@s3-[region].amazonaws.com/[bucket]/[prefix]";
+
+  private s3!: AWS.S3;
+  private bucket!: string;
+
+  async validate(): Promise<void> {
+    const url = urlUtils.parse(this.connection, true);
+    if (!url.auth || !url.host || !url.pathname) {
+      throw new Error(S3.urlFormat);
+    }
+
+    const endpoint = url.hostname;
+    const region = url.host.split(".")[0].replace(/^.+?-/, "");
+
+    const pathname = url.pathname.split("/").filter(p => p);
+
+    const bucket = pathname.shift();
+    const [key, secret] = url.auth.split(":");
+    if (!endpoint || !region || !bucket || !key || !secret) {
+      throw new Error(S3.urlFormat);
+    }
+
+    this.bucket = bucket;
+    const prefix = pathname.join("/");
+
+    this.rootDir = prefix;
+    this.downloadsDir = path.join(prefix, "downloads");
+    this.stringsDir = path.join(prefix, "strings");
+
+    this.s3 = new AWS.S3({
+      endpoint,
+      accessKeyId: key,
+      secretAccessKey: secret
+    });
+
+    const permissions = await this.s3
+      .getBucketAcl({ Bucket: bucket })
+      .promise();
+    if (
+      !permissions.Grants ||
+      !permissions.Grants.map(g => g.Permission).find(p => p === "FULL_CONTROL")
+    ) {
+      throw new Error(
+        `improper bucket permissions for ${this.connection}: ${permissions}`
+      );
+    }
+  }
+
+  async existing(download: Download): Promise<DownloadResult | undefined> {
+    const key = path.join(
+      this.downloadsDir,
+      Math.floor(download.date.getTime() / 1000).toString(),
+      filenamifyUrl(download.url)
+    );
+
+    const result: DownloadResult = {
+      url: download.url,
+      date: download.date,
+      dir: key
+    };
+
+    try {
+      const files = await this.s3
+        .listObjectsV2({ Prefix: key, Bucket: this.bucket })
+        .promise();
+      if (!files.Contents) {
+        return;
+      }
+
+      const keys = files.Contents.map(f => f.Key as string);
+
+      if (download.json) {
+        result.json = keys.find(f => f.match(/\.json$/));
+        if (!result.json) {
+          return;
+        }
+        result.json = path.parse(result.json).base;
+        const contents = await this.s3
+          .getObject({ Key: result.json, Bucket: this.bucket })
+          .promise();
+        result.data = JSON.parse((contents.Body as Buffer).toString());
+      }
+
+      if (download.image) {
+        result.image = keys.find(f => f.match(/\.(jpg|jpeg|png|gif)$/));
+        if (!result.image) {
+          return;
+        }
+        result.image = path.parse(result.image).base;
+      }
+
+      if (download.media) {
+        result.media = keys.find(f => !f.match(/\.(jpg|jpeg|png|gif|json)$/));
+        if (!result.media) {
+          return;
+        }
+        const stats = await this.s3
+          .headObject({ Key: result.media, Bucket: this.bucket })
+          .promise();
+        result.media = path.parse(result.media).base;
+        result.size = stats.ContentLength;
+        result.type = stats.ContentType;
+      }
+
+      return result;
+    } catch (error) {
+      Log.error(this.washer, error);
+    }
+  }
+
+  async downloaded(download: DownloadResult): Promise<DownloadResult> {
+    const key = path.join(
+      this.downloadsDir,
+      Math.floor(download.date.getTime() / 1000).toString(),
+      filenamifyUrl(download.url)
+    );
+
+    let source: string;
+    let target: string;
+
+    try {
+      if (download.json) {
+        source = path.join(download.dir, download.json);
+        target = path.join(key, download.json);
+        await this.uploadLocal(source, target);
+      }
+
+      if (download.image) {
+        source = path.join(download.dir, download.image);
+        target = path.join(key, download.image);
+        await this.uploadLocal(source, target);
+      }
+
+      if (download.media) {
+        source = path.join(download.dir, download.media);
+        target = path.join(key, download.media);
+        await this.uploadLocal(source, target);
+      }
+    } catch (error) {
+      Log.error(this.washer, error);
+    }
+
+    download.dir = key;
+    return download;
+  }
+
+  private async uploadLocal(source: string, target: string): Promise<void> {
+    const send = async (): Promise<AWS.S3.ManagedUpload.SendData> => {
+      const params: AWS.S3.PutObjectRequest = {
+        Bucket: this.bucket,
+        Key: target,
+        ContentType: mime.getType(target) || undefined,
+        Body: fs.createReadStream(source),
+        ACL: "public-read"
+      };
+
+      const response = await this.s3.upload(params).promise();
+      Log.info(this.washer, {
+        event: "s3-upload",
+        connection: this.connection,
+        response
+      });
+      return response;
+    };
+
+    try {
+      await send();
+    } catch (error) {
+      Log.error(this.washer, {
+        event: "s3-upload",
+        connection: this.connection,
+        error
+      });
+    }
+  }
+
+  async clean(retain: Date): Promise<void> {
+    const params: ListObjectsV2Request = {
+      Bucket: this.bucket,
+      Prefix: this.downloadsDir
+    };
+
+    let token;
+
+    while (true) {
+      if (token) {
+        params.ContinuationToken = token;
+      }
+
+      let existing!: PromiseResult<AWS.S3.ListObjectsV2Output, AWS.AWSError>;
+      try {
+        existing = await this.s3.listObjectsV2(params).promise();
+      } catch (error) {
+        Log.error(this.washer, error);
+      }
+
+      if (!existing.Contents) {
+        // Didn't get anything.
+        break;
+      }
+
+      const oldKeys = existing.Contents.map(c => c.Key as string).filter(
+        key =>
+          parseInt(key.replace(this.downloadsDir, "").split("/")[1], 10) <
+          Math.floor(retain.getTime() / 1000)
+      );
+
+      for (const k of oldKeys) {
+        const log = { event: "s3-delete", connection: this.connection, key: k };
+        try {
+          Log.info(this.washer, log);
+          await this.s3.deleteObject({ Bucket: this.bucket, Key: k }).promise();
+        } catch (error) {
+          Log.error(this.washer, { ...log, error });
+        }
+      }
+
+      if (oldKeys.length < existing.Contents.length) {
+        // Keys come back alphabetically, so if all on this page weren't deleted, there shouldn't be more to delete.
+        break;
+      }
+
+      token = existing.NextContinuationToken;
+      if (!token) {
+        // No more pages to get.
+        break;
+      }
+    }
+  }
+
+  async saveString(file: string, data: string): Promise<void> {
+    if (!data) {
+      return this.deleteString(file);
+    }
+
+    const key = path.join(this.stringsDir, file);
+
+    const log = { event: "s3-save", connection: this.connection, key };
+    try {
+      Log.info(this.washer, log);
+      await this.s3
+        .putObject({
+          Bucket: this.bucket,
+          Key: key,
+          Body: data,
+          ACL: "public-read",
+          ContentType: mime.getType(file) || ""
+        })
+        .promise();
+    } catch (error) {
+      Log.error(this.washer, { ...log, error });
+    }
+  }
+
+  async readString(file: string): Promise<string | undefined> {
+    const key = path.join(this.stringsDir, file);
+
+    try {
+      const result = await this.s3
+        .getObject({ Bucket: this.bucket, Key: key })
+        .promise();
+      if (!result.Body) {
+        return;
+      }
+      Log.info(this.washer, {
+        event: "s3-read",
+        connection: this.connection,
+        key
+      });
+      return result.Body.toString();
+    } catch (error) {
+      return;
+    }
+  }
+
+  async deleteString(file: string): Promise<void> {
+    const key = path.join(this.stringsDir, file);
+
+    try {
+      await this.s3.deleteObject({ Bucket: this.bucket, Key: key }).promise();
+      Log.info(this.washer, {
+        event: "s3-delete",
+        connection: this.connection,
+        key
+      });
+    } catch (error) {
+      return;
+    }
+  }
+}

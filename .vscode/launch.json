@@ -16,7 +16,8 @@
       "outFiles": ["${workspaceFolder}/lib/**/*.js"],
       "internalConsoleOptions": "openOnSessionStart",
       // "preLaunchTask": "tsc: build - tsconfig.json",
-      "outputCapture": "std"
+      "outputCapture": "std",
+      "env": { "NODE_ENV": "development" }
     }
   ]
 }
