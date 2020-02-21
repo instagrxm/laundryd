@@ -128,26 +128,26 @@ export default class Run extends BaseCommand {
     settings: Settings[]
   ): Promise<Record<string, WasherInstance>> {
     for (const setting of settings) {
-      if (!setting.id) {
-        throw new Error(`missing id: ${setting.name}`);
+      if (!setting.title) {
+        throw new Error(`missing title: ${setting.id}`);
       }
-      if (!setting.name) {
-        throw new Error(`missing name: ${setting.id}`);
+      if (!setting.id) {
+        throw new Error(`missing id: ${setting.title}`);
       }
       if (settings.filter(s => s.id === setting.id).length > 1) {
         throw new Error(`duplicate id: ${setting.id}`);
       }
-      if (!types[setting.name]) {
-        throw new Error(`washer not found: ${setting.name}`);
+      if (!types[setting.title]) {
+        throw new Error(`washer not found: ${setting.title}`);
       }
       if (setting.subscribe) {
         if (!(setting.subscribe instanceof Array)) {
-          throw new Error(`subscribe should be an array: ${setting.name}`);
+          throw new Error(`subscribe should be an array: ${setting.title}`);
         }
         for (const sub of setting.subscribe) {
           if (!settings.find(s => s.id === sub)) {
             throw new Error(
-              `washer ${setting.name} subscribed to ${sub} but ${sub} was not found`
+              `washer ${setting.title} subscribed to ${sub} but ${sub} was not found`
             );
           }
         }
@@ -157,10 +157,10 @@ export default class Run extends BaseCommand {
     // Actually create the instances
     const washers: Record<string, WasherInstance> = {};
     for (const setting of settings) {
-      const washer = new types[setting.name](setting);
+      const washer = new types[setting.title](setting);
       await Database.loadMemory(washer);
       washers[setting.id] = washer;
-      Log.info(this, `washer "${setting.name}" created`);
+      Log.info(this, `washer "${setting.title}" created`);
     }
 
     return washers;

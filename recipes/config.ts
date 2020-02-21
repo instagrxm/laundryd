@@ -39,50 +39,50 @@ const schedule = {
 
 const washers: any[] = [
   {
+    title: "test/test-wash",
     id: "test/test-wash/foo",
-    name: "test/test-wash",
     schedule: "*/5 * * * * *"
   },
   {
+    title: "test/test-wash",
     id: "test/test-wash/bar",
-    name: "test/test-wash",
     schedule: "*/5 * * * * *"
   },
   {
-    name: "test/test-rinse",
+    title: "test/test-rinse",
     schedule: "*/5 * * * * *",
     retain: 1,
     subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
   },
   {
-    name: "test/test-dry",
+    title: "test/test-dry",
     schedule: "*/5 * * * * *",
     subscribe: ["test/test-rinse"]
   }
   /*
   {
-    name: "wash/mixcloud/uploads",
+    title: "wash/mixcloud/uploads",
     schedule: schedule.default,
     auth: auth.mixcloud,
     begin: retention.begin,
     retain: retention.retain
   },
   {
-    name: "wash/mixcloud/user",
+    title: "wash/mixcloud/user",
     schedule: schedule.default,
     begin: retention.begin,
     retain: retention.retain,
     user: "redbullradio"
   },
   {
-    name: "wash/instagram/timeline",
+    title: "wash/instagram/timeline",
     schedule: schedule.default,
     auth: auth.instagram,
     begin: retention.begin,
     retain: retention.retain
   },
   {
-    name: "wash/instagram/user",
+    title: "wash/instagram/user",
     schedule: schedule.default,
     auth: auth.instagram,
     begin: retention.begin,
@@ -90,7 +90,7 @@ const washers: any[] = [
     user: "foo"
   },
   {
-    name: "wash/instagram/hashtag",
+    title: "wash/instagram/hashtag",
     schedule: schedule.default,
     auth: auth.instagram,
     begin: retention.begin,
@@ -98,19 +98,19 @@ const washers: any[] = [
     hashtag: "foo"
   },
   {
-    name: "wash/instagram/likes",
+    title: "wash/instagram/likes",
     schedule: schedule.default,
     auth: auth.instagram
   },
   {
-    name: "wash/twitter/timeline",
+    title: "wash/twitter/timeline",
     schedule: schedule.default,
     auth: auth.twitter,
     begin: retention.begin,
     retain: retention.retain
   },
   {
-    name: "wash/twitter/user",
+    title: "wash/twitter/user",
     schedule: schedule.default,
     auth: auth.twitter,
     begin: retention.begin,
@@ -118,7 +118,7 @@ const washers: any[] = [
     user: "foo"
   },
   {
-    name: "wash/twitter/list",
+    title: "wash/twitter/list",
     schedule: schedule.default,
     auth: auth.twitter,
     begin: retention.begin,
@@ -126,7 +126,7 @@ const washers: any[] = [
     list: "foo"
   },
   {
-    name: "wash/twitter/hashtag",
+    title: "wash/twitter/hashtag",
     schedule: schedule.default,
     auth: auth.twitter,
     begin: retention.begin,
@@ -134,12 +134,12 @@ const washers: any[] = [
     hashtag: "foo"
   },
   {
-    name: "wash/twitter/likes",
+    title: "wash/twitter/likes",
     schedule: schedule.default,
     auth: auth.twitter
   },
   {
-    name: "wash/soundcloud/user",
+    title: "wash/soundcloud/user",
     schedule: schedule.default,
     user: "foo",
     auth: auth.soundcloud,
@@ -148,7 +148,7 @@ const washers: any[] = [
     media: "audio"
   },
   {
-    name: "wash/soundcloud/playlist",
+    title: "wash/soundcloud/playlist",
     schedule: schedule.default,
     playlist: "foo",
     auth: auth.soundcloud,
@@ -157,7 +157,7 @@ const washers: any[] = [
     media: "audio"
   },
   {
-    name: "wash/soundcloud/timeline",
+    title: "wash/soundcloud/timeline",
     schedule: schedule.default,
     auth: auth.soundcloud,
     begin: retention.begin,
@@ -165,14 +165,14 @@ const washers: any[] = [
     media: "audio"
   },
   {
-    name: "wash/youtube/subscribes",
+    title: "wash/youtube/subscribes",
     schedule: schedule.default,
     auth: auth.youtube,
     begin: retention.begin,
     retain: retention.retain
   },
   {
-    name: "wash/youtube/channel",
+    title: "wash/youtube/channel",
     schedule: schedule.default,
     auth: auth.youtube,
     begin: retention.begin,
@@ -181,7 +181,7 @@ const washers: any[] = [
     media: "audio"
   },
   {
-    name: "wash/youtube/playlist",
+    title: "wash/youtube/playlist",
     schedule: schedule.default,
     auth: auth.youtube,
     begin: retention.begin,
@@ -190,14 +190,14 @@ const washers: any[] = [
     media: "video"
   },
   {
-    name: "wash/vimeo/timeline",
+    title: "wash/vimeo/timeline",
     schedule: schedule.default,
     auth: auth.vimeo,
     begin: retention.begin,
     retain: retention.retain
   },
   {
-    name: "wash/vimeo/channel",
+    title: "wash/vimeo/channel",
     schedule: schedule.default,
     channel: "foo",
     auth: auth.vimeo,
@@ -205,7 +205,7 @@ const washers: any[] = [
     retain: retention.retain
   },
   {
-    name: "wash/vimeo/group",
+    title: "wash/vimeo/group",
     schedule: schedule.default,
     group: "foo",
     auth: auth.vimeo,
@@ -213,7 +213,7 @@ const washers: any[] = [
     retain: retention.retain
   },
   {
-    name: "wash/vimeo/user",
+    title: "wash/vimeo/user",
     schedule: schedule.default,
     user: "foo",
     auth: auth.vimeo,
@@ -221,74 +221,72 @@ const washers: any[] = [
     retain: retention.retain
   },
   {
-    name: "wash/feedbin/likes",
+    title: "wash/feedbin/likes",
     schedule: schedule.default,
     auth: auth.feedbin
   },
   {
-    name: "dry/feedbin/unlike",
+    title: "dry/feedbin/unlike",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.feedbin
   },
   {
-    name: "wash/podcast/likes",
+    title: "wash/podcast/likes",
     schedule: schedule.default,
     auth: auth.podcast
   },
   {
-    name: "dry/podcast/unlike",
+    title: "dry/podcast/unlike",
     subscribe: ["wash/podcast/likes"],
     auth: auth.podcast
   },
   {
-    name: "dry/instagram/like",
+    title: "dry/instagram/like",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.instagram
   },
+  id: "dry/youtube/like/feedbin",title: "dry/youtube/like",
   {
-    id: "dry/youtube/like/feedbin",
-    name: "dry/youtube/like",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.youtube
   },
   {
-    name: "dry/vimeo/like",
+    title: "dry/vimeo/like",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.vimeo
   },
   {
-    name: "dry/twitter/like",
+    title: "dry/twitter/like",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.twitter
   },
+  id: "dry/youtube/like/podcast",title: "dry/youtube/like",
   {
-    id: "dry/youtube/like/podcast",
-    name: "dry/youtube/like",
     subscribe: ["wash/podcast/likes"],
     auth: auth.youtube
   },
   {
-    name: "dry/soundcloud/like",
+    title: "dry/soundcloud/like",
     subscribe: ["wash/podcast/likes"],
     auth: auth.soundcloud
   },
   {
-    name: "dry/mixcloud/like",
+    title: "dry/mixcloud/like",
     subscribe: ["wash/podcast/likes"],
     auth: auth.soundcloud
   },
   {
-    name: "dry/instagram/story",
+    title: "dry/instagram/story",
     subscribe: ["wash/instagram/likes"],
     auth: auth.instagram
   },
   {
-    name: "dry/twitter/tweet",
+    title: "dry/twitter/tweet",
     subscribe: ["wash/instagram/user"],
     auth: auth.twitter
   },
   {
-    name: "dry/email",
+    title: "dry/email",
     subscribe: ["log/error"],
     to: "foo",
     auth: auth.email
@@ -296,6 +294,6 @@ const washers: any[] = [
   */
 ];
 
-washers.forEach(w => (w.id = w.id || w.name));
+washers.forEach(w => (w.id = w.id || w.title));
 
 export = washers;

@@ -1,6 +1,6 @@
 export interface Settings {
   id: string;
-  name: string;
+  title: string;
   schedule?: string;
   subscribe: string[];
   begin?: number;
