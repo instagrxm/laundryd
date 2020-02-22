@@ -15,6 +15,7 @@ export class FileStore {
   protected washer: WasherInstance;
   protected connection: string;
 
+  protected url!: string;
   protected rootDir!: string;
   protected downloadsDir!: string;
   protected stringsDir!: string;
@@ -24,9 +25,10 @@ export class FileStore {
    * @param washer the washer that's using this filestore
    * @param connection the root path from the configuration
    */
-  constructor(washer: WasherInstance, connection: string) {
+  constructor(washer: WasherInstance, connection: string, url: string) {
     this.washer = washer;
     this.connection = connection;
+    this.url = url;
   }
 
   /**

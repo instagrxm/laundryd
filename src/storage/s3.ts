@@ -7,52 +7,53 @@ import mime from "mime";
 import path from "path";
 import urlUtils from "url";
 import { Log } from "../core/log";
+import { WasherInstance } from "../core/washers/washer";
 import { Download, DownloadResult } from "./download";
 import { FileStore } from "./fileStore";
 
 export class S3 extends FileStore {
   static urlFormat =
-    "S3 connection string should be s3://[key]:[secret]@s3-[region].amazonaws.com/[bucket]/[prefix]";
+    "S3 connection string should be s3://[AWS_KEY]:[AWS_SECRET]@[S3_BUCKET].s3-[S3_REGION].amazonaws.com";
 
   private s3!: AWS.S3;
   private bucket!: string;
 
-  async validate(): Promise<void> {
-    const url = urlUtils.parse(this.connection, true);
-    if (!url.auth || !url.host || !url.pathname) {
+  constructor(washer: WasherInstance, connection: string) {
+    const url = urlUtils.parse(connection, true);
+    if (!url.auth || !url.hostname) {
       throw new Error(S3.urlFormat);
     }
 
-    const endpoint = url.hostname;
-    const region = url.host.split(".")[0].replace(/^.+?-/, "");
+    super(washer, connection, `https://${url.hostname}`);
 
-    const pathname = url.pathname.split("/").filter(p => p);
+    const parts = url.hostname.split(".");
+    const endpoint = parts.slice(1).join(".");
+    const bucket = parts[0];
 
-    const bucket = pathname.shift();
     const [key, secret] = url.auth.split(":");
-    if (!endpoint || !region || !bucket || !key || !secret) {
+    if (!endpoint || !bucket || !key || !secret) {
       throw new Error(S3.urlFormat);
     }
 
     this.bucket = bucket;
-    const prefix = pathname.join("/");
-
-    this.rootDir = prefix;
-    this.downloadsDir = path.join(prefix, "downloads");
-    this.stringsDir = path.join(prefix, "strings");
+    this.rootDir = washer.config.id;
+    this.downloadsDir = path.join(this.rootDir, "downloads");
+    this.stringsDir = path.join(this.rootDir, "strings");
 
     this.s3 = new AWS.S3({
       endpoint,
       accessKeyId: key,
       secretAccessKey: secret
     });
+  }
 
+  async validate(): Promise<void> {
     const permissions = await this.s3
-      .getBucketAcl({ Bucket: bucket })
+      .getBucketAcl({ Bucket: this.bucket })
       .promise();
     if (
       !permissions.Grants ||
-      !permissions.Grants.map(g => g.Permission).find(p => p === "FULL_CONTROL")
+      !permissions.Grants.find(g => g.Permission === "FULL_CONTROL")
     ) {
       throw new Error(
         `improper bucket permissions for ${this.connection}: ${permissions}`

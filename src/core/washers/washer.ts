@@ -26,7 +26,10 @@ export class Washer {
     id: flags.string({
       required: true,
       parse: (input: string) => {
-        if (input.startsWith("system.") || input.match(/[\,\s\r\n\:\$]/g)) {
+        if (
+          input.startsWith("system.") ||
+          !input.match(/^[\\\/A-Za-z0-9_-]+$/)
+        ) {
           throw new Error(`invalid washer id "${input}"`);
         }
         return input;

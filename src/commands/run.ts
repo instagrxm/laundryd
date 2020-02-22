@@ -4,6 +4,7 @@ import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../baseCommand";
+import { Config } from "../core/config";
 import { Item, LoadedItem } from "../core/item";
 import { Log, LogItem, LogLevel } from "../core/log";
 import { Dry } from "../core/washers/dry";
@@ -11,6 +12,8 @@ import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
 import { Washer, WasherInstance, WasherType } from "../core/washers/washer";
 import { Database } from "../storage/database";
+import { FileStore } from "../storage/fileStore";
+import { S3 } from "../storage/s3";
 
 // TODO: Temporary web server
 const server = require("net")
@@ -25,8 +28,32 @@ export default class Run extends BaseCommand {
 
     config: flags.string({
       required: true,
+      env: "LAUNDRY_CONFIG",
       description:
         "path to a javascript file exporting an array of washer settings"
+    }),
+
+    files: flags.string({
+      required: true,
+      default: "(OS cache dir)",
+      env: "LAUNDRY_FILES",
+      description:
+        "where to store downloaded files, either a local path or an s3:// location"
+    }),
+
+    fileUrl: flags.string({
+      required: true,
+      default: "http://localhost:3000/files",
+      env: "LAUNDRY_URL",
+      description: "a URL which maps to the file location"
+    }),
+
+    port: flags.integer({
+      required: true,
+      default: 3000,
+      env: "LAUNDRY_PORT",
+      description:
+        "the port to use for the web server which hosts files and the admin interface"
     })
   };
 
@@ -34,9 +61,18 @@ export default class Run extends BaseCommand {
 
   private washerTypes!: Record<string, WasherType>;
   private washers!: Record<string, WasherInstance>;
+  private fileConn!: string;
+  private fileUrl!: string;
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
+
+    if (flags.files === Run.flags.files.default) {
+      flags.files = Config.config.cacheDir;
+    }
+
+    this.fileConn = flags.files;
+    this.fileUrl = flags.fileUrl;
 
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
@@ -180,6 +216,15 @@ export default class Run extends BaseCommand {
       washers[setting.id] = washer;
       await Database.loadMemory(washer);
       washer.init();
+
+      let fileStore: FileStore;
+      if (this.fileConn.startsWith("s3://")) {
+        fileStore = new S3(washer, this.fileConn);
+      } else {
+        fileStore = new FileStore(washer, this.fileConn, this.fileUrl);
+      }
+      await fileStore.validate();
+
       Log.info(this, `washer "${setting.title}" created`);
     }
 

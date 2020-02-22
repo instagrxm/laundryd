@@ -76,7 +76,7 @@ export class Log {
       sourceTitle
     };
 
-    if (process.env.NODE_ENV === "development") {
+    if (level === LogLevel.error && process.env.NODE_ENV === "development") {
       throw new Error(util.inspect(item));
     }
 
