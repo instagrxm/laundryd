@@ -1,5 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
+import { Downloader } from "../../storage/downloader";
+import { FileStore } from "../../storage/fileStore";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
 import { Shared, Sources } from "./shared";
@@ -14,14 +16,21 @@ export class Rinse extends Washer {
     ...Washer.flags,
     schedule: Shared.flags.schedule(),
     subscribe: Shared.flags.subscribe,
-    retain: Shared.flags.retain
+
+    files: Shared.flags.files,
+    fileUrl: Shared.flags.fileUrl,
+    retain: Shared.flags.retain,
+    downloadPool: Shared.flags.downloadPool
   };
 
   config!: OutputFlags<typeof Rinse.flags>;
 
+  fileStore!: FileStore;
+  downloader: Downloader = new Downloader(this);
+
   async init(sources: Sources): Promise<void> {
     await super.init(sources);
-
+    await Shared.fileStore(this);
     Shared.validateSubscribe(this, sources);
 
     if (this.config.schedule) {
@@ -44,11 +53,13 @@ export class Rinse extends Washer {
     }
 
     try {
-      const output = await this.run(input);
-      await Database.saveItems(this, output);
+      let items = await this.run(input);
+      items = await Shared.doDownloads(this, items);
+      await Database.saveItems(this, items);
       await Database.saveMemory(this);
+      await this.fileStore.clean();
     } catch (error) {
-      Log.error(this, { error });
+      await Log.error(this, { error });
     }
   }
 

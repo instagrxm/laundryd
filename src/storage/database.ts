@@ -103,20 +103,30 @@ export class Database {
       return;
     }
 
+    items.forEach(i => delete i.downloads);
+
     // Newest items first
     items.sort((a, b) => b.date.getTime() - a.date.getTime());
     washer.memory.lastItem = items[0];
 
     const collection = Database.db.collection(washer.config.id);
     await collection.createIndex("date");
-    await collection.insertMany(items);
+    await collection.createIndex("url", { unique: true });
 
-    if (washer.config.retain) {
-      const retainDate = new Date(
-        Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
-      );
-      await collection.deleteMany({ date: { $lt: retainDate } });
+    await Promise.all(
+      items.map(i =>
+        collection.replaceOne({ url: i.url }, { $set: i }, { upsert: true })
+      )
+    );
+
+    if (!washer.config.retain) {
+      return;
     }
+
+    const retainDate = new Date(
+      Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
+    );
+    await collection.deleteMany({ date: { $lt: retainDate } });
   }
 
   /**

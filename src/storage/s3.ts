@@ -7,7 +7,8 @@ import mime from "mime";
 import path from "path";
 import urlUtils from "url";
 import { Log } from "../core/log";
-import { Washer } from "../core/washers/washer";
+import { Rinse } from "../core/washers/rinse";
+import { Wash } from "../core/washers/wash";
 import { Download, DownloadResult } from "./download";
 import { FileStore } from "./fileStore";
 
@@ -18,7 +19,7 @@ export class S3 extends FileStore {
   private s3!: AWS.S3;
   private bucket!: string;
 
-  constructor(washer: Washer, connection: string) {
+  constructor(washer: Wash | Rinse, connection: string) {
     const url = urlUtils.parse(connection, true);
     if (!url.auth || !url.hostname) {
       throw new Error(S3.urlFormat);
@@ -64,14 +65,14 @@ export class S3 extends FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const key = path.join(
       this.downloadsDir,
-      Math.floor(download.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.getTime() / 1000).toString(),
       filenamifyUrl(download.url)
     );
 
     const result: DownloadResult = {
       url: download.url,
-      date: download.date,
-      dir: key
+      item: download.item,
+      dir: `/${key}/`
     };
 
     try {
@@ -119,14 +120,14 @@ export class S3 extends FileStore {
 
       return result;
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
     const key = path.join(
       this.downloadsDir,
-      Math.floor(download.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.getTime() / 1000).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -152,10 +153,10 @@ export class S3 extends FileStore {
         await this.uploadLocal(source, target);
       }
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
 
-    download.dir = key;
+    download.dir = `/${key}/`;
     return download;
   }
 
@@ -170,7 +171,7 @@ export class S3 extends FileStore {
       };
 
       const response = await this.s3.upload(params).promise();
-      Log.info(this.washer, {
+      await Log.info(this.washer, {
         event: "s3-upload",
         connection: this.connection,
         response
@@ -181,7 +182,7 @@ export class S3 extends FileStore {
     try {
       await send();
     } catch (error) {
-      Log.error(this.washer, {
+      await Log.error(this.washer, {
         event: "s3-upload",
         connection: this.connection,
         error
@@ -189,7 +190,15 @@ export class S3 extends FileStore {
     }
   }
 
-  async clean(retain: Date): Promise<void> {
+  async clean(): Promise<void> {
+    if (!this.washer.config.retain) {
+      return;
+    }
+
+    const retainDate = new Date(
+      Date.now() - this.washer.config.retain * 24 * 60 * 60 * 1000
+    );
+
     const params: ListObjectsV2Request = {
       Bucket: this.bucket,
       Prefix: this.downloadsDir
@@ -206,7 +215,7 @@ export class S3 extends FileStore {
       try {
         existing = await this.s3.listObjectsV2(params).promise();
       } catch (error) {
-        Log.error(this.washer, error);
+        await Log.error(this.washer, error);
       }
 
       if (!existing.Contents) {
@@ -217,16 +226,16 @@ export class S3 extends FileStore {
       const oldKeys = existing.Contents.map(c => c.Key as string).filter(
         key =>
           parseInt(key.replace(this.downloadsDir, "").split("/")[1], 10) <
-          Math.floor(retain.getTime() / 1000)
+          Math.floor(retainDate.getTime() / 1000)
       );
 
       for (const k of oldKeys) {
         const log = { event: "s3-delete", connection: this.connection, key: k };
         try {
-          Log.info(this.washer, log);
+          await Log.info(this.washer, log);
           await this.s3.deleteObject({ Bucket: this.bucket, Key: k }).promise();
         } catch (error) {
-          Log.error(this.washer, { ...log, error });
+          await Log.error(this.washer, { ...log, error });
         }
       }
 
@@ -252,7 +261,7 @@ export class S3 extends FileStore {
 
     const log = { event: "s3-save", connection: this.connection, key };
     try {
-      Log.info(this.washer, log);
+      await Log.info(this.washer, log);
       await this.s3
         .putObject({
           Bucket: this.bucket,
@@ -263,7 +272,7 @@ export class S3 extends FileStore {
         })
         .promise();
     } catch (error) {
-      Log.error(this.washer, { ...log, error });
+      await Log.error(this.washer, { ...log, error });
     }
   }
 
@@ -277,7 +286,7 @@ export class S3 extends FileStore {
       if (!result.Body) {
         return;
       }
-      Log.info(this.washer, {
+      await Log.info(this.washer, {
         event: "s3-read",
         connection: this.connection,
         key
@@ -293,7 +302,7 @@ export class S3 extends FileStore {
 
     try {
       await this.s3.deleteObject({ Bucket: this.bucket, Key: key }).promise();
-      Log.info(this.washer, {
+      await Log.info(this.washer, {
         event: "s3-delete",
         connection: this.connection,
         key

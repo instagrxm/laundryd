@@ -16,6 +16,7 @@ export class Washer {
   static readonly description: string;
 
   memory!: Memory;
+  running = false;
 
   static flags = {
     id: flags.string({

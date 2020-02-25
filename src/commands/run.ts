@@ -1,5 +1,6 @@
 import { flags } from "@oclif/command";
 import { parse } from "@oclif/parser";
+import { OutputFlags } from "@oclif/parser/lib/parse";
 import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../baseCommand";
@@ -7,7 +8,7 @@ import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
-import { WasherType } from "../core/washers/shared";
+import { Shared, WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
 
@@ -29,36 +30,23 @@ export default class Run extends BaseCommand {
         "path to a javascript file exporting an array of washer settings"
     }),
 
-    files: flags.string({
-      required: true,
-      default: "(OS cache dir)",
-      env: "LAUNDRY_FILES",
-      description:
-        "where to store downloaded files, either a local path or an s3:// location"
-    }),
-
-    fileUrl: flags.string({
-      required: true,
-      default: "http://localhost:3000/files",
-      env: "LAUNDRY_URL",
-      description: "a URL which maps to the file location"
-    }),
-
     port: flags.integer({
       required: true,
       default: 3000,
       env: "LAUNDRY_PORT",
       description:
         "the port to use for the web server which hosts files and the admin interface"
-    })
+    }),
+
+    files: Shared.flags.files,
+    fileUrl: Shared.flags.fileUrl,
+    downloadPool: Shared.flags.downloadPool,
+    retain: Shared.flags.retain
   };
 
   static args = [];
 
-  private washerTypes!: Record<string, WasherType>;
-  private washers!: Record<string, Washer>;
-  private fileConn!: string;
-  private fileUrl!: string;
+  flags!: OutputFlags<typeof Run.flags>;
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
@@ -67,12 +55,11 @@ export default class Run extends BaseCommand {
       flags.files = Config.config.cacheDir;
     }
 
-    this.fileConn = flags.files;
-    this.fileUrl = flags.fileUrl;
+    this.flags = flags;
 
-    this.washerTypes = await this.loadWasherTypes();
+    const washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
-    this.washers = await this.createWashers(this.washerTypes, settings);
+    const washers = await this.createWashers(washerTypes, settings);
   }
 
   /**
@@ -173,6 +160,17 @@ export default class Run extends BaseCommand {
     const washers: Record<string, Washer> = {};
     const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
+      const flags = Object.keys(types[setting.title].flags);
+      if (setting.files === undefined && flags.includes("files")) {
+        setting.files = this.flags.files;
+      }
+      if (setting.fileUrl === undefined && flags.includes("fileUrl")) {
+        setting.fileUrl = this.flags.fileUrl;
+      }
+      if (setting.retain === undefined && flags.includes("retain")) {
+        setting.retain = this.flags.retain;
+      }
+
       // Convert the settings into something that looks like command-line args,
       // since that's what the oclif parser is expecting.
       const argv = Object.keys(setting)
@@ -200,15 +198,7 @@ export default class Run extends BaseCommand {
         sources[setting.id] = washer as Wash | Rinse;
       }
 
-      // let fileStore: FileStore;
-      // if (this.fileConn.startsWith("s3://")) {
-      //   fileStore = new S3(washer, this.fileConn);
-      // } else {
-      //   fileStore = new FileStore(washer, this.fileConn, this.fileUrl);
-      // }
-      // await fileStore.validate();
-
-      Log.info(this, `washer "${setting.title}" created`);
+      await Log.info(this, `washer "${setting.title}" created`);
     }
 
     // Init the washers with any others that they can subscribe to

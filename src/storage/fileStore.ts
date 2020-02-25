@@ -5,17 +5,18 @@ import mime from "mime";
 import os from "os";
 import path from "path";
 import { Log } from "../core/log";
-import { Washer } from "../core/washers/washer";
+import { Rinse } from "../core/washers/rinse";
+import { Wash } from "../core/washers/wash";
 import { Download, DownloadResult } from "./download";
 
 /**
  * Save and load files on the local filesystem.
  */
 export class FileStore {
-  protected washer: Washer;
+  protected washer: Wash | Rinse;
   protected connection: string;
 
-  protected url!: string;
+  url!: string;
   protected rootDir!: string;
   protected downloadsDir!: string;
   protected stringsDir!: string;
@@ -25,7 +26,7 @@ export class FileStore {
    * @param washer the washer that's using this filestore
    * @param connection the root path from the configuration
    */
-  constructor(washer: Washer, connection: string, url: string) {
+  constructor(washer: Wash | Rinse, connection: string, url: string) {
     this.washer = washer;
     this.connection = connection;
     this.url = url;
@@ -80,14 +81,14 @@ export class FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const dir = path.join(
       this.downloadsDir,
-      Math.floor(download.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.getTime() / 1000).toString(),
       filenamifyUrl(download.url)
     );
 
     const result: DownloadResult = {
       url: download.url,
-      date: download.date,
-      dir
+      item: download.item,
+      dir: `${dir}/`
     };
 
     try {
@@ -125,7 +126,7 @@ export class FileStore {
 
       return result;
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
   }
 
@@ -137,7 +138,7 @@ export class FileStore {
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
     const dir = path.join(
       this.downloadsDir,
-      Math.floor(download.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.getTime() / 1000).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -167,10 +168,10 @@ export class FileStore {
         await fs.copy(source, target, opts);
       }
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
 
-    download.dir = dir;
+    download.dir = `${dir}/`;
     return download;
   }
 
@@ -178,17 +179,25 @@ export class FileStore {
    * Remove files older than a given date.
    * @param retain the oldest date to keep
    */
-  async clean(retain: Date): Promise<void> {
+  async clean(): Promise<void> {
+    if (!this.washer.config.retain) {
+      return;
+    }
+
+    const retainDate = new Date(
+      Date.now() - this.washer.config.retain * 24 * 60 * 60 * 1000
+    );
+
     try {
       const cache = await fs.readdir(this.downloadsDir);
       const old = cache.filter(
-        c => parseInt(c, 10) < Math.floor(retain.getTime() / 1000)
+        c => parseInt(c, 10) < Math.floor(retainDate.getTime() / 1000)
       );
       for (const dir of old) {
         await fs.remove(path.join(this.downloadsDir, dir));
       }
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
   }
 
@@ -210,7 +219,7 @@ export class FileStore {
         await fs.outputJSON(file, data);
       }
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
   }
 
@@ -237,7 +246,7 @@ export class FileStore {
     try {
       await fs.remove(file);
     } catch (error) {
-      Log.error(this.washer, error);
+      await Log.error(this.washer, error);
     }
   }
 }

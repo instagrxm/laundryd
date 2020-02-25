@@ -27,13 +27,17 @@ const exec = util.promisify(process.execFile);
  * files and media.
  */
 export class Downloader {
-  private washer!: Washer;
+  private washer: Washer;
 
   // The path for temp download folders.
   private tempRoot = path.join(Config.config.cacheDir, "downloads");
 
   // How many times to attempt a download before giving up.
   private downloadRetries = 2;
+
+  constructor(washer: Washer) {
+    this.washer = washer;
+  }
 
   /**
    * Perform an async download. The callback must copy the resulting files to
@@ -50,7 +54,7 @@ export class Downloader {
     // Create a temp folder
     const tmp = path.join(this.tempRoot, shortid());
 
-    let result: DownloadResult = { url: d.url, dir: tmp, date: d.date };
+    let result: DownloadResult = { url: d.url, dir: tmp, item: d.item };
 
     if (!isUrl(d.url)) {
       return callback(result);
@@ -99,16 +103,16 @@ export class Downloader {
     result.media = filenamifyUrl(url);
     const file = path.join(dir, result.media);
 
-    return new Promise((resolve, reject) => {
-      Log.info(this.washer, { event: "download-http", url });
+    return new Promise(async (resolve, reject) => {
+      await Log.info(this.washer, { event: "download-http", url });
       axios(url, { responseType: "stream" })
         .then(response => {
           result.size = response.headers["content-length"];
           result.type = response.headers["content-type"];
           response.data.pipe(fs.createWriteStream(file));
         })
-        .catch(error => {
-          Log.error(this.washer, { event: "download-http", url, error });
+        .catch(async error => {
+          await Log.error(this.washer, { event: "download-http", url, error });
         });
     });
   }
@@ -168,7 +172,7 @@ export class Downloader {
     args.push(url);
 
     try {
-      Log.info(this.washer, { event: "download-ytdl", url });
+      await Log.info(this.washer, { event: "download-ytdl", url });
       await exec(ytdl, args, opts);
     } catch (error) {
       throw error;
@@ -251,9 +255,9 @@ export class Downloader {
 
     try {
       const res = await util.promisify(ffbinaries.downloadBinaries)(null, opts);
-      Log.info(this.command, { event: "upgrade-ffmpeg", res });
+      await Log.info(this.command, { event: "upgrade-ffmpeg", res });
     } catch (error) {
-      Log.error(this.command, { event: "upgrade-ffmpeg", error });
+      await Log.error(this.command, { event: "upgrade-ffmpeg", error });
     }
   }
 
@@ -263,9 +267,9 @@ export class Downloader {
   private async upgradeYoutubedl(): Promise<void> {
     try {
       const res = await exec(ytdl, ["-U"]);
-      Log.info(this.command, { event: "upgrade-ytdl", msg: res.stdout });
+      await Log.info(this.command, { event: "upgrade-ytdl", msg: res.stdout });
     } catch (error) {
-      Log.error(this.command, { event: "upgrade-ytdl", error });
+      await Log.error(this.command, { event: "upgrade-ytdl", error });
     }
   }
 
@@ -274,10 +278,13 @@ export class Downloader {
    */
   async clean(): Promise<void> {
     try {
-      Log.info(this.command, { event: "cache-clean", dir: this.tempRoot });
+      await Log.info(this.command, {
+        event: "cache-clean",
+        dir: this.tempRoot
+      });
       await fs.remove(this.tempRoot);
     } catch (error) {
-      Log.error(this.command, {
+      await Log.error(this.command, {
         event: "cache-clean",
         dir: this.tempRoot,
         error

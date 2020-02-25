@@ -1,3 +1,5 @@
+import { Download } from "../storage/download";
+
 /**
  * An object created by washers.
  * Based on @types/rss.
@@ -70,6 +72,8 @@ export interface Item {
    * A description of where this item came from.
    */
   source?: ItemSource;
+
+  downloads?: Download[];
 }
 
 /**

@@ -6,21 +6,21 @@ export class TestDry extends Dry {
   static readonly title: string = "test-dry";
 
   async run(items: LoadedItem[]): Promise<void> {
-    Log.info(
+    await Log.info(
       this,
       `${this.config.id} got ${items.length} items from ${items.map(
         i => i.sourceId
       )}`
     );
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
+      setTimeout(async () => {
         if (!this.memory.foo) {
           this.memory.foo = 1;
         } else {
           this.memory.foo++;
         }
-        Log.info(this, `${this.config.id} returning`);
-        Log.info(this, items.map(i => i.url).join(","));
+        await Log.info(this, `${this.config.id} returning`);
+        await Log.info(this, items.map(i => i.url).join(","));
         resolve();
       }, 2000);
     });

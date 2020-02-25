@@ -24,6 +24,7 @@
     "mime": "^2.4.4",
     "mongodb": "^3.5.3",
     "shortid": "^2.2.15",
+    "tiny-async-pool": "^1.1.0",
     "tslib": "^1.10.0",
     "youtube-dl.js": "^1.1.1"
   },
@@ -36,6 +37,7 @@
     "@types/mongodb": "^3.3.16",
     "@types/node": "^10.17.15",
     "@types/shortid": "0.0.29",
+    "@types/tiny-async-pool": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^2.20.0",
     "@typescript-eslint/parser": "^2.20.0",
     "eslint": "^5.16.0",

@@ -6,14 +6,14 @@ export class TestRinse extends Rinse {
   static readonly title: string = "test-rinse";
 
   async run(items: LoadedItem[]): Promise<Item[]> {
-    Log.info(
+    await Log.info(
       this,
       `${this.config.id} got ${items.length} items from ${items.map(
         i => i.sourceId
       )}`
     );
     return new Promise((resolve, reject) => {
-      setTimeout(() => {
+      setTimeout(async () => {
         if (!this.memory.foo) {
           this.memory.foo = 1;
         } else {
@@ -23,8 +23,8 @@ export class TestRinse extends Rinse {
           i.extended = i.extended || {};
           i.extended.rinse = this.memory.foo;
         });
-        Log.info(this, `${this.config.id} returning`);
-        Log.info(this, items.map(i => i.url).join(","));
+        await Log.info(this, `${this.config.id} returning`);
+        await Log.info(this, items.map(i => i.url).join(","));
         resolve(items);
       }, 1000);
     });

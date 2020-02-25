@@ -17,12 +17,6 @@ export class Download {
   url: string;
 
   /**
-   * The date associated with the download, likely the date of the {@link Item} it's
-   * associated with. This is used to determine when to delete expired downloads.
-   */
-  date: Date;
-
-  /**
    * Whether to load and parse JSON data provided by youtube-dl.
    */
   json = false;
@@ -63,12 +57,10 @@ export class Download {
   constructor(
     item: Item,
     url: string,
-    date: Date,
     complete: (result: DownloadResult) => void
   ) {
     this.item = item;
     this.url = url;
-    this.date = date;
     this.complete = complete;
   }
 
@@ -91,10 +83,9 @@ export class Download {
   static direct(
     item: Item,
     url: string,
-    date: Date,
     complete: (result: DownloadResult) => void
   ): Download {
-    const d = new Download(item, url, date, complete);
+    const d = new Download(item, url, complete);
     d.json = false;
     d.media = false;
     d.image = false;
@@ -113,10 +104,9 @@ export class Download {
   static audio(
     item: Item,
     url: string,
-    date: Date,
     complete: (result: DownloadResult) => void
   ): Download {
-    const d = new Download(item, url, date, complete);
+    const d = new Download(item, url, complete);
     d.json = false;
     d.media = true;
     d.image = true;
@@ -130,6 +120,8 @@ export class Download {
  * The results of a download.
  */
 export interface DownloadResult {
+  item: Item;
+
   /**
    * The URL downloaded, same as in the {@link Download} constructor.
    */
@@ -140,12 +132,6 @@ export interface DownloadResult {
    * gets changed to a permanent location by the {@link FileStore}.
    */
   dir: string;
-
-  /**
-   * The date associated with the download, used to determine when it should
-   * be deleted.
-   */
-  date: Date;
 
   /**
    * The path to the JSON file, if one was requested.

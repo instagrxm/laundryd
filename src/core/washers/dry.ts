@@ -46,7 +46,7 @@ export class Dry extends Washer {
       await this.run(input);
       await Database.saveMemory(this);
     } catch (error) {
-      Log.error(this, { error });
+      await Log.error(this, { error });
     }
   }
 
