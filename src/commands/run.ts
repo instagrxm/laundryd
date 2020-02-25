@@ -7,8 +7,9 @@ import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
+import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
-import { Washer, WasherType } from "../core/washers/washer";
+import { Washer } from "../core/washers/washer";
 
 // TODO: Temporary web server
 const server = require("net")

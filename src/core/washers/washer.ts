@@ -2,8 +2,7 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { Memory } from "../memory";
-import { Rinse } from "./rinse";
-import { Wash } from "./wash";
+import { Sources, WasherType } from "./shared";
 
 export class Washer {
   /**
@@ -49,7 +48,7 @@ export class Washer {
     this.config = config;
   }
 
-  async init(sources: Record<string, Wash | Rinse>): Promise<void> {
+  async init(sources: Sources): Promise<void> {
     this.memory = await Database.loadMemory(this);
   }
 
@@ -60,5 +59,3 @@ export class Washer {
     return Object.getPrototypeOf(this).constructor;
   }
 }
-
-export type WasherType = typeof Washer;

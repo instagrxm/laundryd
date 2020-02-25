@@ -3,8 +3,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { Item } from "../item";
 import { Log } from "../log";
-import { Rinse } from "./rinse";
-import { Shared } from "./shared";
+import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 
 export class Wash extends Washer {
@@ -26,7 +25,7 @@ export class Wash extends Washer {
 
   config!: OutputFlags<typeof Wash.flags>;
 
-  async init(sources: Record<string, Wash | Rinse>): Promise<void> {
+  async init(sources: Sources): Promise<void> {
     await super.init(sources);
 
     Shared.startCron(this, async () => await this.exec());

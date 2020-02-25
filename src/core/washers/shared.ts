@@ -6,6 +6,10 @@ import { Log, LogItem, LogLevel } from "../log";
 import { Dry } from "./dry";
 import { Rinse } from "./rinse";
 import { Wash } from "./wash";
+import { Washer } from "./washer";
+
+export type WasherType = typeof Washer;
+export type Sources = Record<string, Wash | Rinse>;
 
 /**
  * Elements shared among the three washer types.
@@ -46,10 +50,7 @@ export class Shared {
    * @param washer the washer to validate
    * @param sources the available output washers
    */
-  static validateSubscribe(
-    washer: Rinse | Dry,
-    sources: Record<string, Wash | Rinse>
-  ): void {
+  static validateSubscribe(washer: Rinse | Dry, sources: Sources): void {
     if (!washer.config.subscribe || !washer.config.subscribe.length) {
       throw new Error("missing subscribe");
     }
@@ -89,7 +90,7 @@ export class Shared {
    */
   static async loadSubscribed(
     washer: Rinse | Dry,
-    sources: Record<string, Wash | Rinse>,
+    sources: Sources,
     since = new Date(0)
   ): Promise<LoadedItem[]> {
     let input: LoadedItem[] = [];
@@ -108,7 +109,7 @@ export class Shared {
    */
   static subscribe(
     washer: Rinse | Dry,
-    sources: Record<string, Wash | Rinse>,
+    sources: Sources,
     callback: (input: LoadedItem) => Promise<void>
   ): void {
     for (const id of washer.config.subscribe) {
