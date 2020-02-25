@@ -30,12 +30,12 @@ export class Rinse extends Washer {
 
   async init(sources: Sources): Promise<void> {
     await super.init(sources);
-    await Shared.fileStore(this);
-    Shared.validateSubscribe(this, sources);
+    await Shared.initFileStore(this);
+    Shared.validateSubscriptions(this, sources);
 
     if (this.config.schedule) {
-      Shared.startCron(this, async () => {
-        const input = await Shared.loadSubscribed(
+      Shared.startSchedule(this, async () => {
+        const input = await Shared.loadSubscriptions(
           this,
           sources,
           this.memory.lastRun
@@ -43,7 +43,11 @@ export class Rinse extends Washer {
         await this.exec(input);
       });
     } else {
-      Shared.subscribe(this, sources, async item => await this.exec([item]));
+      Shared.initRealtimeSubscriptions(
+        this,
+        sources,
+        async item => await this.exec([item])
+      );
     }
   }
 
@@ -54,7 +58,7 @@ export class Rinse extends Washer {
 
     try {
       let items = await this.run(input);
-      items = await Shared.doDownloads(this, items);
+      items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
       await Database.saveMemory(this);
       await this.fileStore.clean();

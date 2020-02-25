@@ -36,14 +36,14 @@ export class Wash extends Washer {
 
   async init(sources: Sources): Promise<void> {
     await super.init(sources);
-    await Shared.fileStore(this);
-    Shared.startCron(this, async () => await this.exec());
+    await Shared.initFileStore(this);
+    Shared.startSchedule(this, async () => await this.exec());
   }
 
   async exec(): Promise<void> {
     try {
       let items = await this.run();
-      items = await Shared.doDownloads(this, items);
+      items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
       await Database.saveMemory(this);
       await this.fileStore.clean();

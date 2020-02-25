@@ -51,7 +51,6 @@ const washers: any[] = [
   {
     title: "test/test-rinse",
     schedule: "*/5 * * * * *",
-    retain: 1,
     subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
   },
   {

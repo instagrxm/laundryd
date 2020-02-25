@@ -77,7 +77,7 @@ export class Shared {
    * @param washer the washer to validate
    * @param sources the available output washers
    */
-  static validateSubscribe(washer: Rinse | Dry, sources: Sources): void {
+  static validateSubscriptions(washer: Rinse | Dry, sources: Sources): void {
     if (!washer.config.subscribe || !washer.config.subscribe.length) {
       throw new Error("missing subscribe");
     }
@@ -98,7 +98,7 @@ export class Shared {
    * @param washer the washer with the schedule
    * @param callback the method to call when the cron ticks
    */
-  static startCron(
+  static startSchedule(
     washer: Wash | Dry | Rinse,
     callback: () => Promise<void>
   ): void {
@@ -122,7 +122,7 @@ export class Shared {
    * @param sources the available output washers
    * @param since load items newer than this date
    */
-  static async loadSubscribed(
+  static async loadSubscriptions(
     washer: Rinse | Dry,
     sources: Sources,
     since = new Date(0)
@@ -141,7 +141,7 @@ export class Shared {
    * @param sources the available output washers
    * @param callback the method to call with the new items
    */
-  static subscribe(
+  static initRealtimeSubscriptions(
     washer: Rinse | Dry,
     sources: Sources,
     callback: (input: LoadedItem) => Promise<void>
@@ -161,7 +161,11 @@ export class Shared {
     }
   }
 
-  static async fileStore(washer: Wash | Rinse): Promise<void> {
+  /**
+   * Initialize a FileStore for a washer.
+   * @param washer the washer that will own the FileStore
+   */
+  static async initFileStore(washer: Wash | Rinse): Promise<void> {
     let fileStore: FileStore;
     if (washer.config.files.startsWith("s3://")) {
       fileStore = new S3(washer, washer.config.files);
@@ -176,7 +180,12 @@ export class Shared {
     washer.fileStore = fileStore;
   }
 
-  static async doDownloads(
+  /**
+   * Encapsulate the logic of performing file downloads.
+   * @param washer the washer that owns the items with the downloads
+   * @param items the items with downloads to be processed
+   */
+  static async downloadItems(
     washer: Wash | Rinse,
     items: Item[]
   ): Promise<Item[]> {
