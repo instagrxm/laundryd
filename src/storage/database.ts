@@ -1,9 +1,10 @@
 import { Collection, Db, MongoClient } from "mongodb";
 import { Item, LoadedItem } from "../core/item";
 import { Log, LogItem, LogLevel } from "../core/log";
+import { Memory } from "../core/memory";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
-import { WasherInstance } from "../core/washers/washer";
+import { Washer } from "../core/washers/washer";
 
 /**
  * Helper class for database functions.
@@ -40,11 +41,11 @@ export class Database {
    * Return the memory object for a washer, or an empty object if there isn't one.
    * @param washer the washer
    */
-  static async loadMemory(washer: WasherInstance): Promise<void> {
+  static async loadMemory(washer: Washer): Promise<Memory> {
     const memory = await Database.memory.findOne({
       washerId: washer.config.id
     });
-    washer.memory = memory || {};
+    return memory || {};
   }
 
   /**
@@ -52,7 +53,7 @@ export class Database {
    * @param washer the washer
    * @param memory the memory object
    */
-  static async saveMemory(washer: WasherInstance): Promise<void> {
+  static async saveMemory(washer: Washer): Promise<void> {
     if (!washer.config.memory) {
       return;
     }
@@ -69,10 +70,7 @@ export class Database {
    * @param washer the washer
    * @param since return items newer than this date
    */
-  static async loadItems(
-    washer: WasherInstance,
-    since: Date
-  ): Promise<LoadedItem[]> {
+  static async loadItems(washer: Washer, since: Date): Promise<LoadedItem[]> {
     if (!washer) {
       return [];
     }

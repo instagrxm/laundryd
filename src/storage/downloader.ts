@@ -10,7 +10,7 @@ import util from "util";
 import BaseCommand from "../baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
-import { WasherInstance } from "../core/washers/washer";
+import { Washer } from "../core/washers/washer";
 import { Download, DownloadResult } from "./download";
 
 // @ts-ignore: no types available for ffbinaries
@@ -27,7 +27,7 @@ const exec = util.promisify(process.execFile);
  * files and media.
  */
 export class Downloader {
-  private washer!: WasherInstance;
+  private washer!: Washer;
 
   // The path for temp download folders.
   private tempRoot = path.join(Config.config.cacheDir, "downloads");

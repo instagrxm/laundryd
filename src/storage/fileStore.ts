@@ -5,14 +5,14 @@ import mime from "mime";
 import os from "os";
 import path from "path";
 import { Log } from "../core/log";
-import { WasherInstance } from "../core/washers/washer";
+import { Washer } from "../core/washers/washer";
 import { Download, DownloadResult } from "./download";
 
 /**
  * Save and load files on the local filesystem.
  */
 export class FileStore {
-  protected washer: WasherInstance;
+  protected washer: Washer;
   protected connection: string;
 
   protected url!: string;
@@ -25,7 +25,7 @@ export class FileStore {
    * @param washer the washer that's using this filestore
    * @param connection the root path from the configuration
    */
-  constructor(washer: WasherInstance, connection: string, url: string) {
+  constructor(washer: Washer, connection: string, url: string) {
     this.washer = washer;
     this.connection = connection;
     this.url = url;

@@ -1,19 +1,14 @@
 import { flags } from "@oclif/command";
 import { parse } from "@oclif/parser";
-import { CronJob } from "cron";
 import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../baseCommand";
 import { Config } from "../core/config";
-import { Item, LoadedItem } from "../core/item";
-import { Log, LogItem, LogLevel } from "../core/log";
+import { Log } from "../core/log";
 import { Dry } from "../core/washers/dry";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
-import { Washer, WasherInstance, WasherType } from "../core/washers/washer";
-import { Database } from "../storage/database";
-import { FileStore } from "../storage/fileStore";
-import { S3 } from "../storage/s3";
+import { Washer, WasherType } from "../core/washers/washer";
 
 // TODO: Temporary web server
 const server = require("net")
@@ -60,7 +55,7 @@ export default class Run extends BaseCommand {
   static args = [];
 
   private washerTypes!: Record<string, WasherType>;
-  private washers!: Record<string, WasherInstance>;
+  private washers!: Record<string, Washer>;
   private fileConn!: string;
   private fileUrl!: string;
 
@@ -77,8 +72,6 @@ export default class Run extends BaseCommand {
     this.washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
     this.washers = await this.createWashers(this.washerTypes, settings);
-    this.startSchedules(Object.values(this.washers));
-    this.startSubscriptions(this.washers);
   }
 
   /**
@@ -165,36 +158,19 @@ export default class Run extends BaseCommand {
   private async createWashers(
     types: Record<string, WasherType>,
     settings: Record<string, any>[]
-  ): Promise<Record<string, WasherInstance>> {
+  ): Promise<Record<string, Washer>> {
     for (const setting of settings) {
       if (!setting.title) {
         throw new Error(`missing title: ${setting.id}`);
       }
-      if (!setting.id) {
-        throw new Error(`missing id: ${setting.title}`);
-      }
-      if (settings.filter(s => s.id === setting.id).length > 1) {
-        throw new Error(`duplicate id: ${setting.id}`);
-      }
       if (!types[setting.title]) {
         throw new Error(`washer not found: ${setting.title}`);
-      }
-      if (setting.subscribe) {
-        if (!(setting.subscribe instanceof Array)) {
-          throw new Error(`subscribe should be an array: ${setting.title}`);
-        }
-        for (const sub of setting.subscribe) {
-          if (sub !== Log.collection && !settings.find(s => s.id === sub)) {
-            throw new Error(
-              `washer ${setting.title} subscribed to ${sub} but ${sub} was not found`
-            );
-          }
-        }
       }
     }
 
     // Actually create the instances
-    const washers: Record<string, WasherInstance> = {};
+    const washers: Record<string, Washer> = {};
+    const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
       // Convert the settings into something that looks like command-line args,
       // since that's what the oclif parser is expecting.
@@ -212,122 +188,37 @@ export default class Run extends BaseCommand {
       const config = parse(argv, { flags: types[setting.title].flags });
 
       // Create and set up the washer
-      const washer = new types[setting.title](config.flags);
-      washers[setting.id] = washer;
-      await Database.loadMemory(washer);
-      await washer.init();
-
-      let fileStore: FileStore;
-      if (this.fileConn.startsWith("s3://")) {
-        fileStore = new S3(washer, this.fileConn);
-      } else {
-        fileStore = new FileStore(washer, this.fileConn, this.fileUrl);
+      let washer;
+      try {
+        washer = new types[setting.title](config.flags);
+      } catch (error) {
+        throw new Error(`${setting.id}: ${error}`);
       }
-      await fileStore.validate();
+      washers[setting.id] = washer;
+      if (washer instanceof Wash || washer instanceof Rinse) {
+        sources[setting.id] = washer as Wash | Rinse;
+      }
+
+      // let fileStore: FileStore;
+      // if (this.fileConn.startsWith("s3://")) {
+      //   fileStore = new S3(washer, this.fileConn);
+      // } else {
+      //   fileStore = new FileStore(washer, this.fileConn, this.fileUrl);
+      // }
+      // await fileStore.validate();
 
       Log.info(this, `washer "${setting.title}" created`);
     }
 
+    // Init the washers with any others that they can subscribe to
+    for (const washer in washers) {
+      try {
+        await washers[washer].init(sources);
+      } catch (error) {
+        throw new Error(`${washers[washer].config.id}: ${error}`);
+      }
+    }
+
     return washers;
-  }
-
-  /**
-   * Kick off the cron schedules for any washers that have them.
-   * @param washers all running washers
-   */
-  private startSchedules(washers: WasherInstance[]): void {
-    for (const washer of washers) {
-      if (!washer.config.schedule) {
-        continue;
-      }
-
-      new CronJob({
-        cronTime: washer.config.schedule,
-        onTick: async (): Promise<void> => await this.runSchedule(washer),
-        start: true
-      });
-    }
-  }
-
-  /**
-   * Run a scheduled washer.
-   * @param washer the washer to run
-   */
-  private async runSchedule(washer: WasherInstance): Promise<void> {
-    // Load items since memory.lastRun from the database
-    let input: LoadedItem[] = [];
-    if (Washer.isInput(washer)) {
-      for (const id of washer.config.subscribe) {
-        const since = washer.memory.lastRun || new Date(0);
-        const items = await Database.loadItems(this.washers[id], since);
-        input = input.concat(items);
-      }
-      if (!input.length) {
-        return;
-      }
-    }
-
-    await this.runWasher(washer, input);
-  }
-
-  /**
-   * Set up real-time subscriptions between washers.
-   * @param washers all running washers
-   */
-  private startSubscriptions(washers: Record<string, WasherInstance>): void {
-    for (const washer of Object.values(washers).filter(
-      w => !w.config.schedule
-    )) {
-      if (Washer.isInput(washer)) {
-        for (const sub of washer.config.subscribe) {
-          if (sub === Log.collection) {
-            // Subscribe to logs
-            Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
-              this.runWasher(washer, [item]);
-            });
-          } else {
-            // Subscribe to other washers
-            const source = washers[sub];
-            if (source && Washer.isOutput(source)) {
-              Database.subscribe(source, (item: LoadedItem) => {
-                this.runWasher(washer, [item]);
-              });
-            }
-          }
-        }
-      }
-    }
-  }
-
-  /**
-   * Run washer logic and save its output.
-   * @param washer the washer to run
-   * @param input the items the washer should process
-   */
-  private async runWasher(
-    washer: WasherInstance,
-    input: LoadedItem[] = []
-  ): Promise<void> {
-    let output: Item[] | void;
-
-    try {
-      // Run the washer
-      if (Washer.isInput(washer)) {
-        output = await washer.run(input);
-      } else {
-        output = await washer.run();
-      }
-    } catch (error) {
-      Log.error(washer, { error });
-      return;
-    }
-
-    if (Washer.isOutput(washer) && output) {
-      // Save the output
-      await Database.saveItems(washer, output);
-    }
-
-    // Save memory
-    await Database.saveMemory(washer);
   }
 }

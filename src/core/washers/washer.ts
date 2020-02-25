@@ -1,13 +1,9 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { CronTime } from "cron";
+import { Database } from "../../storage/database";
 import { Memory } from "../memory";
-import { Dry } from "./dry";
 import { Rinse } from "./rinse";
 import { Wash } from "./wash";
-
-export type WasherType = typeof Wash | typeof Rinse | typeof Dry;
-export type WasherInstance = Wash | Rinse | Dry;
 
 export class Washer {
   /**
@@ -40,14 +36,6 @@ export class Washer {
     memory: flags.boolean({
       default: true,
       description: "whether to save memory after each run"
-    }),
-
-    schedule: flags.string({
-      parse: (input: string) => {
-        const time = new CronTime(input);
-        return input;
-      },
-      description: "when to run the washer"
     })
   };
 
@@ -61,8 +49,8 @@ export class Washer {
     this.config = config;
   }
 
-  async init(): Promise<void> {
-    // do stuff
+  async init(sources: Record<string, Wash | Rinse>): Promise<void> {
+    this.memory = await Database.loadMemory(this);
   }
 
   /**
@@ -71,32 +59,6 @@ export class Washer {
   getType(): WasherType {
     return Object.getPrototypeOf(this).constructor;
   }
-
-  /**
-   * A user-defined type guard for washers which accept items
-   * @param washer the washer to check
-   */
-  static isInput(washer: WasherInstance): washer is Rinse | Dry {
-    const isRinse =
-      Object.getPrototypeOf(washer as Rinse).constructor.flags.subscribe !=
-      undefined;
-    const isDry =
-      Object.getPrototypeOf(washer as Dry).constructor.flags.subscribe !=
-      undefined;
-    return isRinse || isDry;
-  }
-
-  /**
-   * A user-defined type guard for washers which create items
-   * @param washer the washer to check
-   */
-  static isOutput(washer: WasherInstance): washer is Rinse | Wash {
-    const isRinse =
-      Object.getPrototypeOf(washer as Rinse).constructor.flags.retain !=
-      undefined;
-    const isWash =
-      Object.getPrototypeOf(washer as Wash).constructor.flags.retain !=
-      undefined;
-    return isRinse || isWash;
-  }
 }
+
+export type WasherType = typeof Washer;
