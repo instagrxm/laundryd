@@ -17,7 +17,7 @@ export class TestWash extends Wash {
     const item1: Item = {
       date: new Date(2020, 1, 14, 0, 0, 0),
       title: "from test-wash",
-      description: "foo 1",
+      text: "foo 1",
       url: `http://endquote.com/1/${this.memory.foo}`
     };
     item1.downloads = [
@@ -25,7 +25,7 @@ export class TestWash extends Wash {
         item1,
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
-          item1.extended = {
+          item1.meta = {
             url: `${this.fileStore.url}${result.dir}${result.media}`
           };
         }
@@ -35,7 +35,7 @@ export class TestWash extends Wash {
     const item2: Item = {
       date: new Date(2020, 3, 14, 0, 0, 0),
       title: "from test-wash",
-      description: "foo 2",
+      text: "foo 2",
       url: `http://endquote.com/2/${this.memory.foo}`
     };
     item2.downloads = [
@@ -43,7 +43,7 @@ export class TestWash extends Wash {
         item2,
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
-          item2.extended = {
+          item2.meta = {
             url: `${this.fileStore.url}${result.dir}${result.media}`
           };
         }

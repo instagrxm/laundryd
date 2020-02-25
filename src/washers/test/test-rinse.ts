@@ -9,7 +9,7 @@ export class TestRinse extends Rinse {
     await Log.info(
       this,
       `${this.config.id} got ${items.length} items from ${items.map(
-        i => i.sourceId
+        i => i.washerId
       )}`
     );
     return new Promise((resolve, reject) => {
@@ -20,8 +20,8 @@ export class TestRinse extends Rinse {
           this.memory.foo++;
         }
         items.forEach(i => {
-          i.extended = i.extended || {};
-          i.extended.rinse = this.memory.foo;
+          i.meta = i.meta || {};
+          i.meta.rinse = this.memory.foo;
         });
         await Log.info(this, `${this.config.id} returning`);
         await Log.info(this, items.map(i => i.url).join(","));

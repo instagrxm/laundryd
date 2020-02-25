@@ -1,7 +1,7 @@
 import util from "util";
 import BaseCommand from "../baseCommand";
 import { Database } from "../storage/database";
-import { LoadedItem } from "./item";
+import { LogItem } from "./item";
 import { Washer } from "./washers/washer";
 
 /**
@@ -12,13 +12,6 @@ export enum LogLevel {
   info = "info",
   warn = "warn",
   error = "error"
-}
-
-/**
- * Log messages are saved to the database the same as items, but the desription is the log level.
- */
-export interface LogItem extends LoadedItem {
-  description: LogLevel;
 }
 
 /**
@@ -69,11 +62,11 @@ export class Log {
     const item: LogItem = {
       date,
       title,
-      description: level,
-      extended: info,
+      text: level,
+      meta: info,
       url,
-      sourceId,
-      sourceTitle
+      washerId: sourceId,
+      washerTitle: sourceTitle
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {

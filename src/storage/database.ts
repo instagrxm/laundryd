@@ -1,6 +1,7 @@
+import clone from "clone";
 import { Collection, Db, MongoClient } from "mongodb";
-import { Item, LoadedItem } from "../core/item";
-import { Log, LogItem, LogLevel } from "../core/log";
+import { Item, LoadedItem, LogItem } from "../core/item";
+import { Log, LogLevel } from "../core/log";
 import { Memory } from "../core/memory";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
@@ -86,8 +87,8 @@ export class Database {
       .toArray();
 
     items.forEach(i => {
-      i.sourceId = washer.config.id;
-      i.sourceTitle = washer.getType().title;
+      i.washerId = washer.config.id;
+      i.washerTitle = washer.getType().title;
     });
 
     return items;
@@ -103,6 +104,7 @@ export class Database {
       return;
     }
 
+    items = clone(items);
     items.forEach(i => delete i.downloads);
 
     // Newest items first
@@ -145,8 +147,8 @@ export class Database {
 
     changeStream.on("change", change => {
       const item: LoadedItem = change.fullDocument;
-      item.sourceId = washer.config.id;
-      item.sourceTitle = washer.getType().title;
+      item.washerId = washer.config.id;
+      item.washerTitle = washer.getType().title;
       callback(item);
     });
   }
@@ -168,7 +170,7 @@ export class Database {
         $match: {
           $and: [
             { operationType: "insert" },
-            { "fullDocument.description": { $in: levels } }
+            { "fullDocument.text": { $in: levels } }
           ]
         }
       }

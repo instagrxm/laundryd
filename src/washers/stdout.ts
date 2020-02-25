@@ -38,7 +38,7 @@ export class Stdout extends Dry {
 
   async run(items: LoadedItem[]): Promise<void> {
     for (const item of items) {
-      if (this.config.levels.includes(item.description)) {
+      if (this.config.levels.includes(item.text)) {
         const json = util.inspect(
           item,
           undefined,

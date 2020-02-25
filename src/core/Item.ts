@@ -1,67 +1,49 @@
+import { LogLevel } from "aws-sdk/clients/iot";
 import { Download } from "../storage/download";
 
 /**
  * An object created by washers.
- * Based on @types/rss.
  */
 export interface Item {
   /**
-   * The date when the item was created.
-   */
-  date: Date;
-
-  /**
-   * Title of this particular item.
-   */
-  title: string;
-
-  /**
-   * Content for the item.
-   */
-  description: string;
-
-  /**
-   * URL to the item.
+   * URL to the item. URLs from a particular washer must be unique.
    */
   url: string;
 
   /**
-   * If provided, each array item will be added as a category
-   * element.
+   * This item's creation date.
    */
-  categories?: string[];
+  date: Date;
 
   /**
-   * If included it is the name of the item's creator. If not
-   * provided the item author will be the same as the feed author.
-   * This is typical except on multi-author blogs.
+   * The title of this item.
    */
-  author?: string;
+  title?: string;
 
   /**
-   * The latitude coordinate of the item for GeoRSS.
+   * Tags, hashtags, or categories in which this item would appear.
    */
-  lat?: number;
+  tags?: string[];
 
   /**
-   * The longitude coordinate of the item for GeoRSS.
-   */
-  long?: number;
-
-  /**
-   * Put additional elements in the item.
-   */
-  extended?: any;
-
-  /**
-   * An enclosure object.
-   */
-  enclosure?: Enclosure;
-
-  /**
-   * A path to an image associated with the item.
+   * An image path associated with this item, either a relative path within a FileStore or a full URL.
    */
   image?: string;
+
+  /**
+   * Plain text content describing the item.
+   */
+  text?: string;
+
+  /**
+   * Shorter plain text content describing the item.
+   */
+  summary?: string;
+
+  /**
+   * HTML-formatted content describing the item.
+   */
+  html?: string;
 
   /**
    * HTML to embed this item into a page.
@@ -69,11 +51,51 @@ export interface Item {
   embed?: string;
 
   /**
+   * A description of the author of this item.
+   */
+  author?: Author;
+
+  /**
+   * A physical location associated with the item.
+   */
+  location?: Location;
+
+  /**
+   * A media item for this item that would be presented in a podcast format.
+   */
+  media?: Enclosure;
+
+  /**
    * A description of where this item came from.
    */
   source?: ItemSource;
 
+  /**
+   * Any arbitrary data to add.
+   */
+  meta?: Record<string, any>;
+
+  /**
+   * Downloads to process. This field is not saved to the database.
+   */
   downloads?: Download[];
+}
+
+/**
+ * Describe the author of an item.
+ */
+export interface Author {
+  name: string;
+  url?: string;
+  avatar?: string;
+}
+
+/**
+ * Describe the location of an item.
+ */
+export interface Location {
+  name?: string;
+  coord?: { lat: number; lng: number };
 }
 
 /**
@@ -129,10 +151,17 @@ export interface LoadedItem extends Item {
   /**
    * The user-defined unique ID for the washer instance.
    */
-  sourceId: string;
+  washerId: string;
 
   /**
    * The title of the washer, which is the same for all instances.
    */
-  sourceTitle: string;
+  washerTitle: string;
+}
+
+/**
+ * Log messages are saved to the database the same as items, but the desription is the log level.
+ */
+export interface LogItem extends LoadedItem {
+  text: LogLevel;
 }

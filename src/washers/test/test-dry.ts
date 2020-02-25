@@ -9,7 +9,7 @@ export class TestDry extends Dry {
     await Log.info(
       this,
       `${this.config.id} got ${items.length} items from ${items.map(
-        i => i.sourceId
+        i => i.washerId
       )}`
     );
     return new Promise((resolve, reject) => {
