@@ -12,21 +12,15 @@ export class TestRinse extends Rinse {
         i => i.washerId
       )}`
     );
-    return new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        if (!this.memory.foo) {
-          this.memory.foo = 1;
-        } else {
-          this.memory.foo++;
-        }
-        items.forEach(i => {
-          i.meta = i.meta || {};
-          i.meta.rinse = this.memory.foo;
-        });
-        await Log.info(this, `${this.config.id} returning`);
-        await Log.info(this, items.map(i => i.url).join(","));
-        resolve(items);
-      }, 1000);
+    if (!this.memory.foo) {
+      this.memory.foo = 1;
+    } else {
+      this.memory.foo++;
+    }
+    items.forEach(i => {
+      i.meta = i.meta || {};
+      i.meta.rinse = this.memory.foo;
     });
+    return items;
   }
 }

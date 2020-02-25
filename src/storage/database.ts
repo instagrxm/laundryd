@@ -121,13 +121,11 @@ export class Database {
       )
     );
 
-    if (!washer.config.retain) {
+    const retainDate = washer.retainDate();
+    if (!retainDate) {
       return;
     }
 
-    const retainDate = new Date(
-      Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
-    );
     await collection.deleteMany({ date: { $lt: retainDate } });
   }
 
@@ -184,6 +182,10 @@ export class Database {
     });
   }
 
+  /**
+   * Write a message to the log file.
+   * @param log the log message
+   */
   static async writeLog(log: LogItem): Promise<void> {
     await Database.log.insertOne(log);
   }

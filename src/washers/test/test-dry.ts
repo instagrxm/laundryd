@@ -12,17 +12,10 @@ export class TestDry extends Dry {
         i => i.washerId
       )}`
     );
-    return new Promise((resolve, reject) => {
-      setTimeout(async () => {
-        if (!this.memory.foo) {
-          this.memory.foo = 1;
-        } else {
-          this.memory.foo++;
-        }
-        await Log.info(this, `${this.config.id} returning`);
-        await Log.info(this, items.map(i => i.url).join(","));
-        resolve();
-      }, 2000);
-    });
+    if (!this.memory.foo) {
+      this.memory.foo = 1;
+    } else {
+      this.memory.foo++;
+    }
   }
 }

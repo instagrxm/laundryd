@@ -180,13 +180,10 @@ export class FileStore {
    * @param retain the oldest date to keep
    */
   async clean(): Promise<void> {
-    if (!this.washer.config.retain) {
+    const retainDate = this.washer.retainDate();
+    if (!retainDate) {
       return;
     }
-
-    const retainDate = new Date(
-      Date.now() - this.washer.config.retain * 24 * 60 * 60 * 1000
-    );
 
     try {
       const cache = await fs.readdir(this.downloadsDir);

@@ -70,4 +70,8 @@ export class Rinse extends Washer {
   async run(items: LoadedItem[]): Promise<Item[]> {
     return [];
   }
+
+  retainDate(): Date | undefined {
+    return Shared.retainDate(this);
+  }
 }

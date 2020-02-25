@@ -22,8 +22,9 @@ export class Shared {
   static flags = {
     retain: flags.integer({
       default: 0,
-      parse: (input: string) => Math.abs(Math.round(parseFloat(input))),
-      description: "the number of days to keep items, or 0 to keep forever"
+      parse: (input: string) => Math.round(parseFloat(input)),
+      description:
+        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
     }),
 
     schedule: (required = false): flags.IOptionFlag<string | undefined> => {
@@ -232,5 +233,29 @@ export class Shared {
     );
 
     return items;
+  }
+
+  /**
+   * Return a date before which things created by this washer should be deleted.
+   * @param washer the washer whose date to return
+   */
+  static retainDate(washer: Rinse | Wash): Date | undefined {
+    if (washer.config.retain === 0) {
+      // Keep forever
+      return;
+    }
+
+    // Delete immediately
+    let retainDate = new Date();
+    retainDate.setFullYear(retainDate.getFullYear() + 1000);
+
+    if (washer.config.retain > 0) {
+      // Delete things more than retain days old
+      retainDate = new Date(
+        Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
+      );
+    }
+
+    return retainDate;
   }
 }
