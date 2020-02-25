@@ -215,7 +215,7 @@ export default class Run extends BaseCommand {
       const washer = new types[setting.title](config.flags);
       washers[setting.id] = washer;
       await Database.loadMemory(washer);
-      washer.init();
+      await washer.init();
 
       let fileStore: FileStore;
       if (this.fileConn.startsWith("s3://")) {

@@ -27,7 +27,7 @@ export class Rinse extends Washer {
 
   config!: OutputFlags<typeof Rinse.flags>;
 
-  init(): void {
+  async init(): Promise<void> {
     if (!this.config.subscribe.length) {
       Log.error(this, `missing subscribe`);
     } else if (this.config.subscribe.includes(this.config.id)) {

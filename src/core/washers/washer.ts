@@ -61,7 +61,7 @@ export class Washer {
     this.config = config;
   }
 
-  init(): void {
+  async init(): Promise<void> {
     // do stuff
   }
 
