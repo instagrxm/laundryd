@@ -43,21 +43,25 @@ const washers: any[] = [
     id: "test/test-wash/foo",
     schedule: "*/5 * * * * *"
   },
-  {
-    title: "test/test-wash",
-    id: "test/test-wash/bar",
-    schedule: "*/5 * * * * *"
-  },
-  {
-    title: "test/test-rinse",
-    schedule: "*/5 * * * * *",
-    subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
-  },
-  {
-    title: "test/test-dry",
-    schedule: "*/5 * * * * *",
-    subscribe: ["test/test-rinse"]
-  },
+  // {
+  //   title: "test/test-wash",
+  //   id: "test/test-wash/bar",
+  //   schedule: "*/5 * * * * *"
+  // },
+  // {
+  //   title: "test/test-rinse",
+  //   schedule: "*/5 * * * * *",
+  //   subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
+  // },
+  // {
+  //   title: "test/test-dry",
+  //   schedule: "*/5 * * * * *",
+  //   subscribe: ["test/test-rinse"]
+  // },
+  // {
+  //   title: "test/test-fix",
+  //   schedule: "*/10 * * * * *"
+  // },
   {
     title: "stdout",
     subscribe: ["log"],

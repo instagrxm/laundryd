@@ -8,6 +8,7 @@ import { S3 } from "../../storage/s3";
 import { Item, LoadedItem, LogItem } from "../item";
 import { Log, LogLevel } from "../log";
 import { Dry } from "./dry";
+import { Fix } from "./fix";
 import { Rinse } from "./rinse";
 import { Wash } from "./wash";
 import { Washer } from "./washer";
@@ -100,13 +101,13 @@ export class Shared {
    * @param callback the method to call when the cron ticks
    */
   static startSchedule(
-    washer: Wash | Dry | Rinse,
+    washer: Wash | Dry | Rinse | Fix,
     callback: () => Promise<void>
   ): void {
     new CronJob({
       cronTime: washer.config.schedule,
       onTick: async (): Promise<void> => {
-        if (washer.running) {
+        if (washer.running || washer.paused) {
           return;
         }
         washer.running = true;

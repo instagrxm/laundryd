@@ -40,6 +40,7 @@ export class Washer {
   };
 
   config!: OutputFlags<typeof Washer.flags>;
+  paused = false;
 
   constructor(config: OutputFlags<typeof Washer.flags>) {
     if (this.constructor === Washer) {

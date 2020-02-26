@@ -50,6 +50,12 @@ export class TestWash extends Wash {
     //   )
     // ];
 
-    return [item1, item2];
+    return new Promise((resolve, reject) => {
+      setTimeout(async () => {
+        resolve([item1, item2]);
+      }, 10000);
+    });
+
+    //    return [item1, item2];
   }
 }

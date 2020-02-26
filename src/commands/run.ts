@@ -7,6 +7,7 @@ import BaseCommand from "../baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { Dry } from "../core/washers/dry";
+import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
 import { Shared, WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
@@ -47,6 +48,7 @@ export default class Run extends BaseCommand {
   static args = [];
 
   flags!: OutputFlags<typeof Run.flags>;
+  washers!: Record<string, Washer>;
 
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
@@ -59,7 +61,7 @@ export default class Run extends BaseCommand {
 
     const washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
-    const washers = await this.createWashers(washerTypes, settings);
+    this.washers = await this.createWashers(washerTypes, settings);
   }
 
   /**
@@ -97,7 +99,7 @@ export default class Run extends BaseCommand {
       }
     }
 
-    const types = [Wash, Rinse, Dry];
+    const types = [Wash, Rinse, Dry, Fix];
     const washers: Record<string, WasherType> = {};
 
     // Search each file for Washers.
@@ -160,6 +162,7 @@ export default class Run extends BaseCommand {
     const washers: Record<string, Washer> = {};
     const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
+      // Let washers inherit settings from the run command.
       const flags = Object.keys(types[setting.title].flags);
       if (setting.files === undefined && flags.includes("files")) {
         setting.files = this.flags.files;
@@ -183,7 +186,6 @@ export default class Run extends BaseCommand {
           return `--${key}=${setting[key]}`;
         });
 
-      // @ts-ignore: parse the arguments
       const config = parse(argv, { flags: types[setting.title].flags });
 
       // Create and set up the washer
@@ -201,15 +203,49 @@ export default class Run extends BaseCommand {
       await Log.info(this, `washer "${setting.title}" created`);
     }
 
-    // Init the washers with any others that they can subscribe to
-    for (const washer in washers) {
+    for (const washer of Object.values(washers)) {
+      if (washer instanceof Fix) {
+        washer.runExclusive = this.runExclusive.bind(this);
+      }
+
+      // Init the washers with any others that they can subscribe to
       try {
-        await washers[washer].init(sources);
+        await washer.init(sources);
       } catch (error) {
-        throw new Error(`${washers[washer].config.id}: ${error}`);
+        throw new Error(`${washer.config.id}: ${error}`);
       }
     }
 
     return washers;
+  }
+
+  /**
+   * Request to pause all washers, wait for them to complete, and run an exclusive task.
+   * @param washer a "fix" washer requesting to run an exclusive task
+   */
+  async runExclusive(washer: Fix): Promise<void> {
+    const washers = Object.values(this.washers).filter(w => w != washer);
+
+    // Pause all washers
+    washers.forEach(w => (w.paused = true));
+
+    // Wait for anything running to finish
+    const exclusive = new Promise((resolve, reject) => {
+      const wait = (): void => {
+        if (!washers.some(w => w.running)) {
+          resolve();
+        } else {
+          setTimeout(wait, 1000);
+        }
+      };
+      wait();
+    });
+    await exclusive;
+
+    // Run the exclusive task
+    await washer.run();
+
+    // Unpause
+    washers.forEach(w => (w.paused = false));
   }
 }

@@ -21,6 +21,7 @@ export class TestRinse extends Rinse {
       i.meta = i.meta || {};
       i.meta.rinse = this.memory.foo;
     });
+
     return items;
   }
 }
