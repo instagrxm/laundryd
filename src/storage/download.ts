@@ -87,8 +87,8 @@ export class Download {
   ): Download {
     const d = new Download(item, url, complete);
     d.json = false;
-    d.media = false;
     d.image = false;
+    d.media = false;
     d.audio = false;
     d.transcode = false;
     return d;
@@ -108,8 +108,8 @@ export class Download {
   ): Download {
     const d = new Download(item, url, complete);
     d.json = false;
-    d.media = true;
     d.image = true;
+    d.media = true;
     d.audio = true;
     d.transcode = false;
     return d;

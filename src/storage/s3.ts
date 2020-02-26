@@ -70,8 +70,8 @@ export class S3 extends FileStore {
 
     const result: DownloadResult = {
       item: download.item,
-      dir: `/${key}/`,
-      url: `${this.url}/${key}/`
+      dir: key,
+      url: `${this.url}/${key}`
     };
 
     try {
@@ -124,32 +124,33 @@ export class S3 extends FileStore {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const dir = filenamifyUrl(download.url);
+    const targetDir = filenamifyUrl(download.url);
 
-    let source: string;
+    let local: string;
     const date = download.item.date;
+    let remoteDir = "";
 
     try {
       if (download.json) {
-        source = path.join(download.dir, download.json);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.json);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
 
       if (download.image) {
-        source = path.join(download.dir, download.image);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.image);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
 
       if (download.media) {
-        source = path.join(download.dir, download.media);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.media);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
     } catch (error) {
       await Log.error(this.washer, error);
     }
 
-    download.dir = `/${download.dir}/`;
-    download.url = `${this.url}${download.dir}`;
+    download.dir = remoteDir;
+    download.url = `${this.url}/${download.dir}`;
     return download;
   }
 

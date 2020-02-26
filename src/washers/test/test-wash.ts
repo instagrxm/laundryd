@@ -34,7 +34,7 @@ export class TestWash extends Wash {
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
           item1.meta = {
-            url: `${result.url}${result.image}`
+            url: `${result.url}/${result.image}`
           };
         }
       )
@@ -45,7 +45,7 @@ export class TestWash extends Wash {
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
           item2.meta = {
-            url: `${result.url}${result.image}`
+            url: `${result.url}/${result.image}`
           };
         }
       )

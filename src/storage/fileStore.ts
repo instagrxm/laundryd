@@ -85,9 +85,9 @@ export class FileStore {
     );
 
     const result: DownloadResult = {
-      url: dir.replace(this.connection, this.url) + "/",
+      url: dir.replace(this.connection, this.url),
       item: download.item,
-      dir: `${dir}/`
+      dir
     };
 
     try {
@@ -135,32 +135,33 @@ export class FileStore {
    * @param download the completed download
    */
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const dir = filenamifyUrl(download.url);
+    const targetDir = filenamifyUrl(download.url);
 
-    let source: string;
+    let local: string;
     const date = download.item.date;
+    let remoteDir = "";
 
     try {
       if (download.json) {
-        source = path.join(download.dir, download.json);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.json);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
 
       if (download.image) {
-        source = path.join(download.dir, download.image);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.image);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
 
       if (download.media) {
-        source = path.join(download.dir, download.media);
-        download.dir = await this.saveDownload(date, source, dir);
+        local = path.join(download.dir, download.media);
+        remoteDir = await this.saveDownload(date, local, targetDir);
       }
     } catch (error) {
       await Log.error(this.washer, error);
     }
 
-    download.dir = `${download.dir}/`;
-    download.url = download.dir.replace(this.connection, this.url) + "/";
+    download.dir = remoteDir;
+    download.url = download.dir.replace(this.connection, this.url);
     return download;
   }
 
