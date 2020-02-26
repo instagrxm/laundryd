@@ -206,7 +206,7 @@ export default class Run extends BaseCommand {
       try {
         await washer.init(sources);
       } catch (error) {
-        throw new Error(`${washer.config.id}: ${error}`);
+        throw new Error(`${washer.config.id}: ${error.message}`);
       }
     }
 
