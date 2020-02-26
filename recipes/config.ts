@@ -46,6 +46,10 @@ const washers: any[] = [
     levels: "debug"
   },
   {
+    title: "fix/backupDatabase",
+    schedule: "*/5 * * * * *"
+  },
+  {
     title: "fix/upgradeTools"
   },
   {

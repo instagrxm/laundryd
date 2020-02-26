@@ -2,6 +2,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { LoadedItem } from "../item";
 import { Log } from "../log";
+import { SharedFlags } from "../sharedFlags";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 
@@ -12,8 +13,8 @@ export class Dry extends Washer {
 
   static flags = {
     ...Washer.flags,
-    schedule: Shared.flags.schedule(),
-    subscribe: Shared.flags.subscribe
+    schedule: SharedFlags.schedule(),
+    subscribe: SharedFlags.subscribe()
   };
 
   config!: OutputFlags<typeof Dry.flags>;

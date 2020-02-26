@@ -6,10 +6,11 @@ import path from "path";
 import BaseCommand from "../baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
+import { SharedFlags } from "../core/sharedFlags";
 import { Dry } from "../core/washers/dry";
 import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
-import { Shared, WasherType } from "../core/washers/shared";
+import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
 
@@ -34,10 +35,10 @@ export default class Run extends BaseCommand {
         "the port to use for the web server which hosts files and the admin interface"
     }),
 
-    files: Shared.flags.files,
-    fileUrl: Shared.flags.fileUrl,
-    downloadPool: Shared.flags.downloadPool,
-    retain: Shared.flags.retain
+    files: SharedFlags.files(),
+    fileUrl: SharedFlags.fileUrl(),
+    downloadPool: SharedFlags.downloadPool(),
+    retain: SharedFlags.retain()
   };
 
   static args = [];
@@ -159,15 +160,13 @@ export default class Run extends BaseCommand {
     for (const setting of settings) {
       // Let washers inherit settings from the run command.
       const flags = Object.keys(types[setting.title].flags);
-      if (setting.files === undefined && flags.includes("files")) {
-        setting.files = this.flags.files;
-      }
-      if (setting.fileUrl === undefined && flags.includes("fileUrl")) {
-        setting.fileUrl = this.flags.fileUrl;
-      }
-      if (setting.retain === undefined && flags.includes("retain")) {
-        setting.retain = this.flags.retain;
-      }
+      const keys = Object.keys(this.flags);
+      const vals = Object.values(this.flags);
+      keys.forEach((key, index) => {
+        if (setting[key] === undefined && flags.includes(key)) {
+          setting[key] = vals[index];
+        }
+      });
 
       // Convert the settings into something that looks like command-line args,
       // since that's what the oclif parser is expecting.

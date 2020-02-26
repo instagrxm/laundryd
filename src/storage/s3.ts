@@ -7,8 +7,7 @@ import mime from "mime";
 import path from "path";
 import urlUtils from "url";
 import { Log } from "../core/log";
-import { Rinse } from "../core/washers/rinse";
-import { Wash } from "../core/washers/wash";
+import { Washer } from "../core/washers/washer";
 import { Download, DownloadResult } from "./download";
 import { FileStore } from "./fileStore";
 
@@ -19,7 +18,7 @@ export class S3 extends FileStore {
   private s3!: AWS.S3;
   private bucket!: string;
 
-  constructor(washer: Wash | Rinse, connection: string) {
+  constructor(washer: Washer, connection: string) {
     const url = urlUtils.parse(connection, true);
     if (!url.auth || !url.hostname) {
       throw new Error(S3.urlFormat);

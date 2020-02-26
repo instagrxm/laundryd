@@ -1,14 +1,11 @@
-import { Command, flags } from "@oclif/command";
+import { Command } from "@oclif/command";
+import { SharedFlags } from "./core/sharedFlags";
 
 export type CommandType = typeof Command;
 
 export default class BaseCommand extends Command {
   static flags = {
-    mongo: flags.string({
-      required: true,
-      description: "mongodb connection string",
-      default: "mongodb://localhost:27017/laundry"
-    })
+    mongo: SharedFlags.mongo()
   };
 
   static args = [];

@@ -1,9 +1,9 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { Downloader } from "../../storage/downloader";
-import { FileStore } from "../../storage/fileStore";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
+import { SharedFlags } from "../sharedFlags";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 
@@ -14,23 +14,16 @@ export class Rinse extends Washer {
 
   static flags = {
     ...Washer.flags,
-    schedule: Shared.flags.schedule(),
-    subscribe: Shared.flags.subscribe,
-
-    files: Shared.flags.files,
-    fileUrl: Shared.flags.fileUrl,
-    retain: Shared.flags.retain,
-    downloadPool: Shared.flags.downloadPool
+    schedule: SharedFlags.schedule(),
+    subscribe: SharedFlags.subscribe()
   };
 
   config!: OutputFlags<typeof Rinse.flags>;
 
-  fileStore!: FileStore;
   downloader: Downloader = new Downloader(this);
 
   async init(sources: Sources): Promise<void> {
     await super.init();
-    await Shared.initFileStore(this);
     Shared.validateSubscriptions(this, sources);
 
     if (this.config.schedule) {
@@ -69,9 +62,5 @@ export class Rinse extends Washer {
 
   async run(items: LoadedItem[]): Promise<Item[]> {
     return [];
-  }
-
-  retainDate(): Date | undefined {
-    return Shared.retainDate(this);
   }
 }

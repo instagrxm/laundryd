@@ -1,5 +1,4 @@
-import { flags } from "@oclif/command";
-import { CronJob, CronTime } from "cron";
+import { CronJob } from "cron";
 import asyncPool from "tiny-async-pool";
 import { Database } from "../../storage/database";
 import { Download, DownloadResult } from "../../storage/download";
@@ -20,64 +19,6 @@ export type Sources = Record<string, Wash | Rinse>;
  * Elements shared among the washer types.
  */
 export class Shared {
-  static flags = {
-    retain: flags.integer({
-      default: 0,
-      parse: (input: string) => Math.round(parseFloat(input)),
-      description:
-        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
-    }),
-
-    schedule: (
-      required = false,
-      def?: string
-    ): flags.IOptionFlag<string | undefined> => {
-      return flags.string({
-        default: def,
-        required,
-        parse: (input: string) => {
-          const time = new CronTime(input);
-          return input;
-        },
-        description: "when to run the washer"
-      });
-    },
-
-    subscribe: flags.build<string[]>({
-      default: [],
-      parse: (input: string) => {
-        if (!input || !(typeof input === "string")) {
-          throw new Error("missing subscribe");
-        }
-        return input.split(",");
-      },
-      description: "listen for items from this washer id"
-    })(),
-
-    files: flags.string({
-      required: true,
-      default: "OS cache dir",
-      env: "LAUNDRY_FILES",
-      description:
-        "where to store downloaded files, either a local path or an s3:// location"
-    }),
-
-    fileUrl: flags.string({
-      required: true,
-      default: "http://localhost:3000/files",
-      env: "LAUNDRY_URL",
-      description: "a URL which maps to the file location"
-    }),
-
-    downloadPool: flags.integer({
-      required: true,
-      default: 5,
-      env: "LAUNDRY_DOWNLOAD_POOL",
-      hidden: true,
-      description: "how many downloads to perform simultaneously"
-    })
-  };
-
   /**
    * Ensure that a washer's subscriptions are valid.
    * @param washer the washer to validate
@@ -171,7 +112,7 @@ export class Shared {
    * Initialize a FileStore for a washer.
    * @param washer the washer that will own the FileStore
    */
-  static async initFileStore(washer: Wash | Rinse): Promise<void> {
+  static async initFileStore(washer: Washer): Promise<void> {
     let fileStore: FileStore;
     if (washer.config.files.startsWith("s3://")) {
       fileStore = new S3(washer, washer.config.files);
@@ -238,29 +179,5 @@ export class Shared {
     );
 
     return items;
-  }
-
-  /**
-   * Return a date before which things created by this washer should be deleted.
-   * @param washer the washer whose date to return
-   */
-  static retainDate(washer: Rinse | Wash): Date | undefined {
-    if (washer.config.retain === 0) {
-      // Keep forever
-      return;
-    }
-
-    // Delete immediately
-    let retainDate = new Date();
-    retainDate.setFullYear(retainDate.getFullYear() + 1000);
-
-    if (washer.config.retain > 0) {
-      // Delete things more than retain days old
-      retainDate = new Date(
-        Date.now() - washer.config.retain * 24 * 60 * 60 * 1000
-      );
-    }
-
-    return retainDate;
   }
 }
