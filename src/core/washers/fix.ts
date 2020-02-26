@@ -31,6 +31,7 @@ export class Fix extends Washer {
     try {
       await this.runExclusive(this);
       await Database.saveMemory(this);
+      await this.fileStore.clean();
     } catch (error) {
       await Log.error(this, { error });
     }

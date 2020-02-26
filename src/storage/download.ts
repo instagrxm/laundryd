@@ -123,7 +123,8 @@ export interface DownloadResult {
   item: Item;
 
   /**
-   * The URL downloaded, same as in the {@link Download} constructor.
+   * The URL base URL for files in this download. This is initially the URL of the
+   * download, and gets changed to the permanent URL by the {@link FileStore}.
    */
   url: string;
 

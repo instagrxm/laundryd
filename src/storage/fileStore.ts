@@ -85,7 +85,7 @@ export class FileStore {
     );
 
     const result: DownloadResult = {
-      url: download.url,
+      url: dir.replace(this.connection, this.url) + "/",
       item: download.item,
       dir: `${dir}/`
     };
@@ -135,43 +135,52 @@ export class FileStore {
    * @param download the completed download
    */
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const dir = path.join(
-      this.downloadsDir,
-      Math.floor(download.item.date.getTime() / 1000).toString(),
-      filenamifyUrl(download.url)
-    );
+    const dir = filenamifyUrl(download.url);
 
-    const opts = { overwrite: true };
+    let source: string;
+    const date = download.item.date;
 
     try {
-      await fs.ensureDir(dir);
-
-      let source: string;
-      let target: string;
-
       if (download.json) {
         source = path.join(download.dir, download.json);
-        target = path.join(dir, download.json);
-        await fs.copy(source, target, opts);
+        download.dir = await this.saveDownload(date, source, dir);
       }
 
       if (download.image) {
         source = path.join(download.dir, download.image);
-        target = path.join(dir, download.image);
-        await fs.copy(source, target, opts);
+        download.dir = await this.saveDownload(date, source, dir);
       }
 
       if (download.media) {
         source = path.join(download.dir, download.media);
-        target = path.join(dir, download.media);
-        await fs.copy(source, target, opts);
+        download.dir = await this.saveDownload(date, source, dir);
       }
     } catch (error) {
       await Log.error(this.washer, error);
     }
 
-    download.dir = `${dir}/`;
+    download.dir = `${download.dir}/`;
+    download.url = download.dir.replace(this.connection, this.url) + "/";
     return download;
+  }
+
+  /**
+   * Copy a file from a temp folder to the destination.
+   * @param local the local path to the temp file
+   * @param dir the path to the target location
+   * @param date the date associated with this file for cleaning
+   */
+  async saveDownload(date: Date, local: string, dir = ""): Promise<string> {
+    dir = path.join(
+      this.downloadsDir,
+      Math.floor(date.getTime() / 1000).toString(),
+      dir
+    );
+    const file = path.join(dir, path.parse(local).base);
+
+    await fs.copy(local, file, { overwrite: true });
+
+    return dir;
   }
 
   /**

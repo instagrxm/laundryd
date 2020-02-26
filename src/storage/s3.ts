@@ -69,9 +69,9 @@ export class S3 extends FileStore {
     );
 
     const result: DownloadResult = {
-      url: download.url,
       item: download.item,
-      dir: `/${key}/`
+      dir: `/${key}/`,
+      url: `${this.url}/${key}/`
     };
 
     try {
@@ -124,48 +124,49 @@ export class S3 extends FileStore {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const key = path.join(
-      this.downloadsDir,
-      Math.floor(download.item.date.getTime() / 1000).toString(),
-      filenamifyUrl(download.url)
-    );
+    const dir = filenamifyUrl(download.url);
 
     let source: string;
-    let target: string;
+    const date = download.item.date;
 
     try {
       if (download.json) {
         source = path.join(download.dir, download.json);
-        target = path.join(key, download.json);
-        await this.uploadLocal(source, target);
+        download.dir = await this.saveDownload(date, source, dir);
       }
 
       if (download.image) {
         source = path.join(download.dir, download.image);
-        target = path.join(key, download.image);
-        await this.uploadLocal(source, target);
+        download.dir = await this.saveDownload(date, source, dir);
       }
 
       if (download.media) {
         source = path.join(download.dir, download.media);
-        target = path.join(key, download.media);
-        await this.uploadLocal(source, target);
+        download.dir = await this.saveDownload(date, source, dir);
       }
     } catch (error) {
       await Log.error(this.washer, error);
     }
 
-    download.dir = `/${key}/`;
+    download.dir = `/${download.dir}/`;
+    download.url = `${this.url}${download.dir}`;
     return download;
   }
 
-  private async uploadLocal(source: string, target: string): Promise<void> {
+  async saveDownload(date: Date, local: string, dir = ""): Promise<string> {
+    dir = path.join(
+      this.downloadsDir,
+      Math.floor(date.getTime() / 1000).toString(),
+      dir
+    );
+    const file = path.join(dir, path.parse(local).base);
+
     const send = async (): Promise<AWS.S3.ManagedUpload.SendData> => {
       const params: AWS.S3.PutObjectRequest = {
         Bucket: this.bucket,
-        Key: target,
-        ContentType: mime.getType(target) || undefined,
-        Body: fs.createReadStream(source),
+        Key: file,
+        ContentType: mime.getType(file) || undefined,
+        Body: fs.createReadStream(local),
         ACL: "public-read"
       };
 
@@ -187,6 +188,8 @@ export class S3 extends FileStore {
         error
       });
     }
+
+    return dir;
   }
 
   async clean(): Promise<void> {
