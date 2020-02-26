@@ -28,8 +28,12 @@ export class Shared {
         "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
     }),
 
-    schedule: (required = false): flags.IOptionFlag<string | undefined> => {
+    schedule: (
+      required = false,
+      def?: string
+    ): flags.IOptionFlag<string | undefined> => {
       return flags.string({
+        default: def,
         required,
         parse: (input: string) => {
           const time = new CronTime(input);
