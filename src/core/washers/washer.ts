@@ -50,7 +50,7 @@ export class Washer {
     this.config = config;
   }
 
-  async init(sources: Sources): Promise<void> {
+  async init(sources?: Sources): Promise<void> {
     this.memory = await Database.loadMemory(this);
   }
 

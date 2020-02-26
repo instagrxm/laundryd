@@ -5,7 +5,7 @@ import { Downloader } from "../../storage/downloader";
 import { FileStore } from "../../storage/fileStore";
 import { Item } from "../item";
 import { Log } from "../log";
-import { Shared, Sources } from "./shared";
+import { Shared } from "./shared";
 import { Washer } from "./washer";
 
 export class Wash extends Washer {
@@ -34,8 +34,8 @@ export class Wash extends Washer {
   fileStore!: FileStore;
   downloader: Downloader = new Downloader(this);
 
-  async init(sources: Sources): Promise<void> {
-    await super.init(sources);
+  async init(): Promise<void> {
+    await super.init();
     await Shared.initFileStore(this);
     Shared.startSchedule(this, async () => await this.exec());
   }

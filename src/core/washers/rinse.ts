@@ -29,7 +29,7 @@ export class Rinse extends Washer {
   downloader: Downloader = new Downloader(this);
 
   async init(sources: Sources): Promise<void> {
-    await super.init(sources);
+    await super.init();
     await Shared.initFileStore(this);
     Shared.validateSubscriptions(this, sources);
 

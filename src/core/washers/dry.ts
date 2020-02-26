@@ -19,7 +19,7 @@ export class Dry extends Washer {
   config!: OutputFlags<typeof Dry.flags>;
 
   async init(sources: Sources): Promise<void> {
-    await super.init(sources);
+    await super.init();
 
     Shared.validateSubscriptions(this, sources);
 

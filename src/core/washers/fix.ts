@@ -1,7 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { Log } from "../log";
-import { Shared, Sources } from "./shared";
+import { Shared } from "./shared";
 import { Washer } from "./washer";
 
 export class Fix extends Washer {
@@ -17,8 +17,8 @@ export class Fix extends Washer {
   config!: OutputFlags<typeof Fix.flags>;
   runExclusive!: (washer: Fix) => Promise<void>;
 
-  async init(sources: Sources): Promise<void> {
-    await super.init(sources);
+  async init(): Promise<void> {
+    await super.init();
 
     Shared.startSchedule(this, async () => {
       await this.exec();
