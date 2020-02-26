@@ -34,7 +34,8 @@ const retention = {
 };
 
 const schedule = {
-  default: "* * * * * *"
+  default: "* * * * * *",
+  daily: "0 0 0 * * *"
 };
 
 const washers: any[] = [
@@ -45,12 +46,10 @@ const washers: any[] = [
     levels: "debug"
   },
   {
-    title: "fix/upgradeTools",
-    schedule: "0 0 0 * * *"
+    title: "fix/upgradeTools"
   },
   {
-    title: "fix/clearCache",
-    schedule: "0 0 0 * * *"
+    title: "fix/clearCache"
   },
   {
     title: "test/test-wash",
@@ -76,241 +75,239 @@ const washers: any[] = [
   //   title: "test/test-fix",
   //   schedule: "*/10 * * * * *"
   // },
-  /*
-  {
-    title: "wash/mixcloud/uploads",
-    schedule: schedule.default,
-    auth: auth.mixcloud,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/mixcloud/user",
-    schedule: schedule.default,
-    begin: retention.begin,
-    retain: retention.retain,
-    user: "redbullradio"
-  },
-  {
-    title: "wash/instagram/timeline",
-    schedule: schedule.default,
-    auth: auth.instagram,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/instagram/user",
-    schedule: schedule.default,
-    auth: auth.instagram,
-    begin: retention.begin,
-    retain: retention.retain,
-    user: "foo"
-  },
-  {
-    title: "wash/instagram/hashtag",
-    schedule: schedule.default,
-    auth: auth.instagram,
-    begin: retention.begin,
-    retain: retention.retain,
-    hashtag: "foo"
-  },
-  {
-    title: "wash/instagram/likes",
-    schedule: schedule.default,
-    auth: auth.instagram
-  },
-  {
-    title: "wash/twitter/timeline",
-    schedule: schedule.default,
-    auth: auth.twitter,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/twitter/user",
-    schedule: schedule.default,
-    auth: auth.twitter,
-    begin: retention.begin,
-    retain: retention.retain,
-    user: "foo"
-  },
-  {
-    title: "wash/twitter/list",
-    schedule: schedule.default,
-    auth: auth.twitter,
-    begin: retention.begin,
-    retain: retention.retain,
-    list: "foo"
-  },
-  {
-    title: "wash/twitter/hashtag",
-    schedule: schedule.default,
-    auth: auth.twitter,
-    begin: retention.begin,
-    retain: retention.retain,
-    hashtag: "foo"
-  },
-  {
-    title: "wash/twitter/likes",
-    schedule: schedule.default,
-    auth: auth.twitter
-  },
-  {
-    title: "wash/soundcloud/user",
-    schedule: schedule.default,
-    user: "foo",
-    auth: auth.soundcloud,
-    begin: retention.begin,
-    retain: retention.retain,
-    media: "audio"
-  },
-  {
-    title: "wash/soundcloud/playlist",
-    schedule: schedule.default,
-    playlist: "foo",
-    auth: auth.soundcloud,
-    begin: retention.begin,
-    retain: retention.retain,
-    media: "audio"
-  },
-  {
-    title: "wash/soundcloud/timeline",
-    schedule: schedule.default,
-    auth: auth.soundcloud,
-    begin: retention.begin,
-    retain: retention.retain,
-    media: "audio"
-  },
-  {
-    title: "wash/youtube/subscribes",
-    schedule: schedule.default,
-    auth: auth.youtube,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/youtube/channel",
-    schedule: schedule.default,
-    auth: auth.youtube,
-    begin: retention.begin,
-    retain: retention.retain,
-    channel: "foo",
-    media: "audio"
-  },
-  {
-    title: "wash/youtube/playlist",
-    schedule: schedule.default,
-    auth: auth.youtube,
-    begin: retention.begin,
-    retain: retention.retain,
-    playlist: "foo",
-    media: "video"
-  },
-  {
-    title: "wash/vimeo/timeline",
-    schedule: schedule.default,
-    auth: auth.vimeo,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/vimeo/channel",
-    schedule: schedule.default,
-    channel: "foo",
-    auth: auth.vimeo,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/vimeo/group",
-    schedule: schedule.default,
-    group: "foo",
-    auth: auth.vimeo,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/vimeo/user",
-    schedule: schedule.default,
-    user: "foo",
-    auth: auth.vimeo,
-    begin: retention.begin,
-    retain: retention.retain
-  },
-  {
-    title: "wash/feedbin/likes",
-    schedule: schedule.default,
-    auth: auth.feedbin
-  },
-  {
-    title: "dry/feedbin/unlike",
-    subscribe: ["wash/feedbin/likes"],
-    auth: auth.feedbin
-  },
-  {
-    title: "wash/podcast/likes",
-    schedule: schedule.default,
-    auth: auth.podcast
-  },
-  {
-    title: "dry/podcast/unlike",
-    subscribe: ["wash/podcast/likes"],
-    auth: auth.podcast
-  },
-  {
-    title: "dry/instagram/like",
-    subscribe: ["wash/feedbin/likes"],
-    auth: auth.instagram
-  },
-  {
-    id: "dry/youtube/like/feedbin",
-    title: "dry/youtube/like",
-    subscribe: ["wash/feedbin/likes"],
-    auth: auth.youtube
-  },
-  {
-    title: "dry/vimeo/like",
-    subscribe: ["wash/feedbin/likes"],
-    auth: auth.vimeo
-  },
-  {
-    title: "dry/twitter/like",
-    subscribe: ["wash/feedbin/likes"],
-    auth: auth.twitter
-  },
-  {
-    id: "dry/youtube/like/podcast",
-    title: "dry/youtube/like",
-    subscribe: ["wash/podcast/likes"],
-    auth: auth.youtube
-  },
-  {
-    title: "dry/soundcloud/like",
-    subscribe: ["wash/podcast/likes"],
-    auth: auth.soundcloud
-  },
-  {
-    title: "dry/mixcloud/like",
-    subscribe: ["wash/podcast/likes"],
-    auth: auth.soundcloud
-  },
-  {
-    title: "dry/instagram/story",
-    subscribe: ["wash/instagram/likes"],
-    auth: auth.instagram
-  },
-  {
-    title: "dry/twitter/tweet",
-    subscribe: ["wash/instagram/user"],
-    auth: auth.twitter
-  },
-  {
-    title: "dry/email",
-    subscribe: ["log/error"],
-    to: "foo",
-    auth: auth.email
-  }
-  */
+  // {
+  //   title: "wash/mixcloud/uploads",
+  //   schedule: schedule.default,
+  //   auth: auth.mixcloud,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/mixcloud/user",
+  //   schedule: schedule.default,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   user: "redbullradio"
+  // },
+  // {
+  //   title: "wash/instagram/timeline",
+  //   schedule: schedule.default,
+  //   auth: auth.instagram,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/instagram/user",
+  //   schedule: schedule.default,
+  //   auth: auth.instagram,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   user: "foo"
+  // },
+  // {
+  //   title: "wash/instagram/hashtag",
+  //   schedule: schedule.default,
+  //   auth: auth.instagram,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   hashtag: "foo"
+  // },
+  // {
+  //   title: "wash/instagram/likes",
+  //   schedule: schedule.default,
+  //   auth: auth.instagram
+  // },
+  // {
+  //   title: "wash/twitter/timeline",
+  //   schedule: schedule.default,
+  //   auth: auth.twitter,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/twitter/user",
+  //   schedule: schedule.default,
+  //   auth: auth.twitter,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   user: "foo"
+  // },
+  // {
+  //   title: "wash/twitter/list",
+  //   schedule: schedule.default,
+  //   auth: auth.twitter,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   list: "foo"
+  // },
+  // {
+  //   title: "wash/twitter/hashtag",
+  //   schedule: schedule.default,
+  //   auth: auth.twitter,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   hashtag: "foo"
+  // },
+  // {
+  //   title: "wash/twitter/likes",
+  //   schedule: schedule.default,
+  //   auth: auth.twitter
+  // },
+  // {
+  //   title: "wash/soundcloud/user",
+  //   schedule: schedule.default,
+  //   user: "foo",
+  //   auth: auth.soundcloud,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   media: "audio"
+  // },
+  // {
+  //   title: "wash/soundcloud/playlist",
+  //   schedule: schedule.default,
+  //   playlist: "foo",
+  //   auth: auth.soundcloud,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   media: "audio"
+  // },
+  // {
+  //   title: "wash/soundcloud/timeline",
+  //   schedule: schedule.default,
+  //   auth: auth.soundcloud,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   media: "audio"
+  // },
+  // {
+  //   title: "wash/youtube/subscribes",
+  //   schedule: schedule.default,
+  //   auth: auth.youtube,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/youtube/channel",
+  //   schedule: schedule.default,
+  //   auth: auth.youtube,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   channel: "foo",
+  //   media: "audio"
+  // },
+  // {
+  //   title: "wash/youtube/playlist",
+  //   schedule: schedule.default,
+  //   auth: auth.youtube,
+  //   begin: retention.begin,
+  //   retain: retention.retain,
+  //   playlist: "foo",
+  //   media: "video"
+  // },
+  // {
+  //   title: "wash/vimeo/timeline",
+  //   schedule: schedule.default,
+  //   auth: auth.vimeo,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/vimeo/channel",
+  //   schedule: schedule.default,
+  //   channel: "foo",
+  //   auth: auth.vimeo,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/vimeo/group",
+  //   schedule: schedule.default,
+  //   group: "foo",
+  //   auth: auth.vimeo,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/vimeo/user",
+  //   schedule: schedule.default,
+  //   user: "foo",
+  //   auth: auth.vimeo,
+  //   begin: retention.begin,
+  //   retain: retention.retain
+  // },
+  // {
+  //   title: "wash/feedbin/likes",
+  //   schedule: schedule.default,
+  //   auth: auth.feedbin
+  // },
+  // {
+  //   title: "dry/feedbin/unlike",
+  //   subscribe: ["wash/feedbin/likes"],
+  //   auth: auth.feedbin
+  // },
+  // {
+  //   title: "wash/podcast/likes",
+  //   schedule: schedule.default,
+  //   auth: auth.podcast
+  // },
+  // {
+  //   title: "dry/podcast/unlike",
+  //   subscribe: ["wash/podcast/likes"],
+  //   auth: auth.podcast
+  // },
+  // {
+  //   title: "dry/instagram/like",
+  //   subscribe: ["wash/feedbin/likes"],
+  //   auth: auth.instagram
+  // },
+  // {
+  //   id: "dry/youtube/like/feedbin",
+  //   title: "dry/youtube/like",
+  //   subscribe: ["wash/feedbin/likes"],
+  //   auth: auth.youtube
+  // },
+  // {
+  //   title: "dry/vimeo/like",
+  //   subscribe: ["wash/feedbin/likes"],
+  //   auth: auth.vimeo
+  // },
+  // {
+  //   title: "dry/twitter/like",
+  //   subscribe: ["wash/feedbin/likes"],
+  //   auth: auth.twitter
+  // },
+  // {
+  //   id: "dry/youtube/like/podcast",
+  //   title: "dry/youtube/like",
+  //   subscribe: ["wash/podcast/likes"],
+  //   auth: auth.youtube
+  // },
+  // {
+  //   title: "dry/soundcloud/like",
+  //   subscribe: ["wash/podcast/likes"],
+  //   auth: auth.soundcloud
+  // },
+  // {
+  //   title: "dry/mixcloud/like",
+  //   subscribe: ["wash/podcast/likes"],
+  //   auth: auth.soundcloud
+  // },
+  // {
+  //   title: "dry/instagram/story",
+  //   subscribe: ["wash/instagram/likes"],
+  //   auth: auth.instagram
+  // },
+  // {
+  //   title: "dry/twitter/tweet",
+  //   subscribe: ["wash/instagram/user"],
+  //   auth: auth.twitter
+  // },
+  // {
+  //   title: "dry/email",
+  //   subscribe: ["log/error"],
+  //   to: "foo",
+  //   auth: auth.email
+  // }
 ];
 
 washers.forEach(w => (w.id = w.id || w.title));

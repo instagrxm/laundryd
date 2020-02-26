@@ -11,7 +11,7 @@ export class Fix extends Washer {
 
   static flags = {
     ...Washer.flags,
-    schedule: Shared.flags.schedule(true)
+    schedule: Shared.flags.schedule(true, "0 0 0 * * *")
   };
 
   config!: OutputFlags<typeof Fix.flags>;
