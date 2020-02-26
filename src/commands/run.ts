@@ -181,14 +181,13 @@ export default class Run extends BaseCommand {
           return `--${key}=${setting[key]}`;
         });
 
-      const config = parse(argv, { flags: types[setting.title].flags });
-
       // Create and set up the washer
       let washer;
       try {
-        washer = new types[setting.title](config.flags);
+        const { flags } = parse(argv, { flags: types[setting.title].flags });
+        washer = new types[setting.title](flags);
       } catch (error) {
-        throw new Error(`${setting.id}: ${error}`);
+        throw new Error(`${setting.id}: ${error.message}`);
       }
       washers[setting.id] = washer;
       if (washer instanceof Wash || washer instanceof Rinse) {
