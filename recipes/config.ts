@@ -49,6 +49,10 @@ const washers: any[] = [
     schedule: "0 0 0 * * *"
   },
   {
+    title: "fix/clearCache",
+    schedule: "0 0 0 * * *"
+  },
+  {
     title: "test/test-wash",
     id: "test/test-wash/foo",
     schedule: "*/5 * * * * *"
