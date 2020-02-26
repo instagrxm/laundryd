@@ -33,8 +33,10 @@ export class Wash extends Washer {
   async exec(): Promise<void> {
     try {
       let items = await this.run();
+
       items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
+
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {

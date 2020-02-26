@@ -36,18 +36,16 @@ export class BackupDatabase extends Fix {
     const localDir = Config.config.cacheDir;
     const file = "mongo.dump";
 
-    await Log.info(this, { msg: "dumping database" });
-    const dump = `mongodump --uri=${this.config.mongo} --archive=${localDir}`;
-    await exec(dump);
+    const cmd = `mongodump --uri=${this.config.mongo} --archive=${localDir}`;
+    await Log.info(this, { msg: "dumping database", cmd });
+    await exec(cmd);
 
-    await Log.info(this, { msg: "saving dump file" });
-    const dir = await this.fileStore.saveDownload(
-      DateTime.utc(),
-      path.join(localDir, file)
-    );
+    const dest = path.join(localDir, file);
+    await Log.info(this, { msg: "saving dump file", dest });
+    const dir = await this.fileStore.saveDownload(DateTime.utc(), dest);
 
     const url = `${this.fileStore.url}/${dir}/${file}`;
-    await Log.info(this, { msg: `backup available at ${url}` });
+    await Log.info(this, { msg: "backup complete", url });
 
     await fs.remove(localDir);
   }

@@ -30,6 +30,7 @@ export class Fix extends Washer {
   async exec(): Promise<void> {
     try {
       await this.runExclusive(this);
+
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {

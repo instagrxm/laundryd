@@ -51,8 +51,10 @@ export class Rinse extends Washer {
 
     try {
       let items = await this.run(input);
+
       items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
+
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {
