@@ -28,8 +28,25 @@ USAGE
 <!-- usagestop -->
 # Commands
 <!-- commands -->
+* [`laundry commands`](#laundry-commands)
 * [`laundry help [COMMAND]`](#laundry-help-command)
 * [`laundry run`](#laundry-run)
+
+## `laundry commands`
+
+list all the commands
+
+```
+USAGE
+  $ laundry commands
+
+OPTIONS
+  -h, --help  show CLI help
+  -j, --json  output in json format
+  --hidden    also show hidden commands
+```
+
+_See code: [@oclif/plugin-commands](https://github.com/oclif/plugin-commands/blob/v1.2.3/src/commands/commands.ts)_
 
 ## `laundry help [COMMAND]`
 
@@ -55,7 +72,18 @@ USAGE
   $ laundry run
 
 OPTIONS
-  --config=config
+  --config=config    (required) path to a javascript file exporting an array of washer settings
+  --fileUrl=fileUrl  (required) [default: http://localhost:3000/files] a URL which maps to the file location
+
+  --files=files      (required) [default: (OS cache dir)] where to store downloaded files, either a local path or an
+                     s3:// location
+
+  --mongo=mongo      (required) [default: mongodb://localhost:27017/laundry] mongodb connection string
+
+  --port=port        (required) [default: 3000] the port to use for the web server which hosts files and the admin
+                     interface
+
+  --retain=retain    the number of days to keep items, or 0 to keep forever, or -1 to not keep at all
 ```
 
 _See code: [src/commands/run.ts](https://github.com/endquote/laundryd/blob/master/src/commands/run.ts)_

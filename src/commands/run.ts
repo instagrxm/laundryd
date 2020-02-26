@@ -13,11 +13,6 @@ import { Shared, WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
 
-// TODO: Temporary web server
-const server = require("net")
-  .createServer()
-  .listen();
-
 export default class Run extends BaseCommand {
   static description = "";
 
