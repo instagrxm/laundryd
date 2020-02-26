@@ -52,7 +52,7 @@ export class Shared {
 
     files: flags.string({
       required: true,
-      default: "(OS cache dir)",
+      default: "OS cache dir",
       env: "LAUNDRY_FILES",
       description:
         "where to store downloaded files, either a local path or an s3:// location"

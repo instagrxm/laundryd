@@ -39,10 +39,20 @@ const schedule = {
 
 const washers: any[] = [
   {
+    title: "dry/stdout",
+    subscribe: ["log"],
+    color: true,
+    levels: "debug"
+  },
+  {
+    title: "fix/upgradeTools",
+    schedule: "0 0 0 * * *"
+  },
+  {
     title: "test/test-wash",
     id: "test/test-wash/foo",
     schedule: "*/5 * * * * *"
-  },
+  }
   // {
   //   title: "test/test-wash",
   //   id: "test/test-wash/bar",
@@ -62,12 +72,6 @@ const washers: any[] = [
   //   title: "test/test-fix",
   //   schedule: "*/10 * * * * *"
   // },
-  {
-    title: "stdout",
-    subscribe: ["log"],
-    color: true,
-    levels: "debug"
-  }
   /*
   {
     title: "wash/mixcloud/uploads",
@@ -254,8 +258,9 @@ const washers: any[] = [
     subscribe: ["wash/feedbin/likes"],
     auth: auth.instagram
   },
-  id: "dry/youtube/like/feedbin",title: "dry/youtube/like",
   {
+    id: "dry/youtube/like/feedbin",
+    title: "dry/youtube/like",
     subscribe: ["wash/feedbin/likes"],
     auth: auth.youtube
   },
@@ -269,8 +274,9 @@ const washers: any[] = [
     subscribe: ["wash/feedbin/likes"],
     auth: auth.twitter
   },
-  id: "dry/youtube/like/podcast",title: "dry/youtube/like",
   {
+    id: "dry/youtube/like/podcast",
+    title: "dry/youtube/like",
     subscribe: ["wash/podcast/likes"],
     auth: auth.youtube
   },

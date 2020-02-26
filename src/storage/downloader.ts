@@ -7,7 +7,6 @@ import mime from "mime";
 import path from "path";
 import shortid from "shortid";
 import util from "util";
-import BaseCommand from "../baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { Washer } from "../core/washers/washer";
@@ -208,12 +207,10 @@ export class Downloader {
   /**
    * Upgrade the binaries for youtube-dl and ffmpeg.
    */
-  static async upgrade(): Promise<void> {
-    // await Downloader.upgradeFfmpeg();
-    // await Downloader.upgradeYoutubedl();
+  async upgrade(): Promise<void> {
+    await this.upgradeFfmpeg();
+    await this.upgradeYoutubedl();
   }
-
-  command!: BaseCommand;
 
   /**
    * Upgrade the binaries for ffmpeg.
@@ -255,9 +252,9 @@ export class Downloader {
 
     try {
       const res = await util.promisify(ffbinaries.downloadBinaries)(null, opts);
-      await Log.info(this.command, { event: "upgrade-ffmpeg", res });
+      await Log.info(this.washer, { event: "upgrade-ffmpeg", res });
     } catch (error) {
-      await Log.error(this.command, { event: "upgrade-ffmpeg", error });
+      await Log.error(this.washer, { event: "upgrade-ffmpeg", error });
     }
   }
 
@@ -267,9 +264,9 @@ export class Downloader {
   private async upgradeYoutubedl(): Promise<void> {
     try {
       const res = await exec(ytdl, ["-U"]);
-      await Log.info(this.command, { event: "upgrade-ytdl", msg: res.stdout });
+      await Log.info(this.washer, { event: "upgrade-ytdl", msg: res.stdout });
     } catch (error) {
-      await Log.error(this.command, { event: "upgrade-ytdl", error });
+      await Log.error(this.washer, { event: "upgrade-ytdl", error });
     }
   }
 
@@ -278,13 +275,13 @@ export class Downloader {
    */
   async clean(): Promise<void> {
     try {
-      await Log.info(this.command, {
+      await Log.info(this.washer, {
         event: "cache-clean",
         dir: this.tempRoot
       });
       await fs.remove(this.tempRoot);
     } catch (error) {
-      await Log.error(this.command, {
+      await Log.error(this.washer, {
         event: "cache-clean",
         dir: this.tempRoot,
         error

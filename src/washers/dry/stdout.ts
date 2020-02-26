@@ -1,9 +1,9 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import util from "util";
-import { LoadedItem } from "../core/item";
-import { LogLevel } from "../core/log";
-import { Dry } from "../core/washers/dry";
+import { LoadedItem } from "../../core/item";
+import { LogLevel } from "../../core/log";
+import { Dry } from "../../core/washers/dry";
 
 export class Stdout extends Dry {
   static readonly title: string = "stdout";
