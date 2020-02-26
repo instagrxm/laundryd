@@ -1,6 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import childProcess from "child_process";
 import fs from "fs-extra";
+import { DateTime } from "luxon";
 import path from "path";
 import util from "util";
 import { Config } from "../../core/config";
@@ -41,7 +42,7 @@ export class BackupDatabase extends Fix {
 
     await Log.info(this, { msg: "saving dump file" });
     const dir = await this.fileStore.saveDownload(
-      new Date(),
+      DateTime.utc(),
       path.join(localDir, file)
     );
 

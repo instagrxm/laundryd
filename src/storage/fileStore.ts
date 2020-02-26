@@ -1,6 +1,7 @@
 import filenameify from "filenamify";
 import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
+import { DateTime } from "luxon";
 import mime from "mime";
 import os from "os";
 import path from "path";
@@ -80,7 +81,7 @@ export class FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const dir = path.join(
       this.downloadsDir,
-      Math.floor(download.item.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.toSeconds()).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -171,10 +172,10 @@ export class FileStore {
    * @param dir the path to the target location
    * @param date the date associated with this file for cleaning
    */
-  async saveDownload(date: Date, local: string, dir = ""): Promise<string> {
+  async saveDownload(date: DateTime, local: string, dir = ""): Promise<string> {
     dir = path.join(
       this.downloadsDir,
-      Math.floor(date.getTime() / 1000).toString(),
+      Math.floor(date.toSeconds()).toString(),
       dir
     );
     const file = path.join(dir, path.parse(local).base);
@@ -197,7 +198,7 @@ export class FileStore {
     try {
       const cache = await fs.readdir(this.downloadsDir);
       const old = cache.filter(
-        c => parseInt(c, 10) < Math.floor(retainDate.getTime() / 1000)
+        c => parseInt(c, 10) < Math.floor(retainDate.toSeconds())
       );
       for (const dir of old) {
         await fs.remove(path.join(this.downloadsDir, dir));

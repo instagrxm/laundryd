@@ -3,6 +3,7 @@ import { ListObjectsV2Request } from "aws-sdk/clients/s3";
 import { PromiseResult } from "aws-sdk/lib/request";
 import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
+import { DateTime } from "luxon";
 import mime from "mime";
 import path from "path";
 import urlUtils from "url";
@@ -64,7 +65,7 @@ export class S3 extends FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const key = path.join(
       this.downloadsDir,
-      Math.floor(download.item.date.getTime() / 1000).toString(),
+      Math.floor(download.item.date.toSeconds()).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -154,10 +155,10 @@ export class S3 extends FileStore {
     return download;
   }
 
-  async saveDownload(date: Date, local: string, dir = ""): Promise<string> {
+  async saveDownload(date: DateTime, local: string, dir = ""): Promise<string> {
     dir = path.join(
       this.downloadsDir,
-      Math.floor(date.getTime() / 1000).toString(),
+      Math.floor(date.toSeconds()).toString(),
       dir
     );
     const file = path.join(dir, path.parse(local).base);
@@ -226,7 +227,7 @@ export class S3 extends FileStore {
       const oldKeys = existing.Contents.map(c => c.Key as string).filter(
         key =>
           parseInt(key.replace(this.downloadsDir, "").split("/")[1], 10) <
-          Math.floor(retainDate.getTime() / 1000)
+          Math.floor(retainDate.toSeconds())
       );
 
       for (const k of oldKeys) {

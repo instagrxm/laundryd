@@ -1,4 +1,5 @@
 import { LogLevel } from "aws-sdk/clients/iot";
+import { DateTime } from "luxon";
 import { Download } from "../storage/download";
 
 /**
@@ -13,7 +14,7 @@ export interface Item {
   /**
    * This item's creation date.
    */
-  date: Date;
+  date: DateTime;
 
   /**
    * The title of this item.

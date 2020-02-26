@@ -1,4 +1,5 @@
 import { CronJob } from "cron";
+import { DateTime } from "luxon";
 import asyncPool from "tiny-async-pool";
 import { Database } from "../../storage/database";
 import { Download, DownloadResult } from "../../storage/download";
@@ -72,7 +73,7 @@ export class Shared {
   static async loadSubscriptions(
     washer: Rinse | Dry,
     sources: Sources,
-    since = new Date(0)
+    since = DateTime.utc(0)
   ): Promise<LoadedItem[]> {
     let input: LoadedItem[] = [];
     for (const id of washer.config.subscribe) {

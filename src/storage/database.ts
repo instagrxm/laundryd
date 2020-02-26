@@ -1,4 +1,5 @@
 import clone from "clone";
+import { DateTime } from "luxon";
 import { Collection, Db, MongoClient } from "mongodb";
 import { Item, LoadedItem, LogItem } from "../core/item";
 import { Log, LogLevel } from "../core/log";
@@ -58,7 +59,7 @@ export class Database {
     if (!washer.config.memory) {
       return;
     }
-    washer.memory.lastRun = new Date();
+    washer.memory.lastRun = DateTime.utc();
     await Database.memory.replaceOne(
       { washerId: washer.config.id },
       { $set: washer.memory },
@@ -71,12 +72,15 @@ export class Database {
    * @param washer the washer
    * @param since return items newer than this date
    */
-  static async loadItems(washer: Washer, since: Date): Promise<LoadedItem[]> {
+  static async loadItems(
+    washer: Washer,
+    since: DateTime
+  ): Promise<LoadedItem[]> {
     if (!washer) {
       return [];
     }
 
-    const items: LoadedItem[] = await Database.db
+    const items: any[] = await Database.db
       .collection(washer.config.id)
       .find(
         {
@@ -87,8 +91,10 @@ export class Database {
       .toArray();
 
     items.forEach(i => {
+      delete i._id;
       i.washerId = washer.config.id;
       i.washerTitle = washer.getType().title;
+      i.date = DateTime.fromJSDate(i.date);
     });
 
     return items;
@@ -108,7 +114,7 @@ export class Database {
     items.forEach(i => delete i.downloads);
 
     // Newest items first
-    items.sort((a, b) => b.date.getTime() - a.date.getTime());
+    items.sort((a, b) => b.date.toMillis() - a.date.toMillis());
     washer.memory.lastItem = items[0];
 
     const collection = Database.db.collection(washer.config.id);

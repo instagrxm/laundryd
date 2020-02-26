@@ -1,3 +1,4 @@
+import { DateTime } from "luxon";
 import util from "util";
 import BaseCommand from "../baseCommand";
 import { Database } from "../storage/database";
@@ -55,9 +56,9 @@ export class Log {
       info = { msg: info };
     }
 
-    const date = new Date();
+    const date = DateTime.utc();
 
-    const url = `laundry://${sourceType}/${title}/${date.getTime()}`;
+    const url = `laundry://${sourceType}/${title}/${date.toMillis()}`;
 
     const item: LogItem = {
       date,

@@ -1,5 +1,6 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import { DateTime, Duration } from "luxon";
 import { Database } from "../../storage/database";
 import { Downloader } from "../../storage/downloader";
 import { FileStore } from "../../storage/fileStore";
@@ -78,20 +79,19 @@ export class Washer {
    * Return a date before which things created by this washer should be deleted.
    * @param washer the washer whose date to return
    */
-  retainDate(): Date | undefined {
+  retainDate(): DateTime | undefined {
     if (this.config.retain === 0) {
       // Keep forever
       return;
     }
 
     // Delete immediately
-    let retainDate = new Date();
-    retainDate.setFullYear(retainDate.getFullYear() + 1000);
+    let retainDate = DateTime.utc().plus(Duration.fromObject({ years: 1000 }));
 
     if (this.config.retain > 0) {
       // Delete things more than retain days old
-      retainDate = new Date(
-        Date.now() - this.config.retain * 24 * 60 * 60 * 1000
+      retainDate = DateTime.utc().minus(
+        Duration.fromObject({ days: this.config.retain })
       );
     }
 
