@@ -13,12 +13,15 @@ import { Rinse } from "../core/washers/rinse";
 import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
+import { Database } from "../storage/database";
 
 export default class Run extends BaseCommand {
   static description = "";
 
   static flags = {
     ...BaseCommand.flags,
+
+    mongo: SharedFlags.mongo(),
 
     config: flags.string({
       required: true,
@@ -54,6 +57,10 @@ export default class Run extends BaseCommand {
     }
 
     this.flags = flags;
+
+    Config.init(this.config);
+
+    await Database.init(this.flags.mongo);
 
     const washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(flags.config);
