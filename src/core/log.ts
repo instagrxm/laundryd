@@ -72,7 +72,9 @@ export class Log {
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {
-      throw new Error(util.inspect(item));
+      // eslint-disable-next-line no-console
+      console.error(util.inspect(item));
+      process.exit(1);
     }
 
     // console.log(item);
