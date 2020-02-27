@@ -42,6 +42,31 @@ export class Database {
   }
 
   /**
+   * Modify a saved document so that it matches the definition of LoadedItem.
+   * @param document the raw document from the database
+   * @param washer the washer that created the item
+   */
+  private static hydrateItem(document: any, washer: Washer): LoadedItem {
+    delete document._id;
+    document.washerId = washer.config.id;
+    document.washerTitle = washer.getType().title;
+    document.saved = DateTime.fromJSDate(document.saved).toUTC();
+    document.created = DateTime.fromJSDate(document.created).toUTC();
+    return document;
+  }
+
+  /**
+   * Prepare an item to be saved to the database.
+   * @param item the item being saved
+   */
+  private static dehydrateItem(item: Item): any {
+    const document: any = clone(item);
+    delete document.downloads;
+    document.saved = DateTime.utc();
+    return document;
+  }
+
+  /**
    * Return the memory object for a washer, or an empty object if there isn't one.
    * @param washer the washer
    */
@@ -49,6 +74,14 @@ export class Database {
     const memory = await Database.memory.findOne({
       washerId: washer.config.id
     });
+    if (memory) {
+      if (memory.lastRun) {
+        memory.lastRun = DateTime.fromJSDate(memory.lastRun).toUTC();
+      }
+      if (memory.lastItem) {
+        memory.lastItem = Database.hydrateItem(memory.lastItem, washer);
+      }
+    }
     return memory || {};
   }
 
@@ -87,16 +120,9 @@ export class Database {
       .find({ saved: { $gt: since } }, { sort: { saved: -1 } })
       .toArray();
 
-    // Hydrate the items
-    items.forEach(i => {
-      delete i._id;
-      i.washerId = washer.config.id;
-      i.washerTitle = washer.getType().title;
-      i.saved = DateTime.fromJSDate(i.saved);
-      i.created = DateTime.fromJSDate(i.created);
-    });
+    const loadedItems = items.map(i => Database.hydrateItem(i, washer));
 
-    return items;
+    return loadedItems;
   }
 
   /**
@@ -109,18 +135,14 @@ export class Database {
       return;
     }
 
-    // Prepare the items for saving
-    const saveItems: any[] = clone(items);
-    saveItems.forEach(i => {
-      delete i.downloads;
-      i.saved = DateTime.utc();
-    });
-
     // Set up the collection
     const collection = Database.db.collection(washer.config.id);
     await collection.createIndex("created");
     await collection.createIndex("saved");
     await collection.createIndex("url", { unique: true });
+
+    // Prepare the items for saving
+    const saveItems: any[] = items.map(i => Database.dehydrateItem(i));
 
     // Save the items
     await Promise.all(
