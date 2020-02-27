@@ -163,6 +163,12 @@ export default class Run extends BaseCommand {
       if (!types[setting.title]) {
         throw new Error(`washer not found: ${setting.title}`);
       }
+      if (
+        setting.id &&
+        settings.some(s => s !== setting && s.id === setting.id)
+      ) {
+        throw new Error(`duplicate washer id: ${setting.id}`);
+      }
     }
 
     // Actually create the instances
