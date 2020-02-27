@@ -3,7 +3,7 @@ import { parse } from "@oclif/parser";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import * as Globby from "globby";
 import path from "path";
-import BaseCommand from "../baseCommand";
+import BaseCommand from "../core/baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { SharedFlags } from "../core/sharedFlags";

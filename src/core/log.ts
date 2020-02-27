@@ -1,7 +1,7 @@
 import { DateTime } from "luxon";
 import util from "util";
-import BaseCommand from "../baseCommand";
 import { Database } from "../storage/database";
+import BaseCommand from "./baseCommand";
 import { LogItem } from "./item";
 import { Washer } from "./washers/washer";
 
