@@ -37,6 +37,7 @@ export class Database {
       capped: true,
       size: 1048576 * 10 // 10MB
     });
+    await Database.log.createIndex("date");
   }
 
   /**
