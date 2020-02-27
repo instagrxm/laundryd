@@ -1,5 +1,8 @@
 # Mongo Setup Notes
 
+seems to work:
+https://cloud.mongodb.com/
+
 mac conf file
 /usr/local/etc/mongod.conf
 
