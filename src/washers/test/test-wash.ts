@@ -16,7 +16,7 @@ export class TestWash extends Wash {
     }
 
     const item1: Item = {
-      date: DateTime.utc(2020, 1, 14, 0, 0, 0),
+      created: DateTime.utc(2020, 1, 14, 0, 0, 0),
       title: "from test-wash",
       text: "foo 1",
       url: `http://endquote.com/1/${this.memory.foo}`

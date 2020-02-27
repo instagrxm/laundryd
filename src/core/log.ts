@@ -61,7 +61,8 @@ export class Log {
     const url = `laundry://${sourceType}/${title}/${date.toMillis()}`;
 
     const item: LogItem = {
-      date,
+      saved: date,
+      created: date,
       title,
       text: level,
       meta: info,

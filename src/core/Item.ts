@@ -14,7 +14,7 @@ export interface Item {
   /**
    * This item's creation date.
    */
-  date: DateTime;
+  created: DateTime;
 
   /**
    * The title of this item.
@@ -149,6 +149,11 @@ export interface Enclosure {
  * When an item is loaded from the database, it gets properties indicating where it came from.
  */
 export interface LoadedItem extends Item {
+  /**
+   * When the item was saved.
+   */
+  saved: DateTime;
+
   /**
    * The user-defined unique ID for the washer instance.
    */

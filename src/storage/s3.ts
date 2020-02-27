@@ -65,7 +65,7 @@ export class S3 extends FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const key = path.join(
       this.downloadsDir,
-      Math.floor(download.item.date.toSeconds()).toString(),
+      Math.floor(download.item.created.toSeconds()).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -128,7 +128,7 @@ export class S3 extends FileStore {
     const targetDir = filenamifyUrl(download.url);
 
     let local: string;
-    const date = download.item.date;
+    const date = download.item.created;
     let remoteDir = "";
 
     try {

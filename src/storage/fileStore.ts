@@ -81,7 +81,7 @@ export class FileStore {
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const dir = path.join(
       this.downloadsDir,
-      Math.floor(download.item.date.toSeconds()).toString(),
+      Math.floor(download.item.created.toSeconds()).toString(),
       filenamifyUrl(download.url)
     );
 
@@ -139,7 +139,7 @@ export class FileStore {
     const targetDir = filenamifyUrl(download.url);
 
     let local: string;
-    const date = download.item.date;
+    const date = download.item.created;
     let remoteDir = "";
 
     try {
