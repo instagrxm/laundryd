@@ -109,6 +109,10 @@ export default class Run extends BaseCommand {
     for (const file of files) {
       for (const key of Object.keys(file.exported)) {
         const exported = file.exported[key] as Function;
+        // @ts-ignore
+        if (exported.abstract) {
+          continue;
+        }
         let prototype = Object.getPrototypeOf(exported);
         while (prototype) {
           if (types.includes(prototype)) {

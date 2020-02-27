@@ -12,12 +12,17 @@ export class Washer {
   /**
    * A human-readable title for this washer, like "tweets from a user".
    */
-  static readonly title: string;
+  static readonly title: string = "";
 
   /**
    * A longer description for the washer.
    */
-  static readonly description: string;
+  static readonly description: string = "";
+
+  /**
+   * True if this is a base class for other washers and shouldn't be instantiated directly.
+   */
+  static readonly abstract: boolean = false;
 
   memory!: Memory;
   running = false;
