@@ -14,7 +14,7 @@
     "@oclif/plugin-help": "^2.2.3",
     "arr-unique": "^1.0.2",
     "array-unique": "^0.3.2",
-    "aws-sdk": "^2.626.0",
+    "aws-sdk": "^2.627.0",
     "axios": "^0.19.2",
     "clone": "^2.1.2",
     "cron": "^1.8.2",
@@ -32,6 +32,7 @@
   },
   "devDependencies": {
     "@oclif/dev-cli": "^1.22.2",
+    "@types/aws-sdk": "^2.7.0",
     "@types/clone": "^0.1.30",
     "@types/cron": "^1.7.2",
     "@types/fs-extra": "^8.1.0",
@@ -69,11 +70,6 @@
     "commands": "./lib/commands",
     "repositoryPrefix": "<%- repo %>/blob/master/<%- commandPath %>",
     "bin": "laundry",
-    "hooks": {
-      "prerun": [
-        "./lib/hooks/prerun/prerun"
-      ]
-    },
     "plugins": [
       "@oclif/plugin-help",
       "@oclif/plugin-commands"
