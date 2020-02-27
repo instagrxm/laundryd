@@ -36,7 +36,7 @@ export default class Run extends BaseCommand {
     }),
 
     files: SharedFlags.files(),
-    fileUrl: SharedFlags.fileUrl(),
+    fileUrl: SharedFlags.filesUrl(),
     downloadPool: SharedFlags.downloadPool(),
     retain: SharedFlags.retain()
   };
@@ -49,7 +49,7 @@ export default class Run extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
 
-    if (flags.files === Run.flags.files.default) {
+    if (flags.files === SharedFlags.filesHelp) {
       flags.files = Config.config.cacheDir;
     }
 

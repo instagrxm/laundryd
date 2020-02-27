@@ -43,7 +43,7 @@ export class Washer {
     }),
 
     files: SharedFlags.files(),
-    fileUrl: SharedFlags.fileUrl(),
+    fileUrl: SharedFlags.filesUrl(),
     retain: SharedFlags.retain(),
     downloadPool: SharedFlags.downloadPool()
   };

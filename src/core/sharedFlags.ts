@@ -5,8 +5,9 @@ export const SharedFlags = {
   mongo: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
-      description: "mongodb connection string",
-      default: "mongodb://localhost:27017/laundry"
+      default: () =>
+        process.env.LAUNDRY_MONGO || "mongodb://localhost:27017/laundry",
+      description: "mongodb connection string\n(env: LAUNDRY_MONGO)"
     });
   },
 
@@ -47,32 +48,42 @@ export const SharedFlags = {
     })();
   },
 
+  filesHelp: "OS cache dir",
   files: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
-      default: "OS cache dir",
-      env: "LAUNDRY_FILES",
+      default: () => process.env.LAUNDRY_FILES || SharedFlags.filesHelp,
       description:
-        "where to store downloaded files, either a local path or an s3:// location"
+        "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)"
     });
   },
 
-  fileUrl: (): flags.IOptionFlag<string | undefined> => {
+  filesUrl: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
-      default: "http://localhost:3000/files",
-      env: "LAUNDRY_URL",
-      description: "a URL which maps to the file location"
+      default: () =>
+        process.env.LAUNDRY_FILES_URL || "http://localhost:3000/files",
+      description:
+        "a URL which maps to the file location\n(env: LAUNDRY_FILES_URL)"
     });
   },
 
   downloadPool: (def = 0): flags.IOptionFlag<number | undefined> => {
     return flags.integer({
       required: true,
-      default: 5,
-      env: "LAUNDRY_DOWNLOAD_POOL",
+      default: () => {
+        const env = process.env.LAUNDRY_DOWNLOAD_POOL;
+        if (env) {
+          const n = parseInt(env);
+          if (!isNaN(n)) {
+            return n;
+          }
+        }
+        return 5;
+      },
       hidden: true,
-      description: "how many downloads to perform simultaneously"
+      description:
+        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)"
     });
   }
 };

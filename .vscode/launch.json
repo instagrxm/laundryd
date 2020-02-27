@@ -3,11 +3,7 @@
   "configurations": [
     {
       "name": "Launch Program",
-      "args": [
-        "run",
-        "--config=${workspaceRoot}/recipes/config.ts"
-        // "--mongo=mongodb://localhost:27017/laundry"
-      ],
+      "args": ["run", "--config=${workspaceRoot}/recipes/config.ts"],
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/.vscode/debug.sh",
