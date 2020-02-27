@@ -180,15 +180,23 @@ export default class Run extends BaseCommand {
       });
 
       // Convert the settings into something that looks like command-line args,
-      // since that's what the oclif parser is expecting.
+      // since that's what the oclif parser is expecting. This is kind of janky
+      // but it beats writing my own parser.
       const argv = Object.keys(setting)
         .filter(key => key !== "title")
         .map(key => {
           const val = setting[key];
           if (typeof val === "boolean") {
             return val ? `--${key}` : "";
+          } else if (
+            typeof val === "string" ||
+            typeof val === "number" ||
+            val.length !== undefined
+          ) {
+            return `--${key}=${val}`;
+          } else {
+            return `--${key}=${JSON.stringify(val)}`;
           }
-          return `--${key}=${setting[key]}`;
         });
 
       // Create and set up the washer

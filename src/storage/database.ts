@@ -1,8 +1,14 @@
 import clone from "clone";
 import { DateTime } from "luxon";
-import { Collection, Db, MongoClient } from "mongodb";
+import {
+  Collection,
+  Db,
+  FilterQuery,
+  FindOneOptions,
+  MongoClient
+} from "mongodb";
 import { Item, LoadedItem, LogItem } from "../core/item";
-import { Log, LogLevel } from "../core/log";
+import { Log } from "../core/log";
 import { Memory } from "../core/memory";
 import { Rinse } from "../core/washers/rinse";
 import { Wash } from "../core/washers/wash";
@@ -46,13 +52,25 @@ export class Database {
    * @param document the raw document from the database
    * @param washer the washer that created the item
    */
-  private static hydrateItem(document: any, washer: Washer): LoadedItem {
+  private static hydrateItem(
+    document: any,
+    id: string,
+    title: string
+  ): LoadedItem {
     delete document._id;
-    document.washerId = washer.config.id;
-    document.washerTitle = washer.getType().title;
+    document.washerId = id;
+    document.washerTitle = title;
     document.saved = DateTime.fromJSDate(document.saved).toUTC();
     document.created = DateTime.fromJSDate(document.created).toUTC();
     return document;
+  }
+
+  private static hydrateWasherItem(document: any, washer: Washer): LoadedItem {
+    return Database.hydrateItem(
+      document,
+      washer.config.id,
+      washer.getType().title
+    );
   }
 
   /**
@@ -79,7 +97,7 @@ export class Database {
         memory.lastRun = DateTime.fromJSDate(memory.lastRun).toUTC();
       }
       if (memory.lastItem) {
-        memory.lastItem = Database.hydrateItem(memory.lastItem, washer);
+        memory.lastItem = Database.hydrateWasherItem(memory.lastItem, washer);
       }
     }
     return memory || {};
@@ -109,18 +127,22 @@ export class Database {
    */
   static async loadItems(
     washer: Washer,
-    since: DateTime
+    since: DateTime,
+    filter: FilterQuery<any> = {}
   ): Promise<LoadedItem[]> {
     if (!washer) {
       return [];
     }
 
+    filter = Object.assign(filter, { saved: { $gt: since } });
+    const options: FindOneOptions = { sort: { saved: -1 } };
+
     const items: any[] = await Database.db
       .collection(washer.config.id)
-      .find({ saved: { $gt: since } }, { sort: { saved: -1 } })
+      .find(filter, options)
       .toArray();
 
-    const loadedItems = items.map(i => Database.hydrateItem(i, washer));
+    const loadedItems = items.map(i => Database.hydrateWasherItem(i, washer));
 
     return loadedItems;
   }
@@ -167,52 +189,66 @@ export class Database {
    * Receive a callback whenever a washer generates a new item.
    * @param washer the washer to subscribe to
    * @param callback a callback to receive new items on
+   * @param filter receive only items that match this filter
    */
-  static subscribe(
+  static subscribeToWasher(
     washer: Wash | Rinse,
-    callback: (item: LoadedItem) => void
+    callback: (item: LoadedItem) => void,
+    filter: FilterQuery<any> = {}
   ): void {
-    const pipeline = [{ $match: { operationType: "insert" } }];
-    const changeStream = Database.db
-      .collection(washer.config.id)
-      .watch(pipeline);
+    Database.subscribeToCollection(
+      washer.config.id,
+      (change: any) => {
+        const item: LoadedItem = Database.hydrateWasherItem(
+          change.fullDocument,
+          washer
+        );
 
-    changeStream.on("change", change => {
-      const item: LoadedItem = change.fullDocument;
-      item.washerId = washer.config.id;
-      item.washerTitle = washer.getType().title;
-      callback(item);
-    });
+        callback(item);
+      },
+      filter
+    );
   }
 
   /**
-   * Receive a callback whenever a new log message is saved
-   * @param level get logs at this level and above
+   * Receive a callback whenever a new log item is created.
    * @param callback a callback to receive new log messages on
+   * @param filter receive only messages that match this filter
    */
-  static subscribeLog(
-    level: LogLevel,
-    callback: (item: LogItem) => void
+  static subscribeToLog(
+    callback: (item: LoadedItem) => void,
+    filter: FilterQuery<any> = {}
   ): void {
-    let levels = Object.values(LogLevel);
-    levels = levels.slice(levels.indexOf(level));
+    Database.subscribeToCollection(
+      Log.collection,
+      (change: any) => {
+        const item: LoadedItem = Database.hydrateItem(
+          change.fullDocument,
+          Log.collection,
+          Log.collection
+        );
 
-    const pipeline = [
-      {
-        $match: {
-          $and: [
-            { operationType: "insert" },
-            { "fullDocument.text": { $in: levels } }
-          ]
-        }
-      }
-    ];
+        callback(item);
+      },
+      filter
+    );
+  }
 
-    const changeStream = Database.db.collection(Log.collection).watch(pipeline);
+  private static subscribeToCollection(
+    collection: string,
+    callback: (item: LoadedItem) => void,
+    filter: FilterQuery<any> = {}
+  ): void {
+    const match: any = {};
+    Object.keys(filter).forEach(k => (match[`fullDocument.${k}`] = filter[k]));
+    match.operationType = "insert";
+
+    const pipeline = [{ $match: match }];
+
+    const changeStream = Database.db.collection(collection).watch(pipeline);
 
     changeStream.on("change", change => {
-      const item: LogItem = change.fullDocument;
-      callback(item);
+      callback(change);
     });
   }
 

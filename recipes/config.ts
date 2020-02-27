@@ -43,7 +43,7 @@ const washers: any[] = [
     title: "dry/stdout",
     subscribe: ["log"],
     color: true,
-    levels: "debug"
+    filter: { text: { $in: ["info", "warn", "error"] } }
   },
   {
     title: "fix/backupDatabase"
@@ -68,7 +68,8 @@ const washers: any[] = [
   {
     title: "test/test-rinse",
     schedule: "*/5 * * * * *",
-    subscribe: ["test/test-wash/foo", "test/test-wash/bar"]
+    subscribe: ["test/test-wash/foo", "test/test-wash/bar"],
+    filter: { url: { $regex: "endquote.com/2" } }
   }
   // {
   //   title: "test/test-dry",

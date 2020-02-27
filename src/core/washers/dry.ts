@@ -14,7 +14,8 @@ export class Dry extends Washer {
   static flags = {
     ...Washer.flags,
     schedule: SharedFlags.schedule(),
-    subscribe: SharedFlags.subscribe()
+    subscribe: SharedFlags.subscribe(),
+    filter: SharedFlags.filter()
   };
 
   config!: OutputFlags<typeof Dry.flags>;

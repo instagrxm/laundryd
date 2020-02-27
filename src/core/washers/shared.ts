@@ -5,8 +5,8 @@ import { Database } from "../../storage/database";
 import { Download, DownloadResult } from "../../storage/download";
 import { FileStore } from "../../storage/fileStore";
 import { S3 } from "../../storage/s3";
-import { Item, LoadedItem, LogItem } from "../item";
-import { Log, LogLevel } from "../log";
+import { Item, LoadedItem } from "../item";
+import { Log } from "../log";
 import { Dry } from "./dry";
 import { Fix } from "./fix";
 import { Rinse } from "./rinse";
@@ -77,7 +77,11 @@ export class Shared {
   ): Promise<LoadedItem[]> {
     let input: LoadedItem[] = [];
     for (const id of washer.config.subscribe) {
-      const items = await Database.loadItems(sources[id], since);
+      const items = await Database.loadItems(
+        sources[id],
+        since,
+        washer.config.filter
+      );
       input = input.concat(items);
     }
     return input;
@@ -96,15 +100,16 @@ export class Shared {
   ): void {
     for (const id of washer.config.subscribe) {
       if (id === Log.collection) {
-        // Subscribe to logs
-        Database.subscribeLog(LogLevel.debug, (item: LogItem) => {
-          callback(item);
-        });
+        Database.subscribeToLog(
+          (item: LoadedItem) => callback(item),
+          washer.config.filter
+        );
       } else {
-        // Subscribe to other washers
-        Database.subscribe(sources[id], (item: LoadedItem) => {
-          callback(item);
-        });
+        Database.subscribeToWasher(
+          sources[id],
+          (item: LoadedItem) => callback(item),
+          washer.config.filter
+        );
       }
     }
   }

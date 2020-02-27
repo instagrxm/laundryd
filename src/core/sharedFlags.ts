@@ -1,5 +1,6 @@
 import { flags } from "@oclif/command";
 import { CronTime } from "cron";
+import { FilterQuery } from "mongodb";
 
 export const SharedFlags = {
   mongo: (): flags.IOptionFlag<string | undefined> => {
@@ -85,6 +86,22 @@ export const SharedFlags = {
         return input.split(",");
       },
       description: "listen for items from this washer id"
+    })();
+  },
+
+  // https://docs.mongodb.com/manual/reference/operator/query/#query-selectors
+  filter: (): flags.IOptionFlag<FilterQuery<any> | undefined> => {
+    return flags.build<FilterQuery<any>>({
+      default: undefined,
+      required: false,
+      parse: (input: string) => {
+        try {
+          return JSON.parse(input);
+        } catch (error) {
+          throw new Error(`bad filter: ${error.message}`);
+        }
+      },
+      description: "filter incoming items using a mongodb filter query"
     })();
   }
 };

@@ -22,12 +22,12 @@ export class TestWash extends Wash {
       url: `http://endquote.com/1/${this.memory.foo}`
     };
 
-    // const item2: Item = {
-    //   date: DateTime.utc(2020, 3, 14, 0, 0, 0),
-    //   title: "from test-wash",
-    //   text: "foo 2",
-    //   url: `http://endquote.com/2/${this.memory.foo}`
-    // };
+    const item2: Item = {
+      created: DateTime.utc(2020, 3, 14, 0, 0, 0),
+      title: "from test-wash",
+      text: "foo 2",
+      url: `http://endquote.com/2/${this.memory.foo}`
+    };
 
     item1.downloads = [
       Download.audio(
@@ -41,24 +41,18 @@ export class TestWash extends Wash {
       )
     ];
 
-    // item2.downloads = [
-    //   Download.audio(
-    //     item2,
-    //     "https://soundcloud.com/complexion/tfbs228",
-    //     (result: DownloadResult) => {
-    //       item2.meta = {
-    //         url: `${result.url}/${result.image}`
-    //       };
-    //     }
-    //   )
-    // ];
+    item2.downloads = [
+      Download.audio(
+        item2,
+        "https://soundcloud.com/complexion/tfbs228",
+        (result: DownloadResult) => {
+          item2.meta = {
+            url: `${result.url}/${result.image}`
+          };
+        }
+      )
+    ];
 
-    // return new Promise((resolve, reject) => {
-    //   setTimeout(async () => {
-    //     resolve([item1, item2]);
-    //   }, 10000);
-    // });
-
-    return [item1];
+    return [item1, item2];
   }
 }
