@@ -11,43 +11,6 @@ export const SharedFlags = {
     });
   },
 
-  retain: (def = 0): flags.IOptionFlag<number | undefined> => {
-    return flags.integer({
-      default: def,
-      parse: (input: string) => Math.round(parseFloat(input)),
-      description:
-        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
-    });
-  },
-
-  schedule: (
-    required = false,
-    def?: string
-  ): flags.IOptionFlag<string | undefined> => {
-    return flags.string({
-      default: def,
-      required,
-      parse: (input: string) => {
-        const time = new CronTime(input);
-        return input;
-      },
-      description: "when to run the washer"
-    });
-  },
-
-  subscribe: (): flags.IOptionFlag<string[] | undefined> => {
-    return flags.build<string[]>({
-      default: [],
-      parse: (input: string) => {
-        if (!input || !(typeof input === "string")) {
-          throw new Error("missing subscribe");
-        }
-        return input.split(",");
-      },
-      description: "listen for items from this washer id"
-    })();
-  },
-
   filesHelp: "OS cache dir",
   files: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
@@ -85,5 +48,43 @@ export const SharedFlags = {
       description:
         "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)"
     });
+  },
+
+  retain: (def = 0): flags.IOptionFlag<number | undefined> => {
+    return flags.integer({
+      required: true,
+      default: def,
+      parse: (input: string) => Math.round(parseFloat(input)),
+      description:
+        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
+    });
+  },
+
+  schedule: (
+    required = false,
+    def?: string
+  ): flags.IOptionFlag<string | undefined> => {
+    return flags.string({
+      default: def,
+      required,
+      parse: (input: string) => {
+        const time = new CronTime(input);
+        return input;
+      },
+      description: "when to run the washer"
+    });
+  },
+
+  subscribe: (): flags.IOptionFlag<string[] | undefined> => {
+    return flags.build<string[]>({
+      default: [],
+      parse: (input: string) => {
+        if (!input || !(typeof input === "string")) {
+          throw new Error("missing subscribe");
+        }
+        return input.split(",");
+      },
+      description: "listen for items from this washer id"
+    })();
   }
 };
