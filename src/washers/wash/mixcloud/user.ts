@@ -8,8 +8,8 @@ export default class User extends Mixcloud {
   static readonly title: string = "wash/mixcloud/user";
   static readonly description: string = "load mixes from a Mixcloud user";
 
-  static flags = {
-    ...Mixcloud.flags,
+  static settings = {
+    ...Mixcloud.settings,
 
     user: flags.string({
       description: "the username to load mixes from",
@@ -17,7 +17,7 @@ export default class User extends Mixcloud {
     })
   };
 
-  config!: OutputFlags<typeof User.flags>;
+  config!: OutputFlags<typeof User.settings>;
 
   async run(): Promise<Item[]> {
     const items = await this.getUserShows(

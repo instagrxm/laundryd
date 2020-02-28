@@ -8,7 +8,7 @@ import { Downloader } from "../../storage/downloader";
 import { FileStore } from "../../storage/fileStore";
 import { Log } from "../log";
 import { Memory } from "../memory";
-import { SharedFlags } from "../sharedFlags";
+import { Settings } from "../settings";
 import { Shared, Sources, WasherType } from "./shared";
 
 export class Washer {
@@ -30,7 +30,7 @@ export class Washer {
   memory!: Memory;
   running = false;
 
-  static flags = {
+  static settings = {
     id: flags.string({
       required: true,
       parse: (input: string) => {
@@ -45,23 +45,23 @@ export class Washer {
       description: "a unique identifier for this washer"
     }),
 
-    enabled: SharedFlags.boolean({
+    enabled: Settings.boolean({
       default: true,
       description: "whether to run this washer at all"
     }),
 
-    memory: SharedFlags.boolean({
+    memory: Settings.boolean({
       default: true,
       description: "whether to save memory after each run"
     }),
 
-    files: SharedFlags.files(),
-    fileUrl: SharedFlags.filesUrl(),
-    retain: SharedFlags.retain(),
-    downloadPool: SharedFlags.downloadPool()
+    files: Settings.files(),
+    fileUrl: Settings.filesUrl(),
+    retain: Settings.retain(),
+    downloadPool: Settings.downloadPool()
   };
 
-  config!: OutputFlags<typeof Washer.flags>;
+  config!: OutputFlags<typeof Washer.settings>;
 
   fileStore!: FileStore;
   downloader: Downloader = new Downloader(this);
@@ -71,7 +71,7 @@ export class Washer {
 
   paused = false;
 
-  constructor(config: OutputFlags<typeof Washer.flags>) {
+  constructor(config: OutputFlags<typeof Washer.settings>) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }

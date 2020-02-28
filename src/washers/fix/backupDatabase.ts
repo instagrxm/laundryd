@@ -6,7 +6,7 @@ import path from "path";
 import util from "util";
 import { Config } from "../../core/config";
 import { Log } from "../../core/log";
-import { SharedFlags } from "../../core/sharedFlags";
+import { Settings } from "../../core/settings";
 import { Fix } from "../../core/washers/fix";
 
 const exec = util.promisify(childProcess.exec);
@@ -15,12 +15,12 @@ export class BackupDatabase extends Fix {
   static readonly title: string = "fix/backupDatabase";
   static readonly description: string = "dump the database to the file store";
 
-  static flags = {
-    ...Fix.flags,
-    mongo: SharedFlags.mongo()
+  static settings = {
+    ...Fix.settings,
+    mongo: Settings.mongo()
   };
 
-  config!: OutputFlags<typeof BackupDatabase.flags>;
+  config!: OutputFlags<typeof BackupDatabase.settings>;
 
   async init(): Promise<void> {
     try {

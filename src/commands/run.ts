@@ -6,7 +6,7 @@ import path from "path";
 import BaseCommand from "../core/baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
-import { SharedFlags } from "../core/sharedFlags";
+import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
@@ -21,7 +21,7 @@ export default class Run extends BaseCommand {
   static flags = {
     ...BaseCommand.flags,
 
-    mongo: SharedFlags.mongo(),
+    mongo: Settings.mongo(),
 
     config: flags.string({
       required: true,
@@ -38,10 +38,10 @@ export default class Run extends BaseCommand {
         "the port to use for the web server which hosts files and the admin interface"
     }),
 
-    files: SharedFlags.files(),
-    fileUrl: SharedFlags.filesUrl(),
-    downloadPool: SharedFlags.downloadPool(),
-    retain: SharedFlags.retain()
+    files: Settings.files(),
+    fileUrl: Settings.filesUrl(),
+    downloadPool: Settings.downloadPool(),
+    retain: Settings.retain()
   };
 
   static args = [];
@@ -52,7 +52,7 @@ export default class Run extends BaseCommand {
   async run(): Promise<void> {
     const { args, flags } = this.parse(Run);
 
-    if (flags.files === SharedFlags.filesHelp) {
+    if (flags.files === Settings.filesHelp) {
       flags.files = Config.config.cacheDir;
     }
 
@@ -181,7 +181,7 @@ export default class Run extends BaseCommand {
       }
 
       // Let washers inherit settings from the run command.
-      const flags = Object.keys(types[setting.title].flags);
+      const flags = Object.keys(types[setting.title].settings);
       const keys = Object.keys(this.flags);
       const vals = Object.values(this.flags);
       keys.forEach((key, index) => {
@@ -214,7 +214,7 @@ export default class Run extends BaseCommand {
       // Create and set up the washer
       let washer;
       try {
-        const { flags } = parse(argv, { flags: types[setting.title].flags });
+        const { flags } = parse(argv, { flags: types[setting.title].settings });
         washer = new types[setting.title](flags);
       } catch (error) {
         throw new Error(`${setting.id}: ${error.message}`);

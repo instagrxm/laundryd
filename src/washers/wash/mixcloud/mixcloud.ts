@@ -8,8 +8,8 @@ import { Download, DownloadResult } from "../../../storage/download";
 export class Mixcloud extends Wash {
   static readonly abstract: boolean = true;
 
-  static flags = {
-    ...Wash.flags
+  static settings = {
+    ...Wash.settings
   };
 
   api = "https://api.mixcloud.com";

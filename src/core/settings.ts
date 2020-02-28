@@ -3,7 +3,7 @@ import { IBooleanFlag } from "@oclif/parser/lib/flags";
 import { CronTime } from "cron";
 import { FilterQuery } from "mongodb";
 
-export const SharedFlags = {
+export const Settings = {
   mongo: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
@@ -17,7 +17,7 @@ export const SharedFlags = {
   files: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
-      default: () => process.env.LAUNDRY_FILES || SharedFlags.filesHelp,
+      default: () => process.env.LAUNDRY_FILES || Settings.filesHelp,
       description:
         "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)"
     });

@@ -4,7 +4,7 @@ import { DateTime, Duration } from "luxon";
 import { Database } from "../../storage/database";
 import { Item } from "../item";
 import { Log } from "../log";
-import { SharedFlags } from "../sharedFlags";
+import { Settings } from "../settings";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
 
@@ -13,9 +13,9 @@ export class Wash extends Washer {
   static readonly description: string =
     "retrieve data on a schedule and parse it into a normalized format";
 
-  static flags = {
-    ...Washer.flags,
-    schedule: SharedFlags.schedule(true),
+  static settings = {
+    ...Washer.settings,
+    schedule: Settings.schedule(true),
 
     begin: flags.integer({
       default: 0,
@@ -24,7 +24,7 @@ export class Wash extends Washer {
     })
   };
 
-  config!: OutputFlags<typeof Wash.flags>;
+  config!: OutputFlags<typeof Wash.settings>;
 
   async init(): Promise<void> {
     await super.init();
@@ -39,7 +39,7 @@ export class Wash extends Washer {
     );
 
     const firstRun = beginDate.diff(this.memory.lastRun).milliseconds > 0;
-    const lastConfig = this.memory.config as OutputFlags<typeof Wash.flags>;
+    const lastConfig = this.memory.config as OutputFlags<typeof Wash.settings>;
     const beginChanged = this.config.begin !== lastConfig.begin;
 
     if (firstRun || beginChanged) {

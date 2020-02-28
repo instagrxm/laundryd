@@ -1,7 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { Log } from "../log";
-import { SharedFlags } from "../sharedFlags";
+import { Settings } from "../settings";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
 
@@ -10,13 +10,13 @@ export class Fix extends Washer {
   static readonly description: string =
     "perform a task that requires all other washers to pause";
 
-  static flags = {
-    ...Washer.flags,
-    schedule: SharedFlags.schedule(true, "0 0 0 * * *"),
-    retain: SharedFlags.retain(7)
+  static settings = {
+    ...Washer.settings,
+    schedule: Settings.schedule(true, "0 0 0 * * *"),
+    retain: Settings.retain(7)
   };
 
-  config!: OutputFlags<typeof Fix.flags>;
+  config!: OutputFlags<typeof Fix.settings>;
 
   runExclusive!: (washer: Fix) => Promise<void>;
 

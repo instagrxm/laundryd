@@ -11,8 +11,8 @@ export default class Uploads extends Mixcloud {
   static readonly description: string =
     "load new uploads from everyone you're following on Mixcloud";
 
-  static flags = {
-    ...Mixcloud.flags,
+  static settings = {
+    ...Mixcloud.settings,
 
     clientId: flags.string({
       description:
@@ -40,7 +40,7 @@ export default class Uploads extends Mixcloud {
     })
   };
 
-  config!: OutputFlags<typeof Uploads.flags>;
+  config!: OutputFlags<typeof Uploads.settings>;
 
   protected me!: any;
 

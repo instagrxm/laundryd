@@ -2,7 +2,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Database } from "../../storage/database";
 import { LoadedItem } from "../item";
 import { Log } from "../log";
-import { SharedFlags } from "../sharedFlags";
+import { Settings } from "../settings";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 
@@ -11,14 +11,14 @@ export class Dry extends Washer {
   static readonly description: string =
     "accept normalized data on a schedule or as it arrives, and take actions on it";
 
-  static flags = {
-    ...Washer.flags,
-    schedule: SharedFlags.schedule(),
-    subscribe: SharedFlags.subscribe(),
-    filter: SharedFlags.filter()
+  static settings = {
+    ...Washer.settings,
+    schedule: Settings.schedule(),
+    subscribe: Settings.subscribe(),
+    filter: Settings.filter()
   };
 
-  config!: OutputFlags<typeof Dry.flags>;
+  config!: OutputFlags<typeof Dry.settings>;
 
   async init(sources: Sources): Promise<void> {
     await super.init();

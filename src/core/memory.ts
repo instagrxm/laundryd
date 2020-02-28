@@ -6,6 +6,6 @@ import { Washer } from "./washers/washer";
 export interface Memory {
   [key: string]: any;
   lastRun: DateTime;
-  config: OutputFlags<typeof Washer.flags>;
+  config: OutputFlags<typeof Washer.settings>;
   lastItem?: Item;
 }
