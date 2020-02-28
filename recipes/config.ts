@@ -40,83 +40,83 @@ const schedule = {
 
 const washers: any[] = [
   {
-    title: "dry/stdout",
+    name: "dry/stdout",
     subscribe: ["log"],
     color: true,
     filter: { text: { $in: ["info", "warn", "error"] } }
   },
   {
-    title: "fix/backupDatabase"
+    name: "fix/backupDatabase"
   },
   {
-    title: "fix/upgradeTools"
+    name: "fix/upgradeTools"
   },
   {
-    title: "fix/clearCache"
+    name: "fix/clearCache"
   },
   {
     enabled: false,
-    title: "wash/mixcloud/user",
+    name: "wash/mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
     begin: 10,
     retain: 0
   },
   {
-    title: "wash/mixcloud/uploads",
+    name: "wash/mixcloud/uploads",
     schedule: schedule.default,
     begin: 10,
     retain: 0
   }
   // {
-  //   title: "test/test-wash",
+  //   name: "test/test-wash",
   //   id: "test/test-wash/foo",
   //   schedule: "*/5 * * * * *"
   //   // retain: 1
   // },
   // {
-  //   title: "test/test-wash",
+  //   name: "test/test-wash",
   //   id: "test/test-wash/bar",
   //   schedule: "*/5 * * * * *"
   // },
   // {
-  //   title: "test/test-rinse",
+  //   name: "test/test-rinse",
   //   schedule: "*/5 * * * * *",
   //   subscribe: ["test/test-wash/foo", "test/test-wash/bar"],
   //   filter: { url: { $regex: "endquote.com/2" } }
   // }
   // {
-  //   title: "test/test-dry",
+  //   name: "test/test-dry",
   //   schedule: "*/5 * * * * *",
   //   subscribe: ["test/test-rinse"]
   // },
   // {
-  //   title: "test/test-fix",
+  //   name: "test/test-fix",
   //   schedule: "*/10 * * * * *"
   // },
   // {
-  //   title: "wash/mixcloud/uploads",
+  //   name: "wash/mixcloud/uploads",
   //   schedule: schedule.default,
   //   auth: auth.mixcloud,
   //   begin: retention.begin,
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/mixcloud/user",
+  //   name: "wash/mixcloud/user",
   //   schedule: schedule.default,
   //   begin: retention.begin,
   //   retain: retention.retain,
   //   user: "redbullradio"
   // },
   // {
-  //   title: "wash/instagram/timeline",
+  //   name: "wash/instagram/timeline",
   //   schedule: schedule.default,
   //   auth: auth.instagram,
   //   begin: retention.begin,
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/instagram/user",
+  //   name: "wash/instagram/user",
   //   schedule: schedule.default,
   //   auth: auth.instagram,
   //   begin: retention.begin,
@@ -124,7 +124,7 @@ const washers: any[] = [
   //   user: "foo"
   // },
   // {
-  //   title: "wash/instagram/hashtag",
+  //   name: "wash/instagram/hashtag",
   //   schedule: schedule.default,
   //   auth: auth.instagram,
   //   begin: retention.begin,
@@ -132,19 +132,19 @@ const washers: any[] = [
   //   hashtag: "foo"
   // },
   // {
-  //   title: "wash/instagram/likes",
+  //   name: "wash/instagram/likes",
   //   schedule: schedule.default,
   //   auth: auth.instagram
   // },
   // {
-  //   title: "wash/twitter/timeline",
+  //   name: "wash/twitter/timeline",
   //   schedule: schedule.default,
   //   auth: auth.twitter,
   //   begin: retention.begin,
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/twitter/user",
+  //   name: "wash/twitter/user",
   //   schedule: schedule.default,
   //   auth: auth.twitter,
   //   begin: retention.begin,
@@ -152,7 +152,7 @@ const washers: any[] = [
   //   user: "foo"
   // },
   // {
-  //   title: "wash/twitter/list",
+  //   name: "wash/twitter/list",
   //   schedule: schedule.default,
   //   auth: auth.twitter,
   //   begin: retention.begin,
@@ -160,7 +160,7 @@ const washers: any[] = [
   //   list: "foo"
   // },
   // {
-  //   title: "wash/twitter/hashtag",
+  //   name: "wash/twitter/hashtag",
   //   schedule: schedule.default,
   //   auth: auth.twitter,
   //   begin: retention.begin,
@@ -168,12 +168,12 @@ const washers: any[] = [
   //   hashtag: "foo"
   // },
   // {
-  //   title: "wash/twitter/likes",
+  //   name: "wash/twitter/likes",
   //   schedule: schedule.default,
   //   auth: auth.twitter
   // },
   // {
-  //   title: "wash/soundcloud/user",
+  //   name: "wash/soundcloud/user",
   //   schedule: schedule.default,
   //   user: "foo",
   //   auth: auth.soundcloud,
@@ -182,7 +182,7 @@ const washers: any[] = [
   //   media: "audio"
   // },
   // {
-  //   title: "wash/soundcloud/playlist",
+  //   name: "wash/soundcloud/playlist",
   //   schedule: schedule.default,
   //   playlist: "foo",
   //   auth: auth.soundcloud,
@@ -191,7 +191,7 @@ const washers: any[] = [
   //   media: "audio"
   // },
   // {
-  //   title: "wash/soundcloud/timeline",
+  //   name: "wash/soundcloud/timeline",
   //   schedule: schedule.default,
   //   auth: auth.soundcloud,
   //   begin: retention.begin,
@@ -199,14 +199,14 @@ const washers: any[] = [
   //   media: "audio"
   // },
   // {
-  //   title: "wash/youtube/subscribes",
+  //   name: "wash/youtube/subscribes",
   //   schedule: schedule.default,
   //   auth: auth.youtube,
   //   begin: retention.begin,
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/youtube/channel",
+  //   name: "wash/youtube/channel",
   //   schedule: schedule.default,
   //   auth: auth.youtube,
   //   begin: retention.begin,
@@ -215,7 +215,7 @@ const washers: any[] = [
   //   media: "audio"
   // },
   // {
-  //   title: "wash/youtube/playlist",
+  //   name: "wash/youtube/playlist",
   //   schedule: schedule.default,
   //   auth: auth.youtube,
   //   begin: retention.begin,
@@ -224,14 +224,14 @@ const washers: any[] = [
   //   media: "video"
   // },
   // {
-  //   title: "wash/vimeo/timeline",
+  //   name: "wash/vimeo/timeline",
   //   schedule: schedule.default,
   //   auth: auth.vimeo,
   //   begin: retention.begin,
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/vimeo/channel",
+  //   name: "wash/vimeo/channel",
   //   schedule: schedule.default,
   //   channel: "foo",
   //   auth: auth.vimeo,
@@ -239,7 +239,7 @@ const washers: any[] = [
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/vimeo/group",
+  //   name: "wash/vimeo/group",
   //   schedule: schedule.default,
   //   group: "foo",
   //   auth: auth.vimeo,
@@ -247,7 +247,7 @@ const washers: any[] = [
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/vimeo/user",
+  //   name: "wash/vimeo/user",
   //   schedule: schedule.default,
   //   user: "foo",
   //   auth: auth.vimeo,
@@ -255,80 +255,80 @@ const washers: any[] = [
   //   retain: retention.retain
   // },
   // {
-  //   title: "wash/feedbin/likes",
+  //   name: "wash/feedbin/likes",
   //   schedule: schedule.default,
   //   auth: auth.feedbin
   // },
   // {
-  //   title: "dry/feedbin/unlike",
+  //   name: "dry/feedbin/unlike",
   //   subscribe: ["wash/feedbin/likes"],
   //   auth: auth.feedbin
   // },
   // {
-  //   title: "wash/podcast/likes",
+  //   name: "wash/podcast/likes",
   //   schedule: schedule.default,
   //   auth: auth.podcast
   // },
   // {
-  //   title: "dry/podcast/unlike",
+  //   name: "dry/podcast/unlike",
   //   subscribe: ["wash/podcast/likes"],
   //   auth: auth.podcast
   // },
   // {
-  //   title: "dry/instagram/like",
+  //   name: "dry/instagram/like",
   //   subscribe: ["wash/feedbin/likes"],
   //   auth: auth.instagram
   // },
   // {
   //   id: "dry/youtube/like/feedbin",
-  //   title: "dry/youtube/like",
+  //   name: "dry/youtube/like",
   //   subscribe: ["wash/feedbin/likes"],
   //   auth: auth.youtube
   // },
   // {
-  //   title: "dry/vimeo/like",
+  //   name: "dry/vimeo/like",
   //   subscribe: ["wash/feedbin/likes"],
   //   auth: auth.vimeo
   // },
   // {
-  //   title: "dry/twitter/like",
+  //   name: "dry/twitter/like",
   //   subscribe: ["wash/feedbin/likes"],
   //   auth: auth.twitter
   // },
   // {
   //   id: "dry/youtube/like/podcast",
-  //   title: "dry/youtube/like",
+  //   name: "dry/youtube/like",
   //   subscribe: ["wash/podcast/likes"],
   //   auth: auth.youtube
   // },
   // {
-  //   title: "dry/soundcloud/like",
+  //   name: "dry/soundcloud/like",
   //   subscribe: ["wash/podcast/likes"],
   //   auth: auth.soundcloud
   // },
   // {
-  //   title: "dry/mixcloud/like",
+  //   name: "dry/mixcloud/like",
   //   subscribe: ["wash/podcast/likes"],
   //   auth: auth.soundcloud
   // },
   // {
-  //   title: "dry/instagram/story",
+  //   name: "dry/instagram/story",
   //   subscribe: ["wash/instagram/likes"],
   //   auth: auth.instagram
   // },
   // {
-  //   title: "dry/twitter/tweet",
+  //   name: "dry/twitter/tweet",
   //   subscribe: ["wash/instagram/user"],
   //   auth: auth.twitter
   // },
   // {
-  //   title: "dry/email",
+  //   name: "dry/email",
   //   subscribe: ["log/error"],
   //   to: "foo",
   //   auth: auth.email
   // }
 ];
 
-washers.forEach(w => (w.id = w.id || w.title));
+washers.forEach(w => (w.id = w.id || w.name));
 
 export = washers;

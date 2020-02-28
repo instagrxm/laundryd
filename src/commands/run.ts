@@ -157,11 +157,11 @@ export default class Run extends BaseCommand {
     settings: Record<string, any>[]
   ): Promise<Record<string, Washer>> {
     for (const setting of settings) {
-      if (!setting.title) {
+      if (!setting.name) {
         throw new Error(`missing title: ${setting.id}`);
       }
-      if (!types[setting.title]) {
-        throw new Error(`washer not found: ${setting.title}`);
+      if (!types[setting.name]) {
+        throw new Error(`washer not found: ${setting.name}`);
       }
       if (
         setting.id &&
@@ -181,7 +181,7 @@ export default class Run extends BaseCommand {
       }
 
       // Let washers inherit settings from the run command.
-      const flags = Object.keys(types[setting.title].settings);
+      const flags = Object.keys(types[setting.name].settings);
       const keys = Object.keys(this.flags);
       const vals = Object.values(this.flags);
       keys.forEach((key, index) => {
@@ -194,7 +194,7 @@ export default class Run extends BaseCommand {
       // since that's what the oclif parser is expecting. This is kind of janky
       // but it beats writing my own parser.
       const argv = Object.keys(setting)
-        .filter(key => key !== "title")
+        .filter(key => key !== "name")
         .map(key => {
           const val = setting[key];
           if (typeof val === "boolean") {
@@ -214,8 +214,8 @@ export default class Run extends BaseCommand {
       // Create and set up the washer
       let washer;
       try {
-        const { flags } = parse(argv, { flags: types[setting.title].settings });
-        washer = new types[setting.title](flags);
+        const { flags } = parse(argv, { flags: types[setting.name].settings });
+        washer = new types[setting.name](flags);
       } catch (error) {
         throw new Error(`${setting.id}: ${error.message}`);
       }
@@ -224,7 +224,7 @@ export default class Run extends BaseCommand {
         sources[setting.id] = washer as Wash | Rinse;
       }
 
-      await Log.info(this, `washer "${setting.title}" created`);
+      await Log.info(this, { msg: `washer "${setting.name}" created` });
     }
 
     for (const washer of Object.values(washers)) {
