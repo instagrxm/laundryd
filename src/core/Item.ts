@@ -125,12 +125,7 @@ export interface ItemSource {
  */
 export interface Enclosure {
   /**
-   * URL to file object (or file).
-   */
-  url: string;
-
-  /**
-   * Path to binary file (or URL).
+   * Path to file.
    */
   file: string;
 

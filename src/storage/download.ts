@@ -77,7 +77,6 @@ export class Download {
    * Factory method which returns a download to a direct URL.
    * @param item the Item that spawned this download
    * @param url the URL to download
-   * @param date the date associated with the download, likely the same as the associated Item
    * @param complete a completion handler
    */
   static direct(
@@ -98,7 +97,6 @@ export class Download {
    * Factory method which returns a download for an audio file.
    * @param item the Item that spawned this download
    * @param url the URL to download
-   * @param date the date associated with the download, likely the same as the associated Item
    * @param complete a completion handler
    */
   static audio(

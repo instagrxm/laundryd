@@ -72,8 +72,11 @@ export class Log {
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {
+      const err: any = item;
+      err.saved = item.saved.toJSDate();
+      err.created = item.created.toJSDate();
       // eslint-disable-next-line no-console
-      console.error(util.inspect(item));
+      console.error(util.inspect(err));
       process.exit(1);
     }
 

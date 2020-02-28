@@ -1,9 +1,12 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import axios from "axios";
 import { DateTime, Duration } from "luxon";
+import { stringify } from "querystring";
 import { Database } from "../../storage/database";
 import { Downloader } from "../../storage/downloader";
 import { FileStore } from "../../storage/fileStore";
+import { Log } from "../log";
 import { Memory } from "../memory";
 import { SharedFlags } from "../sharedFlags";
 import { Shared, Sources, WasherType } from "./shared";
@@ -42,7 +45,12 @@ export class Washer {
       description: "a unique identifier for this washer"
     }),
 
-    memory: flags.boolean({
+    enabled: SharedFlags.boolean({
+      default: true,
+      description: "whether to run this washer at all"
+    }),
+
+    memory: SharedFlags.boolean({
       default: true,
       description: "whether to save memory after each run"
     }),
@@ -58,6 +66,9 @@ export class Washer {
   fileStore!: FileStore;
   downloader: Downloader = new Downloader(this);
 
+  // The HTTP client that commands should use.
+  protected http = axios.create();
+
   paused = false;
 
   constructor(config: OutputFlags<typeof Washer.flags>) {
@@ -71,6 +82,26 @@ export class Washer {
   async init(sources?: Sources): Promise<void> {
     this.memory = await Database.loadMemory(this);
     await Shared.initFileStore(this);
+
+    // Log all http requests.
+    this.http.interceptors.request.use(async config => {
+      const params = config.params ? `?${stringify(config.params)}` : "";
+      const url = `${config.baseURL || ""}${config.url}${params}`;
+      await Log.info(this, { event: "http", url });
+      return config;
+    });
+
+    // Handle all http errors.
+    this.http.interceptors.response.use(
+      response => response,
+      async error => {
+        const params = error.config.params
+          ? `?${stringify(error.config.params)}`
+          : "";
+        const url = `${error.config.baseURL || ""}${error.config.url}${params}`;
+        await Log.error(this, { event: "http", url, error });
+      }
+    );
   }
 
   /**

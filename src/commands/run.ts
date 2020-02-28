@@ -175,6 +175,11 @@ export default class Run extends BaseCommand {
     const washers: Record<string, Washer> = {};
     const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
+      // Skip creation of disabled washers
+      if (setting.enabled === false) {
+        continue;
+      }
+
       // Let washers inherit settings from the run command.
       const flags = Object.keys(types[setting.title].flags);
       const keys = Object.keys(this.flags);
@@ -193,7 +198,7 @@ export default class Run extends BaseCommand {
         .map(key => {
           const val = setting[key];
           if (typeof val === "boolean") {
-            return val ? `--${key}` : "";
+            return val ? `--${key}` : `--no-${key}`;
           } else if (
             typeof val === "string" ||
             typeof val === "number" ||
@@ -203,7 +208,8 @@ export default class Run extends BaseCommand {
           } else {
             return `--${key}=${JSON.stringify(val)}`;
           }
-        });
+        })
+        .filter(s => s);
 
       // Create and set up the washer
       let washer;

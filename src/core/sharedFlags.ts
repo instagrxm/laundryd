@@ -1,4 +1,5 @@
 import { flags } from "@oclif/command";
+import { IBooleanFlag } from "@oclif/parser/lib/flags";
 import { CronTime } from "cron";
 import { FilterQuery } from "mongodb";
 
@@ -103,5 +104,12 @@ export const SharedFlags = {
       },
       description: "filter incoming items using a mongodb filter query"
     })();
+  },
+
+  // Enforce "allowNo" on boolean flags
+  // https://oclif.io/docs/flags
+  boolean: (options: Partial<IBooleanFlag<boolean>>): IBooleanFlag<boolean> => {
+    options.allowNo = true;
+    return flags.boolean(options);
   }
 };

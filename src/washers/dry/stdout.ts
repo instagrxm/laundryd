@@ -1,22 +1,22 @@
-import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import clone from "clone";
 import util from "util";
 import { LoadedItem } from "../../core/item";
+import { SharedFlags } from "../../core/sharedFlags";
 import { Dry } from "../../core/washers/dry";
 
 export class Stdout extends Dry {
-  static readonly title: string = "stdout";
-  static readonly description: string = "output items to the console";
+  static readonly title = "dry/stdout";
+  static readonly description = "output items to the console";
 
   static flags = {
     ...Dry.flags,
 
-    memory: flags.boolean({
+    memory: SharedFlags.boolean({
       default: false
     }),
 
-    color: flags.boolean({
+    color: SharedFlags.boolean({
       default: false,
       description: "output in color"
     })

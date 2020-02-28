@@ -28,6 +28,10 @@ export class Fix extends Washer {
   }
 
   async exec(): Promise<void> {
+    if (!this.config.enabled) {
+      return;
+    }
+
     try {
       await this.runExclusive(this);
 

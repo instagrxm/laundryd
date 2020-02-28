@@ -44,7 +44,7 @@ export class Dry extends Washer {
   }
 
   async exec(input: LoadedItem[]): Promise<void> {
-    if (!input || !input.length) {
+    if (!this.config.enabled || !input || !input.length) {
       return;
     }
 

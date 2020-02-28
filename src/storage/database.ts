@@ -89,18 +89,24 @@ export class Database {
    * @param washer the washer
    */
   static async loadMemory(washer: Washer): Promise<Memory> {
-    const memory = await Database.memory.findOne({
+    let memory = await Database.memory.findOne({
       washerId: washer.config.id
     });
-    if (memory) {
-      if (memory.lastRun) {
-        memory.lastRun = DateTime.fromJSDate(memory.lastRun).toUTC();
-      }
-      if (memory.lastItem) {
-        memory.lastItem = Database.hydrateWasherItem(memory.lastItem, washer);
-      }
+    memory = memory || {};
+
+    if (memory.lastRun) {
+      memory.lastRun = DateTime.fromJSDate(memory.lastRun).toUTC();
+    } else {
+      memory.lastRun = DateTime.fromSeconds(0);
     }
-    return memory || {};
+
+    if (memory.lastItem) {
+      memory.lastItem = Database.hydrateWasherItem(memory.lastItem, washer);
+    }
+
+    memory.config = memory.config || washer.config;
+
+    return memory;
   }
 
   /**
@@ -112,7 +118,10 @@ export class Database {
     if (!washer.config.memory) {
       return;
     }
+
     washer.memory.lastRun = DateTime.utc();
+    washer.memory.config = washer.config;
+
     await Database.memory.replaceOne(
       { washerId: washer.config.id },
       { $set: washer.memory },
@@ -174,7 +183,11 @@ export class Database {
     );
 
     // Save a link to the last item in memory
-    washer.memory.lastItem = saveItems[0];
+    const latest = items.reduce((prev, curr) =>
+      prev.created.diff(curr.created).milliseconds > 0 ? prev : curr
+    );
+
+    washer.memory.lastItem = Database.dehydrateItem(latest);
 
     // Delete old items
     const retainDate = washer.retainDate();
@@ -182,7 +195,7 @@ export class Database {
       return;
     }
 
-    await collection.deleteMany({ date: { $lt: retainDate } });
+    await collection.deleteMany({ created: { $lt: retainDate } });
   }
 
   /**

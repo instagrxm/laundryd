@@ -34,7 +34,7 @@ const retention = {
 };
 
 const schedule = {
-  default: "* * * * * *",
+  default: "*/5 * * * * *",
   daily: "0 0 0 * * *"
 };
 
@@ -55,22 +55,36 @@ const washers: any[] = [
     title: "fix/clearCache"
   },
   {
-    title: "test/test-wash",
-    id: "test/test-wash/foo",
-    schedule: "*/5 * * * * *"
-    // retain: 1
+    enabled: false,
+    title: "wash/mixcloud/user",
+    user: "redbullradio",
+    schedule: schedule.default,
+    begin: 10,
+    retain: 0
   },
   {
-    title: "test/test-wash",
-    id: "test/test-wash/bar",
-    schedule: "*/5 * * * * *"
-  },
-  {
-    title: "test/test-rinse",
-    schedule: "*/5 * * * * *",
-    subscribe: ["test/test-wash/foo", "test/test-wash/bar"],
-    filter: { url: { $regex: "endquote.com/2" } }
+    title: "wash/mixcloud/uploads",
+    schedule: schedule.default,
+    begin: 10,
+    retain: 0
   }
+  // {
+  //   title: "test/test-wash",
+  //   id: "test/test-wash/foo",
+  //   schedule: "*/5 * * * * *"
+  //   // retain: 1
+  // },
+  // {
+  //   title: "test/test-wash",
+  //   id: "test/test-wash/bar",
+  //   schedule: "*/5 * * * * *"
+  // },
+  // {
+  //   title: "test/test-rinse",
+  //   schedule: "*/5 * * * * *",
+  //   subscribe: ["test/test-wash/foo", "test/test-wash/bar"],
+  //   filter: { url: { $regex: "endquote.com/2" } }
+  // }
   // {
   //   title: "test/test-dry",
   //   schedule: "*/5 * * * * *",
