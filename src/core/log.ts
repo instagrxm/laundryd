@@ -28,44 +28,37 @@ export class Log {
    * Save a log message to the database.
    * @param level the level of this log message
    * @param source the command or washer generating the log
-   * @param info any info for the log message
+   * @param msg any info for the log message
    */
   static async log(
     level: LogLevel,
     source: Washer | BaseCommand,
-    info?: object | string
+    msg: LogMessage
   ): Promise<LogItem> {
-    let title = "";
-    let sourceType = "";
     let sourceId = "";
     let sourceName = "";
+    let path = "";
 
     if (source instanceof Washer) {
-      sourceType = "washer";
-      title = `${source.info.name}/${source.config.id}`;
-      sourceId = source.config.id;
       sourceName = source.info.name;
+      sourceId = source.config.id;
+      path = `washer/${sourceName}/${sourceId}`;
     } else {
-      sourceType = "command";
-      title = source.static.id;
-      sourceId = title;
-      sourceName = title;
-    }
-
-    if (typeof info === "string") {
-      info = { msg: info };
+      sourceName = source.static.id;
+      sourceId = source.static.id;
+      path = `command/${source.static.id}`;
     }
 
     const date = DateTime.utc();
 
-    const url = `laundry://${sourceType}/${title}/${date.toMillis()}`;
+    const url = `laundry://${path}/${date.toMillis()}`;
 
     const item: LogItem = {
+      level: level,
       saved: date,
       created: date,
-      title,
-      text: level,
-      meta: info,
+      text: msg.msg,
+      meta: msg,
       url,
       washerId: sourceId,
       washerName: sourceName
@@ -85,19 +78,36 @@ export class Log {
     return item;
   }
 
-  static async debug(source: Washer | BaseCommand, data?: any): Promise<void> {
-    await Log.log(LogLevel.debug, source, data);
+  static async debug(
+    source: Washer | BaseCommand,
+    msg: LogMessage
+  ): Promise<void> {
+    await Log.log(LogLevel.debug, source, msg);
   }
 
-  static async info(source: Washer | BaseCommand, data?: any): Promise<void> {
-    await Log.log(LogLevel.info, source, data);
+  static async info(
+    source: Washer | BaseCommand,
+    msg: LogMessage
+  ): Promise<void> {
+    await Log.log(LogLevel.info, source, msg);
   }
 
-  static async warn(source: Washer | BaseCommand, data?: any): Promise<void> {
-    await Log.log(LogLevel.warn, source, data);
+  static async warn(
+    source: Washer | BaseCommand,
+    msg: LogMessage
+  ): Promise<void> {
+    await Log.log(LogLevel.warn, source, msg);
   }
 
-  static async error(source: Washer | BaseCommand, data?: any): Promise<void> {
-    await Log.log(LogLevel.error, source, data);
+  static async error(
+    source: Washer | BaseCommand,
+    msg: LogMessage
+  ): Promise<void> {
+    await Log.log(LogLevel.error, source, msg);
   }
+}
+
+export interface LogMessage {
+  msg?: string;
+  [key: string]: any;
 }

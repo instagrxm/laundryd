@@ -13,7 +13,7 @@ export class TestWash extends Wash {
   });
 
   async run(): Promise<Item[]> {
-    await Log.info(this, `${this.config.id}`);
+    await Log.info(this, { msg: this.config.id });
     if (!this.memory.foo) {
       this.memory.foo = 1;
     } else {

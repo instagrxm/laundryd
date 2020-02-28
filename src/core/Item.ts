@@ -164,5 +164,5 @@ export interface LoadedItem extends Item {
  * Log messages are saved to the database the same as items, but the desription is the log level.
  */
 export interface LogItem extends LoadedItem {
-  text: LogLevel;
+  level: LogLevel;
 }

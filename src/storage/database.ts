@@ -54,18 +54,23 @@ export class Database {
    */
   private static hydrateItem(
     document: any,
-    id: string,
-    title: string
+    name?: string,
+    id?: string
   ): LoadedItem {
     delete document._id;
-    document.washerId = id;
+    if (name) {
+      document.washerName = name;
+    }
+    if (id) {
+      document.washerId = id;
+    }
     document.saved = DateTime.fromJSDate(document.saved).toUTC();
     document.created = DateTime.fromJSDate(document.created).toUTC();
     return document;
   }
 
   private static hydrateWasherItem(document: any, washer: Washer): LoadedItem {
-    return Database.hydrateItem(document, washer.config.id, washer.info.title);
+    return Database.hydrateItem(document, washer.info.name, washer.config.id);
   }
 
   /**
@@ -230,11 +235,7 @@ export class Database {
     Database.subscribeToCollection(
       Log.collection,
       (change: any) => {
-        const item: LoadedItem = Database.hydrateItem(
-          change.fullDocument,
-          Log.collection,
-          Log.collection
-        );
+        const item: LoadedItem = Database.hydrateItem(change.fullDocument);
 
         callback(item);
       },

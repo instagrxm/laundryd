@@ -10,12 +10,11 @@ export class TestDry extends Dry {
   });
 
   async run(items: LoadedItem[]): Promise<void> {
-    await Log.info(
-      this,
-      `${this.config.id} got ${items.length} items from ${items.map(
+    await Log.info(this, {
+      msg: `${this.config.id} got ${items.length} items from ${items.map(
         i => i.washerId
       )}`
-    );
+    });
     if (!this.memory.foo) {
       this.memory.foo = 1;
     } else {

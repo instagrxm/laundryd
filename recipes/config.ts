@@ -43,7 +43,7 @@ const washers: any[] = [
     name: "dry/stdout",
     subscribe: ["log"],
     color: true,
-    filter: { text: { $in: ["info", "warn", "error"] } }
+    filter: { level: { $in: ["info", "warn", "error"] } }
   },
   {
     name: "fix/backupDatabase"

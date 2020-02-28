@@ -9,7 +9,7 @@ export class TestFix extends Fix {
   });
 
   async run(): Promise<void> {
-    await Log.info(this);
+    await Log.info(this, { msg: this.config.id });
     if (!this.memory.foo) {
       this.memory.foo = 1;
     } else {
