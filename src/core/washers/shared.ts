@@ -186,4 +186,21 @@ export class Shared {
 
     return items;
   }
+
+  static async checkItems(
+    washer: Wash | Rinse,
+    items: Item[]
+  ): Promise<Item[]> {
+    // Don't let bad dates creep in
+    const invalid = items.filter(i => !i.created || !i.created.isValid);
+    if (invalid.length) {
+      await Log.error(washer, {
+        msg: "invalid created dates",
+        urls: invalid.map(i => i.url)
+      });
+      items = items.filter(i => !invalid.includes(i));
+    }
+
+    return items;
+  }
 }

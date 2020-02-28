@@ -57,6 +57,7 @@ export class Wash extends Washer {
     try {
       let items = await this.run();
 
+      items = await Shared.checkItems(this, items);
       items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
 
