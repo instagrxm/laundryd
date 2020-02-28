@@ -38,18 +38,18 @@ export class Log {
     let title = "";
     let sourceType = "";
     let sourceId = "";
-    let sourceTitle = "";
+    let sourceName = "";
 
     if (source instanceof Washer) {
       sourceType = "washer";
-      title = `${source.getType().title}/${source.config.id}`;
+      title = `${source.info.name}/${source.config.id}`;
       sourceId = source.config.id;
-      sourceTitle = source.getType().title;
+      sourceName = source.info.name;
     } else {
       sourceType = "command";
-      title = source.getType().id;
+      title = source.static.id;
       sourceId = title;
-      sourceTitle = title;
+      sourceName = title;
     }
 
     if (typeof info === "string") {
@@ -68,7 +68,7 @@ export class Log {
       meta: info,
       url,
       washerId: sourceId,
-      washerTitle: sourceTitle
+      washerName: sourceName
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {

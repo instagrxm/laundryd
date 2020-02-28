@@ -4,10 +4,13 @@ import util from "util";
 import { LoadedItem } from "../../core/item";
 import { Settings } from "../../core/settings";
 import { Dry } from "../../core/washers/dry";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 export class Stdout extends Dry {
-  static readonly title = "dry/stdout";
-  static readonly description = "output items to the console";
+  static readonly info = new WasherInfo({
+    title: "stdout",
+    description: "output items to the console"
+  });
 
   static settings = {
     ...Dry.settings,

@@ -55,7 +55,6 @@ const washers: any[] = [
     name: "fix/clearCache"
   },
   {
-    enabled: false,
     name: "wash/mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
@@ -63,6 +62,7 @@ const washers: any[] = [
     retain: 0
   },
   {
+    enabled: false,
     name: "wash/mixcloud/uploads",
     schedule: schedule.default,
     begin: 10,

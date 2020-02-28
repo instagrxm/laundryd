@@ -1,8 +1,12 @@
 import { Log } from "../../core/log";
 import { Fix } from "../../core/washers/fix";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 export class TestFix extends Fix {
-  static readonly title: string = "test-fix";
+  static readonly info = new WasherInfo({
+    title: "test-fix",
+    description: "test-fix"
+  });
 
   async run(): Promise<void> {
     await Log.info(this);

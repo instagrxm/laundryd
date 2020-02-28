@@ -3,13 +3,14 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Config } from "../../../core/config";
 import { Item } from "../../../core/item";
 import { Log } from "../../../core/log";
+import { WasherInfo } from "../../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
 export default class Uploads extends Mixcloud {
-  static readonly abstract: boolean = false;
-  static readonly title: string = "wash/mixcloud/uploads";
-  static readonly description: string =
-    "load new uploads from everyone you're following on Mixcloud";
+  static readonly info = new WasherInfo({
+    title: "Mixcloud uploads",
+    description: "load new uploads from everyone you're following on Mixcloud"
+  });
 
   static settings = {
     ...Mixcloud.settings,

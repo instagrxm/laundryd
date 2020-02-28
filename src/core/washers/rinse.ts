@@ -6,11 +6,15 @@ import { Log } from "../log";
 import { Settings } from "../settings";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
+import { WasherInfo } from "./washerInfo";
 
 export class Rinse extends Washer {
-  static readonly title: string = "rinse";
-  static readonly description: string =
-    "accept normalized data on a schedule or as it arrives, analyze it, and return new data";
+  static readonly info = new WasherInfo({
+    title: "rinse base class",
+    description:
+      "accept normalized data on a schedule or as it arrives, analyze it, and return new data",
+    abstract: true
+  });
 
   static settings = {
     ...Washer.settings,

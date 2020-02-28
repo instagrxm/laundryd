@@ -2,10 +2,15 @@ import { DateTime } from "luxon";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Wash } from "../../core/washers/wash";
+import { WasherInfo } from "../../core/washers/washerInfo";
 import { Download, DownloadResult } from "../../storage/download";
 
 export class TestWash extends Wash {
-  static readonly title: string = "test-wash";
+  static readonly info = new WasherInfo({
+    title: "test-wash",
+    description: "test-wash",
+    abstract: false
+  });
 
   async run(): Promise<Item[]> {
     await Log.info(this, `${this.config.id}`);

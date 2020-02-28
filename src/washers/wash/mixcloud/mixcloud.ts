@@ -3,10 +3,15 @@ import { DateTime } from "luxon";
 import path from "path";
 import { Item } from "../../../core/item";
 import { Wash } from "../../../core/washers/wash";
+import { WasherInfo } from "../../../core/washers/washerInfo";
 import { Download, DownloadResult } from "../../../storage/download";
 
 export class Mixcloud extends Wash {
-  static readonly abstract: boolean = true;
+  static readonly info = new WasherInfo({
+    title: "Mixcloud base class",
+    description: "get and parse data from mixcloud.com",
+    abstract: true
+  });
 
   static settings = {
     ...Wash.settings

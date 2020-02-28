@@ -5,11 +5,15 @@ import { Log } from "../log";
 import { Settings } from "../settings";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
+import { WasherInfo } from "./washerInfo";
 
 export class Dry extends Washer {
-  static readonly title: string = "dry";
-  static readonly description: string =
-    "accept normalized data on a schedule or as it arrives, and take actions on it";
+  static readonly info = new WasherInfo({
+    title: "dry base class",
+    description:
+      "accept normalized data on a schedule or as it arrives, and take actions on it",
+    abstract: true
+  });
 
   static settings = {
     ...Washer.settings,

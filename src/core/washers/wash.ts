@@ -7,11 +7,15 @@ import { Log } from "../log";
 import { Settings } from "../settings";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
+import { WasherInfo } from "./washerInfo";
 
 export class Wash extends Washer {
-  static readonly title: string = "wash";
-  static readonly description: string =
-    "retrieve data on a schedule and parse it into a normalized format";
+  static readonly info = new WasherInfo({
+    title: "wash base class",
+    description:
+      "retrieve data on a schedule and parse it into a normalized format",
+    abstract: true
+  });
 
   static settings = {
     ...Washer.settings,

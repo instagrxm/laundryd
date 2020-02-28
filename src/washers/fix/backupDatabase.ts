@@ -8,12 +8,15 @@ import { Config } from "../../core/config";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
 import { Fix } from "../../core/washers/fix";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 const exec = util.promisify(childProcess.exec);
 
 export class BackupDatabase extends Fix {
-  static readonly title: string = "fix/backupDatabase";
-  static readonly description: string = "dump the database to the file store";
+  static readonly info = new WasherInfo({
+    title: "back up database",
+    description: "dump the database to the file store"
+  });
 
   static settings = {
     ...Fix.settings,

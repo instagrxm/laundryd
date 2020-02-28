@@ -13,6 +13,7 @@ import { Rinse } from "../core/washers/rinse";
 import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
+import { WasherInfo } from "../core/washers/washerInfo";
 import { Database } from "../storage/database";
 
 export default class Run extends BaseCommand {
@@ -110,12 +111,14 @@ export default class Run extends BaseCommand {
       for (const key of Object.keys(file.exported)) {
         const exported = file.exported[key] as Function;
         // @ts-ignore
-        if (exported.abstract) {
+        const info: WasherInfo = exported.info;
+        if (info.abstract) {
           continue;
         }
         let prototype = Object.getPrototypeOf(exported);
         while (prototype) {
           if (types.includes(prototype)) {
+            info.name = file.name;
             washers[file.name] = exported as WasherType;
             break;
           }

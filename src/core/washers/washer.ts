@@ -9,23 +9,15 @@ import { FileStore } from "../../storage/fileStore";
 import { Log } from "../log";
 import { Memory } from "../memory";
 import { Settings } from "../settings";
-import { Shared, Sources, WasherType } from "./shared";
+import { Shared, Sources } from "./shared";
+import { WasherInfo } from "./washerInfo";
 
 export class Washer {
-  /**
-   * A human-readable title for this washer, like "tweets from a user".
-   */
-  static readonly title: string = "";
-
-  /**
-   * A longer description for the washer.
-   */
-  static readonly description: string = "";
-
-  /**
-   * True if this is a base class for other washers and shouldn't be instantiated directly.
-   */
-  static readonly abstract: boolean = false;
+  static readonly info = new WasherInfo({
+    title: "washer base class",
+    description: "washer base class",
+    abstract: true
+  });
 
   memory!: Memory;
   running = false;
@@ -104,11 +96,8 @@ export class Washer {
     );
   }
 
-  /**
-   * Return the static side of a washer so its title and description are accessible.
-   */
-  getType(): WasherType {
-    return Object.getPrototypeOf(this).constructor;
+  get info(): WasherInfo {
+    return Object.getPrototypeOf(this).constructor.info;
   }
 
   /**

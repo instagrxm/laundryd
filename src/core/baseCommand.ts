@@ -11,7 +11,7 @@ export default class BaseCommand extends Command {
     const { args, flags } = this.parse(BaseCommand);
   }
 
-  getType(): CommandType {
+  get static(): CommandType {
     return Object.getPrototypeOf(this).constructor;
   }
 }

@@ -59,18 +59,13 @@ export class Database {
   ): LoadedItem {
     delete document._id;
     document.washerId = id;
-    document.washerTitle = title;
     document.saved = DateTime.fromJSDate(document.saved).toUTC();
     document.created = DateTime.fromJSDate(document.created).toUTC();
     return document;
   }
 
   private static hydrateWasherItem(document: any, washer: Washer): LoadedItem {
-    return Database.hydrateItem(
-      document,
-      washer.config.id,
-      washer.getType().title
-    );
+    return Database.hydrateItem(document, washer.config.id, washer.info.title);
   }
 
   /**

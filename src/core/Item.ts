@@ -155,9 +155,9 @@ export interface LoadedItem extends Item {
   washerId: string;
 
   /**
-   * The title of the washer, which is the same for all instances.
+   * The name of the washer, which is the same for all instances.
    */
-  washerTitle: string;
+  washerName: string;
 }
 
 /**

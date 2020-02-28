@@ -4,11 +4,14 @@ import { Log } from "../log";
 import { Settings } from "../settings";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
+import { WasherInfo } from "./washerInfo";
 
 export class Fix extends Washer {
-  static readonly title: string = "fix";
-  static readonly description: string =
-    "perform a task that requires all other washers to pause";
+  static readonly info = new WasherInfo({
+    title: "fix base class",
+    description: "perform a task that requires all other washers to pause",
+    abstract: true
+  });
 
   static settings = {
     ...Washer.settings,
