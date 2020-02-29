@@ -15,7 +15,7 @@
     "arr-unique": "^1.0.2",
     "array-unique": "^0.3.2",
     "autolinker": "^3.13.0",
-    "aws-sdk": "^2.627.0",
+    "aws-sdk": "^2.629.0",
     "axios": "^0.19.2",
     "clone": "^2.1.2",
     "cron": "^1.8.2",
@@ -29,7 +29,7 @@
     "querystring": "^0.2.0",
     "shortid": "^2.2.15",
     "tiny-async-pool": "^1.1.0",
-    "tslib": "^1.11.0",
+    "tslib": "^1.11.1",
     "youtube-dl.js": "^1.1.1"
   },
   "devDependencies": {
@@ -42,7 +42,7 @@
     "@types/luxon": "^1.21.0",
     "@types/mime": "^2.0.1",
     "@types/mongodb": "^3.3.16",
-    "@types/node": "^13.7.6",
+    "@types/node": "^13.7.7",
     "@types/shortid": "0.0.29",
     "@types/tiny-async-pool": "^1.0.0",
     "@typescript-eslint/eslint-plugin": "^2.21.0",
@@ -51,7 +51,7 @@
     "globby": "^11.0.0",
     "prettier": "^1.19.1",
     "ts-node": "^8.6.2",
-    "typescript": "^3.8.2"
+    "typescript": "^3.8.3"
   },
   "engines": {
     "node": ">=8.0.0"
