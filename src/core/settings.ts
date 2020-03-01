@@ -33,6 +33,14 @@ export const Settings = {
     });
   },
 
+  download: (): IBooleanFlag<boolean> => {
+    return flags.boolean({
+      default: false,
+      allowNo: true,
+      description: "whether to download media"
+    });
+  },
+
   downloadPool: (def = 0): flags.IOptionFlag<number | undefined> => {
     return flags.integer({
       required: true,

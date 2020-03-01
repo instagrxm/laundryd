@@ -20,7 +20,10 @@ export class Rinse extends Washer {
     ...Washer.settings,
     schedule: Settings.schedule(),
     subscribe: Settings.subscribe(),
-    filter: Settings.filter()
+    filter: Settings.filter(),
+
+    download: Settings.download(),
+    downloadPool: Settings.downloadPool()
   };
 
   config!: OutputFlags<typeof Rinse.settings>;
@@ -58,7 +61,11 @@ export class Rinse extends Washer {
       let items = await this.run(input);
 
       items = await Shared.checkItems(this, items);
-      items = await Shared.downloadItems(this, items);
+
+      if (this.config.download) {
+        items = await Shared.downloadItems(this, items);
+      }
+
       await Database.saveItems(this, items);
 
       await Database.saveMemory(this);

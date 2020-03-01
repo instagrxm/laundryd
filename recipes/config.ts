@@ -58,6 +58,7 @@ const washers: any[] = [
     name: "wash/mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
+    download: true,
     begin: 10,
     retain: 0
   },
@@ -65,6 +66,7 @@ const washers: any[] = [
     enabled: false,
     name: "wash/mixcloud/uploads",
     schedule: schedule.default,
+    download: true,
     begin: 10,
     retain: 0
   }

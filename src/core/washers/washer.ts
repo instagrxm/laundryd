@@ -49,8 +49,7 @@ export class Washer {
 
     files: Settings.files(),
     fileUrl: Settings.filesUrl(),
-    retain: Settings.retain(),
-    downloadPool: Settings.downloadPool()
+    retain: Settings.retain()
   };
 
   config!: OutputFlags<typeof Washer.settings>;
