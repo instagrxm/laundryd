@@ -36,14 +36,15 @@ export class BackupDatabase extends Fix {
   }
 
   async run(): Promise<void> {
-    const localDir = Config.config.cacheDir;
+    const localDir = path.join(Config.config.cacheDir, this.config.id);
+    await fs.ensureDir(localDir);
     const file = "mongo.dump";
+    const dest = path.join(localDir, file);
 
-    const cmd = `mongodump --uri=${this.config.mongo} --archive=${localDir}`;
+    const cmd = `mongodump --uri=${this.config.mongo} --archive=${dest}`;
     await Log.info(this, { msg: "dumping database", cmd });
     await exec(cmd);
 
-    const dest = path.join(localDir, file);
     await Log.info(this, { msg: "saving dump file", dest });
     const dir = await this.fileStore.saveDownload(DateTime.utc(), dest);
 
