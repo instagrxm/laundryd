@@ -51,20 +51,18 @@ export default class Run extends BaseCommand {
   washers!: Record<string, Washer>;
 
   async run(): Promise<void> {
-    const { args, flags } = this.parse(Run);
+    await super.run();
 
-    if (flags.files === Settings.filesHelp) {
-      flags.files = Config.config.cacheDir;
+    if (this.flags.files === Settings.filesHelp) {
+      this.flags.files = Config.config.cacheDir;
     }
-
-    this.flags = flags;
 
     Config.init(this.config);
 
     await Database.init(this.flags.mongo);
 
     const washerTypes = await this.loadWasherTypes();
-    const settings = await this.loadSettings(flags.config);
+    const settings = await this.loadSettings(this.flags.config);
     this.washers = await this.createWashers(washerTypes, settings);
   }
 
