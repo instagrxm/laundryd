@@ -54,10 +54,8 @@ export default class Run extends BaseCommand {
     await super.run();
 
     if (this.flags.files === Settings.filesHelp) {
-      this.flags.files = Config.config.cacheDir;
+      this.flags.files = Config.config.dataDir;
     }
-
-    Config.init(this.config);
 
     await Database.init(this.flags.mongo);
 
