@@ -15,10 +15,13 @@ import { Download, DownloadResult } from "./download";
 // @ts-ignore: no types available for ffbinaries
 import ffbinaries = require("ffbinaries");
 
-const ytdl = path.join(
+const ytdlPath = path.join(
   __dirname,
   "../../node_modules/youtube-dl.js/bin/youtube-dl"
 );
+
+const ffmpegPath = path.join(__dirname, "../../node_modules/ffbinaries/bin");
+
 const exec = util.promisify(process.execFile);
 
 /**
@@ -131,9 +134,8 @@ export class Downloader {
   ): Promise<DownloadResult> {
     // https://github.com/ytdl-org/youtube-dl/blob/master/README.md#options
 
-    const ffmpeg = path.join(Config.config.cacheDir, "ffmpeg");
     const args: string[] = [
-      `--ffmpeg-location=${ffmpeg}`,
+      `--ffmpeg-location=${ffmpegPath}`,
       "--restrict-filenames",
       "--socket-timeout=10"
     ];
@@ -172,7 +174,7 @@ export class Downloader {
 
     try {
       await Log.debug(this.washer, { event: "download-ytdl", url });
-      await exec(ytdl, args, opts);
+      await exec(ytdlPath, args, opts);
     } catch (error) {
       throw error;
     }
@@ -216,15 +218,14 @@ export class Downloader {
    * Upgrade the binaries for ffmpeg.
    */
   private async upgradeFfmpeg(): Promise<void> {
-    const ffmpeg = path.join(Config.config.cacheDir, "ffmpeg");
-    await fs.ensureDir(ffmpeg);
+    await fs.ensureDir(ffmpegPath);
 
     let download = true;
 
     // ffbinaries doesn't do a version check, so we'll do that.
     try {
       const versionOutput = (
-        await exec(path.join(ffmpeg, "ffmpeg"), ["-version"])
+        await exec(path.join(ffmpegPath, "ffmpeg"), ["-version"])
       ).stdout;
       // first line includes: ffmpeg version 4.2.2
       const currentVersion = versionOutput
@@ -245,7 +246,7 @@ export class Downloader {
 
     const opts = {
       platform: ffbinaries.detectPlatform(),
-      destination: ffmpeg,
+      destination: ffmpegPath,
       force: true,
       quiet: true
     };
@@ -263,7 +264,7 @@ export class Downloader {
    */
   private async upgradeYoutubedl(): Promise<void> {
     try {
-      const res = await exec(ytdl, ["-U"]);
+      const res = await exec(ytdlPath, ["-U"]);
       await Log.debug(this.washer, { event: "upgrade-ytdl", msg: res.stdout });
     } catch (error) {
       await Log.error(this.washer, { event: "upgrade-ytdl", error });
