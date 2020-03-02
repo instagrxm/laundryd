@@ -11,7 +11,7 @@ export class TestRinse extends Rinse {
   });
 
   async run(items: LoadedItem[]): Promise<Item[]> {
-    await Log.info(this, {
+    await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(
         i => i.washerId
       )}`

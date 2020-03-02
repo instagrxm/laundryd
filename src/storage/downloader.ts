@@ -103,7 +103,7 @@ export class Downloader {
     const file = path.join(dir, result.media);
 
     return new Promise(async (resolve, reject) => {
-      await Log.info(this.washer, { event: "download-http", url });
+      await Log.debug(this.washer, { event: "download-http", url });
       axios(url, { responseType: "stream" })
         .then(response => {
           result.size = response.headers["content-length"];
@@ -171,7 +171,7 @@ export class Downloader {
     args.push(url);
 
     try {
-      await Log.info(this.washer, { event: "download-ytdl", url });
+      await Log.debug(this.washer, { event: "download-ytdl", url });
       await exec(ytdl, args, opts);
     } catch (error) {
       throw error;
@@ -252,7 +252,7 @@ export class Downloader {
 
     try {
       const res = await util.promisify(ffbinaries.downloadBinaries)(null, opts);
-      await Log.info(this.washer, { event: "upgrade-ffmpeg", res });
+      await Log.debug(this.washer, { event: "upgrade-ffmpeg", res });
     } catch (error) {
       await Log.error(this.washer, { event: "upgrade-ffmpeg", error });
     }
@@ -264,7 +264,7 @@ export class Downloader {
   private async upgradeYoutubedl(): Promise<void> {
     try {
       const res = await exec(ytdl, ["-U"]);
-      await Log.info(this.washer, { event: "upgrade-ytdl", msg: res.stdout });
+      await Log.debug(this.washer, { event: "upgrade-ytdl", msg: res.stdout });
     } catch (error) {
       await Log.error(this.washer, { event: "upgrade-ytdl", error });
     }
@@ -275,7 +275,7 @@ export class Downloader {
    */
   async clean(): Promise<void> {
     try {
-      await Log.info(this.washer, {
+      await Log.debug(this.washer, {
         event: "cache-clean",
         dir: this.tempRoot
       });

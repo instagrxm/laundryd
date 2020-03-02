@@ -62,12 +62,14 @@ export class Wash extends Washer {
 
     try {
       this.startTime = DateTime.utc();
+      await Log.info(this, { msg: "start" });
       let items = await this.run();
       items = await Shared.checkItems(this, items);
       items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
       await Database.saveMemory(this);
       await this.fileStore.clean();
+      await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });
     }

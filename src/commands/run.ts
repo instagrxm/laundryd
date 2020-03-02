@@ -1,6 +1,5 @@
 import { flags } from "@oclif/command";
-import { parse } from "@oclif/parser";
-import { OutputFlags } from "@oclif/parser/lib/parse";
+import { OutputArgs, OutputFlags, parse } from "@oclif/parser";
 import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../core/baseCommand";
@@ -48,10 +47,11 @@ export default class Run extends BaseCommand {
   static args = [];
 
   flags!: OutputFlags<typeof Run.flags>;
+  args!: OutputArgs<typeof Run.args>;
   washers!: Record<string, Washer>;
 
   async run(): Promise<void> {
-    await super.run();
+    await super.run(Run);
 
     if (this.flags.files === Settings.filesHelp) {
       this.flags.files = Config.config.dataDir;
@@ -223,7 +223,7 @@ export default class Run extends BaseCommand {
         sources[setting.id] = washer as Wash | Rinse;
       }
 
-      await Log.info(this, { msg: `washer "${setting.name}" created` });
+      await Log.debug(this, { msg: `washer "${setting.name}" created` });
     }
 
     for (const washer of Object.values(washers)) {

@@ -173,7 +173,7 @@ export class S3 extends FileStore {
       };
 
       const response = await this.s3.upload(params).promise();
-      await Log.info(this.washer, {
+      await Log.debug(this.washer, {
         event: "s3-upload",
         connection: this.connection,
         response
@@ -233,7 +233,7 @@ export class S3 extends FileStore {
       for (const k of oldKeys) {
         const log = { event: "s3-delete", connection: this.connection, key: k };
         try {
-          await Log.info(this.washer, log);
+          await Log.debug(this.washer, log);
           await this.s3.deleteObject({ Bucket: this.bucket, Key: k }).promise();
         } catch (error) {
           await Log.error(this.washer, { ...log, error });
@@ -262,7 +262,7 @@ export class S3 extends FileStore {
 
     const log = { event: "s3-save", connection: this.connection, key };
     try {
-      await Log.info(this.washer, log);
+      await Log.debug(this.washer, log);
       await this.s3
         .putObject({
           Bucket: this.bucket,
@@ -287,7 +287,7 @@ export class S3 extends FileStore {
       if (!result.Body) {
         return;
       }
-      await Log.info(this.washer, {
+      await Log.debug(this.washer, {
         event: "s3-read",
         connection: this.connection,
         key
@@ -303,7 +303,7 @@ export class S3 extends FileStore {
 
     try {
       await this.s3.deleteObject({ Bucket: this.bucket, Key: key }).promise();
-      await Log.info(this.washer, {
+      await Log.debug(this.washer, {
         event: "s3-delete",
         connection: this.connection,
         key

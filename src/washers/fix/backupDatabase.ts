@@ -42,14 +42,14 @@ export class BackupDatabase extends Fix {
     const dest = path.join(localDir, file);
 
     const cmd = `mongodump --uri=${this.config.mongo} --archive=${dest}`;
-    await Log.info(this, { msg: "dumping database", cmd });
+    await Log.debug(this, { msg: "dumping database", cmd });
     await exec(cmd);
 
-    await Log.info(this, { msg: "saving dump file", dest });
+    await Log.debug(this, { msg: "saving dump file", dest });
     const dir = await this.fileStore.saveDownload(DateTime.utc(), dest);
 
     const url = `${this.fileStore.url}/${dir}/${file}`;
-    await Log.info(this, { msg: "backup complete", url });
+    await Log.debug(this, { msg: "backup complete", url });
 
     await fs.remove(localDir);
   }

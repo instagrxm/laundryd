@@ -10,7 +10,7 @@ export class TestDry extends Dry {
   });
 
   async run(items: LoadedItem[]): Promise<void> {
-    await Log.info(this, {
+    await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(
         i => i.washerId
       )}`

@@ -3,6 +3,8 @@ import util from "util";
 import { Database } from "../storage/database";
 import BaseCommand from "./baseCommand";
 import { LogItem } from "./item";
+import { Dry } from "./washers/dry";
+import { Rinse } from "./washers/rinse";
 import { Washer } from "./washers/washer";
 
 /**
@@ -34,12 +36,19 @@ export class Log {
     level: LogLevel,
     source: Washer | BaseCommand,
     msg: LogMessage
-  ): Promise<LogItem> {
+  ): Promise<void> {
     let sourceId = "";
     let sourceName = "";
     let path = "";
 
     if (source instanceof Washer) {
+      // Loggers can't log
+      if (source instanceof Rinse || source instanceof Dry) {
+        if (source.config.subscribe.includes(Log.collection)) {
+          return;
+        }
+      }
+
       sourceName = source.info.name;
       sourceId = source.config.id;
       path = `washer/${sourceName}/${sourceId}`;
@@ -75,7 +84,6 @@ export class Log {
 
     // console.log(item);
     await Database.writeLog(item);
-    return item;
   }
 
   static async debug(

@@ -55,9 +55,11 @@ export class Dry extends Washer {
 
     try {
       this.startTime = DateTime.utc();
+      await Log.info(this, { msg: "start" });
       await this.run(input);
       await Database.saveMemory(this);
       await this.fileStore.clean();
+      await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });
     }

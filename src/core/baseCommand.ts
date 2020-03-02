@@ -1,5 +1,4 @@
 import { Command } from "@oclif/command";
-import { Input } from "@oclif/command/lib/flags";
 import { OutputArgs, OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 import { Config } from "./config";
@@ -8,16 +7,13 @@ export type CommandType = typeof Command;
 
 export default class BaseCommand extends Command {
   static flags = {};
-  protected flags!: OutputFlags<typeof BaseCommand.flags>;
-
   static args = [];
+
+  protected flags!: OutputFlags<typeof BaseCommand.flags>;
   protected args!: OutputArgs<typeof BaseCommand.args>;
 
-  async run(): Promise<void> {
-    const { flags, args } = this.parse(
-      this.constructor as Input<typeof BaseCommand.flags>
-    );
-
+  async run(commandClass?: any): Promise<void> {
+    const { args, flags } = this.parse(commandClass || BaseCommand);
     this.flags = flags;
     this.args = args;
 

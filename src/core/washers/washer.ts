@@ -78,7 +78,7 @@ export class Washer {
     this.http.interceptors.request.use(async config => {
       const params = config.params ? `?${stringify(config.params)}` : "";
       const url = `${config.baseURL || ""}${config.url}${params}`;
-      await Log.info(this, { event: "http", url });
+      await Log.debug(this, { event: "http", url });
       return config;
     });
 
