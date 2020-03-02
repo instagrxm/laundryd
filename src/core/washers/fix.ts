@@ -1,4 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import { DateTime } from "luxon";
 import { Database } from "../../storage/database";
 import { Log } from "../log";
 import { Settings } from "../settings";
@@ -36,8 +37,8 @@ export class Fix extends Washer {
     }
 
     try {
+      this.startTime = DateTime.utc();
       await this.runExclusive(this);
-
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {

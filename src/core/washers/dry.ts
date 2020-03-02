@@ -1,4 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import { DateTime } from "luxon";
 import { Database } from "../../storage/database";
 import { LoadedItem } from "../item";
 import { Log } from "../log";
@@ -53,8 +54,8 @@ export class Dry extends Washer {
     }
 
     try {
+      this.startTime = DateTime.utc();
       await this.run(input);
-
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {

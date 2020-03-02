@@ -1,4 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import { DateTime } from "luxon";
 import { Database } from "../../storage/database";
 import { Downloader } from "../../storage/downloader";
 import { Item, LoadedItem } from "../item";
@@ -21,7 +22,6 @@ export class Rinse extends Washer {
     schedule: Settings.schedule(),
     subscribe: Settings.subscribe(),
     filter: Settings.filter(),
-
     download: Settings.download(),
     downloadPool: Settings.downloadPool()
   };
@@ -58,16 +58,11 @@ export class Rinse extends Washer {
     }
 
     try {
+      this.startTime = DateTime.utc();
       let items = await this.run(input);
-
       items = await Shared.checkItems(this, items);
-
-      if (this.config.download) {
-        items = await Shared.downloadItems(this, items);
-      }
-
+      items = await Shared.downloadItems(this, items);
       await Database.saveItems(this, items);
-
       await Database.saveMemory(this);
       await this.fileStore.clean();
     } catch (error) {

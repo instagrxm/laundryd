@@ -142,6 +142,10 @@ export class Shared {
     washer: Wash | Rinse,
     items: Item[]
   ): Promise<Item[]> {
+    if (!washer.config.download) {
+      return items;
+    }
+
     let downloads: Download[] = [];
     for (const i of items) {
       if (i.downloads) {

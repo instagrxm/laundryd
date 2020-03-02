@@ -100,10 +100,6 @@ export class Database {
       memory.lastRun = DateTime.fromSeconds(0);
     }
 
-    if (memory.lastItem) {
-      memory.lastItem = Database.hydrateWasherItem(memory.lastItem, washer);
-    }
-
     memory.config = memory.config || washer.config;
 
     return memory;
@@ -120,6 +116,9 @@ export class Database {
     }
 
     washer.memory.lastRun = DateTime.utc();
+    washer.memory.lastDuration = washer.memory.lastRun.diff(
+      washer.startTime
+    ).milliseconds;
     washer.memory.config = washer.config;
 
     await Database.memory.replaceOne(
@@ -181,13 +180,6 @@ export class Database {
         collection.replaceOne({ url: i.url }, { $set: i }, { upsert: true })
       )
     );
-
-    // Save a link to the last item in memory
-    const latest = items.reduce((prev, curr) =>
-      prev.created.diff(curr.created).milliseconds > 0 ? prev : curr
-    );
-
-    washer.memory.lastItem = Database.dehydrateItem(latest);
 
     // Delete old items
     const retainDate = washer.retainDate();

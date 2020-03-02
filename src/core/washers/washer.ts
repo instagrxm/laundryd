@@ -53,14 +53,14 @@ export class Washer {
   };
 
   config!: OutputFlags<typeof Washer.settings>;
+  paused = false;
+  startTime!: DateTime;
 
   fileStore!: FileStore;
   downloader: Downloader = new Downloader(this);
 
   // The HTTP client that commands should use.
   protected http = axios.create();
-
-  paused = false;
 
   constructor(config: OutputFlags<typeof Washer.settings>) {
     if (this.constructor === Washer) {
