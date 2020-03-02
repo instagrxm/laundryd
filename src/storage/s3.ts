@@ -25,6 +25,8 @@ export class S3 extends FileStore {
       throw new Error(S3.urlFormat);
     }
 
+    // Remove auth so it doesn't appear in logs
+    connection = connection.replace(`${url.auth}@`, "");
     super(washer, connection, `https://${url.hostname}`);
 
     const parts = url.hostname.split(".");
