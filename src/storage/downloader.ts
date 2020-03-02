@@ -265,7 +265,7 @@ export class Downloader {
   private async upgradeYoutubedl(): Promise<void> {
     try {
       const res = await exec(ytdlPath, ["-U"]);
-      await Log.debug(this.washer, { msg: "upgrade-ytdl", msg: res.stdout });
+      await Log.debug(this.washer, { msg: "upgrade-ytdl", meta: res.stdout });
     } catch (error) {
       await Log.error(this.washer, { msg: "upgrade-ytdl", error });
     }

@@ -1,4 +1,5 @@
 import clone from "clone";
+import franc from "franc";
 import { DateTime } from "luxon";
 import {
   Collection,
@@ -7,7 +8,7 @@ import {
   FindOneOptions,
   MongoClient
 } from "mongodb";
-import { Item, LoadedItem, LogItem } from "../core/item";
+import { Item, LoadedItem, LogItem, MongoLanguage } from "../core/item";
 import { Log } from "../core/log";
 import { Memory } from "../core/memory";
 import { Rinse } from "../core/washers/rinse";
@@ -35,7 +36,9 @@ export class Database {
 
     // A collection to save state for each washer
     const memory = Database.db.collection("memory");
-    await memory.createIndex("washerId", { unique: true });
+    await memory.createIndexes([
+      { name: "washerId", key: { washerId: 1 }, unique: true }
+    ]);
     Database.memory = memory;
 
     // A collection to save logs
@@ -43,8 +46,10 @@ export class Database {
       capped: true,
       size: 1048576 * 10 // 10MB
     });
-    await Database.log.createIndex("created");
-    await Database.log.createIndex("saved");
+    await Database.log.createIndexes([
+      { name: "created", key: { created: -1 } },
+      { name: "saved", key: { saved: -1 } }
+    ]);
   }
 
   /**
@@ -81,6 +86,17 @@ export class Database {
     const document: any = clone(item);
     delete document.downloads;
     document.saved = DateTime.utc();
+
+    if (!document.language) {
+      document.franc = franc(`${item.title} ${item.text} ${item.tags}`);
+      const francLangs = Object.values(MongoLanguage);
+      const mongoLangs = Object.keys(MongoLanguage);
+      const mongoLang = mongoLangs[francLangs.indexOf(document.franc)];
+      if (mongoLang) {
+        document.language = mongoLang;
+      }
+    }
+
     return document;
   }
 
@@ -167,9 +183,17 @@ export class Database {
 
     // Set up the collection
     const collection = Database.db.collection(washer.config.id);
-    await collection.createIndex("created");
-    await collection.createIndex("saved");
-    await collection.createIndex("url", { unique: true });
+
+    await collection.createIndexes([
+      { name: "created", key: { created: -1 } },
+      { name: "saved", key: { saved: -1 } },
+      { name: "url", key: { url: 1 }, unique: true },
+      {
+        name: "text",
+        key: { title: "text", tags: "text", author: "text", text: "text" },
+        weights: { title: 10, tags: 10, author: 10, text: 5 }
+      }
+    ]);
 
     // Prepare the items for saving
     const saveItems: any[] = items.map(i => Database.dehydrateItem(i));

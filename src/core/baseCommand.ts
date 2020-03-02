@@ -14,8 +14,8 @@ export default class BaseCommand extends Command {
 
   async run(commandClass?: any): Promise<void> {
     const { args, flags } = this.parse(commandClass || BaseCommand);
-    this.flags = flags;
-    this.args = args;
+    this.flags = flags as OutputFlags<typeof BaseCommand.flags>;
+    this.args = args as OutputArgs<typeof BaseCommand.args>;
 
     Config.init(this.config);
 

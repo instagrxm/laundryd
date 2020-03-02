@@ -17,6 +17,11 @@ export interface Item {
   created: DateTime;
 
   /**
+   * The language to use for full-text searches.
+   */
+  language?: MongoLanguage;
+
+  /**
    * The title of this item.
    */
   title?: string;
@@ -165,4 +170,26 @@ export interface LoadedItem extends Item {
  */
 export interface LogItem extends LoadedItem {
   level: LogLevel;
+}
+
+/**
+ * Mapping of language names supported by MongoDB full-text search to those in the franc
+ * library: https://github.com/wooorm/franc
+ */
+export enum MongoLanguage {
+  danish = "dan",
+  dutch = "nld",
+  english = "eng",
+  finnish = "fin",
+  french = "fra",
+  german = "deu",
+  hungarian = "hun",
+  italian = "ita",
+  norwegian = "nob",
+  portuguese = "por",
+  romanian = "ron",
+  russian = "rus",
+  spanish = "ese",
+  swedish = "swe",
+  turkish = "tur"
 }
