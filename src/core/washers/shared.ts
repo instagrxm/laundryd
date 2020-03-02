@@ -182,7 +182,7 @@ export class Shared {
           );
         } catch (error) {
           // Remove items if the downloads fail.
-          await Log.warn(washer, { event: "download-fail", error });
+          await Log.warn(washer, { msg: "download-fail", error });
           items = items.filter(i => i !== download.item);
         }
       }
