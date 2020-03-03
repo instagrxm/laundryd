@@ -21,6 +21,9 @@ export class FileStore {
   protected downloadsDir!: string;
   protected stringsDir!: string;
 
+  downloadsPrefix = "downloads";
+  stringsPrefix = "strings";
+
   /**
    * Make a new file store.
    * @param washer the washer that's using this filestore
@@ -45,8 +48,8 @@ export class FileStore {
     dir = path.join(dir, this.washer.config.id);
 
     this.rootDir = dir;
-    this.downloadsDir = path.join(dir, "downloads");
-    this.stringsDir = path.join(dir, "strings");
+    this.downloadsDir = path.join(dir, this.downloadsPrefix);
+    this.stringsDir = path.join(dir, this.stringsPrefix);
 
     const connMap = `${this.connection}: ${this.rootDir}`;
 

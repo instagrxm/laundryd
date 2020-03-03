@@ -25,7 +25,6 @@ export class Wash extends Washer {
 
     begin: flags.integer({
       default: 0,
-      parse: (input: string) => Math.abs(Math.round(parseFloat(input))),
       description: "the number of days of past items to load in the first run"
     })
   };

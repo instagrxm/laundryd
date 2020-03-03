@@ -40,8 +40,8 @@ export class S3 extends FileStore {
 
     this.bucket = bucket;
     this.rootDir = washer.config.id;
-    this.downloadsDir = path.join(this.rootDir, "downloads");
-    this.stringsDir = path.join(this.rootDir, "strings");
+    this.downloadsDir = path.join(this.rootDir, this.downloadsPrefix);
+    this.stringsDir = path.join(this.rootDir, this.stringsPrefix);
 
     this.s3 = new AWS.S3({
       endpoint,

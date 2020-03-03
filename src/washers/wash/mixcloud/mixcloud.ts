@@ -1,6 +1,5 @@
 import Autolinker from "autolinker";
 import { DateTime } from "luxon";
-import path from "path";
 import { Item } from "../../../core/item";
 import { Wash } from "../../../core/washers/wash";
 import { WasherInfo } from "../../../core/washers/washerInfo";
@@ -101,12 +100,12 @@ export class Mixcloud extends Wash {
     item.downloads = [
       Download.audio(item, item.url, (result: DownloadResult) => {
         if (result.image) {
-          item.image = path.join(result.dir, result.image);
+          item.image = `${result.url}/${result.image}`;
         }
 
         if (result.media) {
           item.media = {
-            file: path.join(result.dir, result.media),
+            file: `${result.url}/${result.media}`,
             size: result.size as number,
             type: result.type as string
           };

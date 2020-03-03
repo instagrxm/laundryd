@@ -55,12 +55,30 @@ const washers: any[] = [
     name: "fix/clearCache"
   },
   {
+    // id: "mixcloud/rebullradio",
     name: "wash/mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
     download: true,
     begin: 10,
     retain: 0
+  },
+  {
+    enabled: false,
+    // id: "mixcloud/rebullradio/rss",
+    name: "dry/rss",
+    schedule: schedule.default,
+    subscribe: ["wash/mixcloud/user"]
+  },
+  {
+    // id: "mixcloud/rebullradio/podcast",
+    name: "dry/podcast",
+    schedule: schedule.default,
+    ownerName: "Josh Santangelo",
+    ownerEmail: "josh@endquote.com",
+    category: "Music",
+    subcategory: "Music Commentary",
+    subscribe: ["wash/mixcloud/user"]
   },
   {
     enabled: false,

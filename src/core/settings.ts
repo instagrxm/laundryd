@@ -64,7 +64,6 @@ export const Settings = {
     return flags.integer({
       required: true,
       default: def,
-      parse: (input: string) => Math.round(parseFloat(input)),
       description:
         "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
     });
