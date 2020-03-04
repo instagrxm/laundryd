@@ -18,7 +18,6 @@ export class Dry extends Washer {
 
   static settings = {
     ...Washer.settings,
-    schedule: Settings.schedule(),
     subscribe: Settings.subscribe(),
     filter: Settings.filter()
   };

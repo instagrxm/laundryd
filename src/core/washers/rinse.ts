@@ -19,7 +19,6 @@ export class Rinse extends Washer {
 
   static settings = {
     ...Washer.settings,
-    schedule: Settings.schedule(),
     subscribe: Settings.subscribe(),
     filter: Settings.filter(),
     download: Settings.download(),

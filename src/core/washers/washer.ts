@@ -37,6 +37,8 @@ export class Washer {
       description: "a unique identifier for this washer"
     }),
 
+    schedule: Settings.schedule(),
+
     enabled: Settings.boolean({
       default: true,
       description: "whether to run this washer at all"

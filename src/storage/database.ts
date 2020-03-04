@@ -123,7 +123,7 @@ export class Database {
    * @param memory the memory object
    */
   static async saveMemory(washer: Washer): Promise<void> {
-    if (!washer.config.memory) {
+    if (!washer.config.memory && !washer.config.schedule) {
       return;
     }
 
