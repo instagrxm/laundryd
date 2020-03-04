@@ -106,44 +106,38 @@ export class Email extends Dry {
   }
 
   async run(items: LoadedItem[]): Promise<void> {
-    let subject = "";
-    let text = "";
-    let html = "";
-    const attachments: Attachment[] = [];
-
     for (const item of items) {
-      if (subject) {
-        subject += ", ";
-      }
-      subject += item.title;
-
-      text += `${item.title}\n\n${item.text || item.html}\n\n`;
-
-      html += `<div><p><strong>${item.title}</strong></p>${item.html ||
-        item.text}</div>`;
-
-      if (this.config.attachJSON) {
-        attachments.push({
-          filename: item.created.toFormat("yyyyMMddHHmmss") + ".json",
-          content: JSON.stringify(Database.dehydrateItem(item), null, 2)
-        });
-      }
-
-      if (this.config.attachImage && item.image) {
-        attachments.push({
-          filename: path.parse(item.image).base,
-          path: item.image
-        });
-      }
-
-      if (this.config.attachMedia && item.media) {
-        attachments.push({
-          filename: path.parse(item.media.file).base,
-          contentType: item.media.type,
-          path: item.media.file
-        });
-      }
+      await this.sendItem(item);
     }
+  }
+
+  async sendItem(item: LoadedItem): Promise<void> {
+    const attachments: Attachment[] = [];
+    if (this.config.attachJSON) {
+      attachments.push({
+        filename: item.created.toFormat("yyyyMMddHHmmss") + ".json",
+        content: JSON.stringify(Database.dehydrateItem(item), null, 2)
+      });
+    }
+
+    if (this.config.attachImage && item.image) {
+      attachments.push({
+        filename: path.parse(item.image).base,
+        path: item.image
+      });
+    }
+
+    if (this.config.attachMedia && item.media) {
+      attachments.push({
+        filename: path.parse(item.media.file).base,
+        contentType: item.media.type,
+        path: item.media.file
+      });
+    }
+
+    const subject = item.title || item.washerId;
+    const text = item.text || item.html || "";
+    const html = item.html || item.text || "";
 
     const mail: Mail.Options = {
       from: this.config.from,
