@@ -16,28 +16,25 @@ export default class Uploads extends Mixcloud {
     ...Mixcloud.settings,
 
     clientId: flags.string({
+      required: true,
       description:
-        "the client id for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/\n(env: MIXCLOUD_CLIENTID)",
-      env: "MIXCLOUD_CLIENTID",
-      required: true
+        "the client id for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/\n(env: MIXCLOUD_CLIENTID)"
     }),
 
     clientSecret: flags.string({
+      required: true,
       description:
-        "the client secret for the Mixcloud application\n(env: MIXCLOUD_CLIENTSECRET)",
-      env: "MIXCLOUD_CLIENTSECRET",
-      required: true
+        "the client secret for the Mixcloud application\n(env: MIXCLOUD_CLIENTSECRET)"
     }),
 
     token: flags.string({
       description:
-        "the access token for the Mixcloud API\n(env: MIXCLOUD_TOKEN)",
-      env: "MIXCLOUD_TOKEN"
+        "the access token for the Mixcloud API\n(env: MIXCLOUD_TOKEN)"
     }),
 
     code: flags.string({
-      description: "the oauth code used to get an access token",
-      hidden: true
+      hidden: true,
+      description: "the oauth code used to get an access token"
     })
   };
 
