@@ -41,8 +41,8 @@ const schedule = {
 const washers: any[] = [
   {
     name: "dry/stdout",
-    subscribe: ["log"],
     color: true,
+    subscribe: ["log"],
     filter: { level: { $in: ["debug", "info", "warn", "error"] } }
   },
   {
@@ -55,7 +55,7 @@ const washers: any[] = [
     name: "fix/clearCache"
   },
   {
-    // id: "mixcloud/rebullradio",
+    // enabled: false,
     name: "wash/mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
@@ -65,29 +65,47 @@ const washers: any[] = [
   },
   {
     enabled: false,
-    // id: "mixcloud/rebullradio/rss",
-    name: "dry/rss",
+    name: "wash/mixcloud/uploads",
     schedule: schedule.default,
-    subscribe: ["wash/mixcloud/user"]
+    download: true,
+    begin: 10,
+    retain: 0,
+    clientId: process.env.MIXCLOUD_CLIENTID,
+    clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
+    token: process.env.MIXCLOUD_TOKEN
   },
   {
-    // id: "mixcloud/rebullradio/podcast",
+    enabled: false,
+    name: "dry/rss",
+    schedule: schedule.default,
+    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
+  },
+  {
+    enabled: false,
     name: "dry/podcast",
     schedule: schedule.default,
     ownerName: "Josh Santangelo",
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["wash/mixcloud/user"]
+    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
   },
   {
-    enabled: false,
-    name: "wash/mixcloud/uploads",
+    name: "dry/email",
+    smtpHost: process.env.SMTP_HOST,
+    smtpUser: process.env.SMTP_USER,
+    smtpPass: process.env.SMTP_PASS,
+    from: "laundry@endquote.com",
+    to: "josh+to1@endquote.com,josh+to2@endquote.com",
+    cc: "josh+cc1@endquote.com,josh+cc2@endquote.com",
+    attachJSON: true,
+    attachImage: true,
     schedule: schedule.default,
-    download: true,
-    begin: 10,
-    retain: 0
+    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
+    // subscribe: ["log"],
+    // filter: { level: "error" }
   }
+
   // {
   //   name: "test/test-wash",
   //   id: "test/test-wash/foo",
