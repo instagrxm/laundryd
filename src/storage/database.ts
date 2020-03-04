@@ -57,11 +57,7 @@ export class Database {
    * @param document the raw document from the database
    * @param washer the washer that created the item
    */
-  private static hydrateItem(
-    document: any,
-    name?: string,
-    id?: string
-  ): LoadedItem {
+  static hydrateItem(document: any, name?: string, id?: string): LoadedItem {
     delete document._id;
     if (name) {
       document.washerName = name;
@@ -82,7 +78,7 @@ export class Database {
    * Prepare an item to be saved to the database.
    * @param item the item being saved
    */
-  private static dehydrateItem(item: Item): any {
+  static dehydrateItem(item: Item): any {
     const document: any = clone(item);
     delete document.downloads;
     document.saved = DateTime.utc();
