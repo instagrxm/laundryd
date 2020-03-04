@@ -29,8 +29,8 @@ export class Rinse extends Washer {
 
   downloader: Downloader = new Downloader(this);
 
-  async init(sources: Sources): Promise<void> {
-    await super.init();
+  async preInit(sources: Sources): Promise<void> {
+    await super.preInit(sources);
     Shared.validateSubscriptions(this, sources);
 
     if (this.config.schedule) {

@@ -9,15 +9,12 @@ import { WasherInfo } from "../../core/washers/washerInfo";
 export class Stdout extends Dry {
   static readonly info = new WasherInfo({
     title: "stdout",
-    description: "output items to the console"
+    description: "output items to the console",
+    memory: false
   });
 
   static settings = {
     ...Dry.settings,
-
-    memory: Settings.boolean({
-      default: false
-    }),
 
     color: Settings.boolean({
       default: false,

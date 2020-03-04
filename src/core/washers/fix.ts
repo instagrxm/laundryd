@@ -24,8 +24,8 @@ export class Fix extends Washer {
 
   runExclusive!: (washer: Fix) => Promise<void>;
 
-  async init(): Promise<void> {
-    await super.init();
+  async preInit(): Promise<void> {
+    await super.preInit();
     Shared.startSchedule(this, async () => {
       await this.exec();
     });

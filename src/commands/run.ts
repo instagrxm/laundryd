@@ -233,10 +233,11 @@ export default class Run extends BaseCommand {
       try {
         if (washer instanceof Rinse || washer instanceof Dry) {
           // Init the washers with any others that they can subscribe to
-          await washer.init(sources);
+          await washer.preInit(sources);
         } else {
-          await washer.init();
+          await washer.preInit();
         }
+        await washer.init();
       } catch (error) {
         throw new Error(`${washer.config.id}: ${error.message}`);
       }

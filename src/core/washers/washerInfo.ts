@@ -10,6 +10,11 @@ export class WasherInfo {
   readonly description: string;
 
   /**
+   * If true, save and restore washer.memory between runs.
+   */
+  readonly memory: boolean;
+
+  /**
    * If true, the washer cannot be used directly, only inherited from.
    */
   readonly abstract: boolean;
@@ -22,14 +27,17 @@ export class WasherInfo {
   constructor({
     title,
     description,
-    abstract = false
+    abstract = false,
+    memory = true
   }: {
     title: string;
     description: string;
+    memory?: boolean;
     abstract?: boolean;
   }) {
     this.title = title;
     this.description = description;
+    this.memory = memory;
     this.abstract = abstract;
   }
 }

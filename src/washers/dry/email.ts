@@ -6,22 +6,18 @@ import path from "path";
 import { LoadedItem } from "../../core/item";
 import { Settings } from "../../core/settings";
 import { Dry } from "../../core/washers/dry";
-import { Sources } from "../../core/washers/shared";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { Database } from "../../storage/database";
 
 export class Email extends Dry {
   static readonly info = new WasherInfo({
     title: "email",
-    description: "send items via email using an SMTP service"
+    description: "send items via email using an SMTP service",
+    memory: false
   });
 
   static settings = {
     ...Dry.settings,
-
-    memory: Settings.boolean({
-      default: false
-    }),
 
     smtpHost: flags.string({
       required: true,
@@ -71,7 +67,7 @@ export class Email extends Dry {
       description: "cc these addresses"
     })(),
 
-    attachJSON: Settings.boolean({
+    attachData: Settings.boolean({
       default: false,
       description: "whether to attach items as JSON files"
     }),
@@ -91,9 +87,7 @@ export class Email extends Dry {
 
   private smtp!: Mail;
 
-  async init(sources: Sources): Promise<void> {
-    await super.init(sources);
-
+  async init(): Promise<void> {
     this.smtp = nodemailer.createTransport({
       host: this.config.smtpHost,
       port: this.config.smtpPort,
@@ -113,7 +107,8 @@ export class Email extends Dry {
 
   async sendItem(item: LoadedItem): Promise<void> {
     const attachments: Attachment[] = [];
-    if (this.config.attachJSON) {
+
+    if (this.config.attachData) {
       attachments.push({
         filename: item.created.toFormat("yyyyMMddHHmmss") + ".json",
         content: JSON.stringify(Database.dehydrateItem(item), null, 2)

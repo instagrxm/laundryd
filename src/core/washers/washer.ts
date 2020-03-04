@@ -44,11 +44,6 @@ export class Washer {
       description: "whether to run this washer at all"
     }),
 
-    memory: Settings.boolean({
-      default: true,
-      description: "whether to save memory after each run"
-    }),
-
     files: Settings.files(),
     fileUrl: Settings.filesUrl(),
     retain: Settings.retain()
@@ -72,7 +67,12 @@ export class Washer {
     this.config = config;
   }
 
-  async init(sources?: Sources): Promise<void> {
+  /**
+   * Perform internal initialization in washer base classes. Should not be extended
+   * by plugins.
+   * @param sources washers that can be subscribed to
+   */
+  async preInit(sources?: Sources): Promise<void> {
     this.memory = await Database.loadMemory(this);
     await Shared.initFileStore(this);
 
@@ -95,6 +95,13 @@ export class Washer {
         await Log.error(this, { msg: "http", url, error });
       }
     );
+  }
+
+  /**
+   * Perform any initialization needed at washer creation.
+   */
+  async init(): Promise<void> {
+    //
   }
 
   get info(): WasherInfo {

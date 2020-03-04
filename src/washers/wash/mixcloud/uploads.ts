@@ -43,11 +43,6 @@ export default class Uploads extends Mixcloud {
   protected me!: any;
 
   async init(): Promise<void> {
-    await super.init();
-    await this.auth();
-  }
-
-  async auth(): Promise<void> {
     const [user, repo] = Config.config.pjson.repository.split("/");
     const redirectUrl = encodeURIComponent(
       `https://${user}.github.io/${repo}/auth/mixcloud.html`

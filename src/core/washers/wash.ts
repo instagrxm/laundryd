@@ -31,8 +31,8 @@ export class Wash extends Washer {
 
   config!: OutputFlags<typeof Wash.settings>;
 
-  async init(): Promise<void> {
-    await super.init();
+  async preInit(): Promise<void> {
+    await super.preInit();
 
     if (this.config.retain > 0 && this.config.retain < this.config.begin) {
       throw new Error("retain should be larger than begin");

@@ -31,8 +31,6 @@ export class BackupDatabase extends Fix {
     } catch (error) {
       throw new Error(`couldn't find mongodump: ${error.message}`);
     }
-
-    await super.init();
   }
 
   async run(): Promise<void> {

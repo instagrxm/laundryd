@@ -75,13 +75,13 @@ const washers: any[] = [
     token: process.env.MIXCLOUD_TOKEN
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "dry/rss",
     schedule: schedule.default,
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "dry/podcast",
     schedule: schedule.default,
     ownerName: "Josh Santangelo",
@@ -98,9 +98,9 @@ const washers: any[] = [
     from: "laundry@endquote.com",
     to: "josh+to1@endquote.com,josh+to2@endquote.com",
     cc: "josh+cc1@endquote.com,josh+cc2@endquote.com",
-    attachJSON: true,
+    attachData: true,
     attachImage: true,
-    schedule: schedule.default,
+    // schedule: schedule.default,
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
     // subscribe: ["log"],
     // filter: { level: "error" }
