@@ -174,11 +174,6 @@ export default class Run extends BaseCommand {
     const washers: Record<string, Washer> = {};
     const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
-      // Skip creation of disabled washers
-      if (setting.enabled === false) {
-        continue;
-      }
-
       // Let washers inherit settings from the run command.
       const flags = Object.keys(types[setting.name].settings);
       const keys = Object.keys(this.flags);
@@ -227,6 +222,10 @@ export default class Run extends BaseCommand {
     }
 
     for (const washer of Object.values(washers)) {
+      if (!washer.config.enabled) {
+        continue;
+      }
+
       if (washer instanceof Fix) {
         washer.runExclusive = this.runExclusive.bind(this);
       }
