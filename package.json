@@ -95,7 +95,7 @@
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && cd docs && oclif-dev readme",
     "test": "echo NO TESTS",
     "version": "cd docs && oclif-dev readme",
-    "postinstall": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin"
+    "postinstall-disabled": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin"
   },
   "types": "lib/index.d.ts"
 }

@@ -19,7 +19,7 @@ $ npm install -g @laundry/laundry
 $ laundry COMMAND
 running command...
 $ laundry (-v|--version|version)
-@laundry/laundry/0.0.0 darwin-x64 node-v13.8.0
+@laundry/laundry/0.0.1 darwin-x64 node-v13.8.0
 $ laundry --help [COMMAND]
 USAGE
   $ laundry COMMAND
