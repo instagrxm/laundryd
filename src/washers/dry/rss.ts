@@ -80,9 +80,6 @@ export class RSS extends Dry {
   }
 
   buildFeed(items: LoadedItem[]): string {
-    // Build the general feed metadata
-    const feed = new RSSFactory(this.buildChannel(items[0]));
-
     // Build new items from this run of the washer
     let feedItems = items.map(i => this.buildItem(i));
 
@@ -112,6 +109,7 @@ export class RSS extends Dry {
     this.memory.lastItems = feedItems;
 
     // Build the feed
+    const feed = new RSSFactory(this.buildChannel(items[0]));
     feedItems.forEach(i => feed.item(i));
     return feed.xml({ indent: "  " });
   }
