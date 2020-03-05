@@ -142,7 +142,7 @@ export class Shared {
     washer: Wash | Rinse,
     items: Item[]
   ): Promise<Item[]> {
-    if (!washer.config.download) {
+    if (!washer.config.download || !items || !items.length) {
       return items;
     }
 
@@ -196,6 +196,9 @@ export class Shared {
     items: Item[]
   ): Promise<Item[]> {
     // Don't let bad dates creep in
+    if (!items || !items.length) {
+      return items;
+    }
     const invalid = items.filter(i => !i.created || !i.created.isValid);
     if (invalid.length) {
       await Log.error(washer, {
