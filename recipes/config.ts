@@ -67,14 +67,31 @@ const washers: any[] = [
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
   },
   {
-    // enabled: false,
-    id: "wash/mixcloud/user/format",
+    enabled: false,
+    id: "wash/mixcloud/user/jsx",
     name: "rinse/jsx",
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"],
-    html:
-      "<div><strong>{item.title}</strong></div><div><img src={item.image} /></div><div dangerouslySetInnerHTML={{__html:item.html}} />{item.meta.tags.join(',')}"
+    html: `
+      <div><strong>{item.title}</strong></div>
+      <div><img src={item.image} /></div>
+      <div dangerouslySetInnerHTML={{__html:item.html}} />
+      <div>{item.meta.tags.join(',')}</div>
+    `
   },
   {
+    // enabled: false,
+    id: "wash/mixcloud/user/handlebars",
+    name: "rinse/handlebars",
+    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"],
+    html: `
+      <div><strong>{{title}}</strong></div>
+      <div><img src={{image}} /></div>
+      <div>{{{html}}}</div>
+      <div>{{#each meta.tags}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}</div>
+    `
+  },
+  {
+    // enabled: false,
     id: "wash/mixcloud/user/email",
     name: "dry/email",
     smtpHost: process.env.SMTP_HOST,
@@ -86,7 +103,7 @@ const washers: any[] = [
     attachImage: true,
     // schedule: schedule.default,
     // subscribe: ["wash/mixcloud/user/format"]
-    subscribe: ["wash/mixcloud/user/format"]
+    subscribe: ["wash/mixcloud/user/handlebars"]
   }
 
   // {
