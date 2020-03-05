@@ -15,11 +15,11 @@ data laundering tools
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g laundry
+$ npm install -g @laundry/laundry
 $ laundry COMMAND
 running command...
 $ laundry (-v|--version|version)
-laundry/0.0.0 darwin-x64 node-v13.8.0
+@laundry/laundry/0.0.0 darwin-x64 node-v13.8.0
 $ laundry --help [COMMAND]
 USAGE
   $ laundry COMMAND
@@ -73,18 +73,20 @@ USAGE
 
 OPTIONS
   --config=config    (required) path to a javascript file exporting an array of washer settings
-  --fileUrl=fileUrl  (required) [default: http://localhost:3000/files] a URL which maps to the file location
 
-  --files=files      (required) [default: (OS cache dir)] where to store downloaded files, either a local path or an
-                     s3:// location
+  --fileUrl=fileUrl  (required) [default: http://localhost:3000/files] a URL which maps to the file location
+                     (env: LAUNDRY_FILES_URL)
+
+  --files=files      (required) [default: OS cache dir] where to store downloaded files, either a local path or an s3://
+                     location
+                     (env: LAUNDRY_FILES)
 
   --mongo=mongo      (required) [default: mongodb://localhost:27017/laundry] mongodb connection string
+                     (env: LAUNDRY_MONGO)
 
   --port=port        (required) [default: 3000] the port to use for the web server which hosts files and the admin
                      interface
-
-  --retain=retain    the number of days to keep items, or 0 to keep forever, or -1 to not keep at all
 ```
 
-_See code: [src/commands/run.ts](https://github.com/endquote/laundryd/blob/master/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/laundryd/laundry/blob/master/src/commands/run.ts)_
 <!-- commandsstop -->
