@@ -96,6 +96,8 @@ export class Email extends Dry {
         pass: this.config.smtpPass
       }
     });
+
+    await this.smtp.verify();
   }
 
   async run(items: LoadedItem[]): Promise<void> {
