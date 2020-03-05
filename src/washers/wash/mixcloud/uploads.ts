@@ -69,11 +69,13 @@ export default class Uploads extends Mixcloud {
 
   async run(): Promise<Item[]> {
     // Get the user's profile info.
-    this.me = await this.http.request({
-      url: `${this.api}/me/`,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      params: { access_token: this.config.token, metadata: 1 }
-    });
+    if (!this.me) {
+      this.me = await this.http.request({
+        url: `${this.api}/me/`,
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        params: { access_token: this.config.token, metadata: 1 }
+      });
+    }
 
     // Set up the first request.
     const req = {
