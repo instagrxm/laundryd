@@ -3,7 +3,6 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
 import RSSFactory from "rss";
-import urlUtils from "url";
 import { Config } from "../../core/config";
 import { LoadedItem } from "../../core/item";
 import { Dry } from "../../core/washers/dry";
@@ -24,23 +23,20 @@ export class RSS extends Dry {
     }),
 
     title: flags.string({
+      required: true,
       description: "the title of the feed"
     })
   };
 
   config!: OutputFlags<typeof RSS.settings>;
 
-  buildChannel(firstItem: LoadedItem): any {
-    const siteUrl = urlUtils.parse(firstItem.url);
-
+  buildChannel(pubDate: Date): any {
     return {
-      title: this.config.title || firstItem.source?.title,
+      title: this.config.title,
       generator: Config.config.pjson.name,
       feed_url: `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/rss.xml`,
-      site_url: firstItem.source?.url || `${siteUrl.protocol}//${siteUrl.host}`,
-      image_url: firstItem.source?.image || firstItem.image,
       docs: Config.config.pjson.homepage,
-      pubDate: firstItem.created.toJSDate(),
+      pubDate,
       buildDate: new Date()
     };
   }
@@ -109,7 +105,8 @@ export class RSS extends Dry {
     this.memory.lastItems = feedItems;
 
     // Build the feed
-    const feed = new RSSFactory(this.buildChannel(feedItems[0]));
+    const pubDate = feedItems[0] ? feedItems[0].date : new Date();
+    const feed = new RSSFactory(this.buildChannel(pubDate));
     feedItems.forEach(i => feed.item(i));
     return feed.xml({ indent: "  " });
   }
