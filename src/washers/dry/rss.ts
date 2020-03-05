@@ -84,25 +84,35 @@ export class RSS extends Dry {
     const feed = new RSSFactory(this.buildChannel(items[0]));
 
     // Build new items from this run of the washer
-    const newItems = items.map(i => this.buildItem(i));
+    let feedItems = items.map(i => this.buildItem(i));
 
-    // Get items from the last run, filter any with the same URL
-    let oldItems = this.memory.lastItems ?? [];
-    oldItems = oldItems.filter(
-      (o: { url: string }) => !newItems.find(n => n.url === o.url)
-    );
+    // Add items from last time
+    feedItems = feedItems.concat(this.memory.lastItems || []);
 
     // Remove any old items
     const now = DateTime.utc();
-    const allItems = newItems
-      .concat(oldItems)
-      .filter(
-        i =>
-          now.diff(DateTime.fromJSDate(i.date), "days").days <= this.config.days
-      );
+    feedItems = feedItems.filter(
+      i =>
+        now.diff(DateTime.fromJSDate(i.date), "days").days <= this.config.days
+    );
+
+    // Sort so newest is first
+    feedItems.sort((a, b) => b.date.getTime() - a.date.getTime());
+
+    // Remove duplicate URLs
+    const unique: any[] = [];
+    feedItems.forEach(i => {
+      if (!unique.find(u => u.url === i.url)) {
+        unique.push(i);
+      }
+    });
+    feedItems = unique;
+
+    // Save for next time
+    this.memory.lastItems = feedItems;
 
     // Build the feed
-    allItems.forEach(i => feed.item(i));
+    feedItems.forEach(i => feed.item(i));
     return feed.xml({ indent: "  " });
   }
 
