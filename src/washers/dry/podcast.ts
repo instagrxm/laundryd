@@ -44,8 +44,13 @@ export class Podcast extends RSS {
 
   config!: OutputFlags<typeof Podcast.settings>;
 
-  buildChannel(firstItem: LoadedItem): any {
-    const channel = super.buildChannel(firstItem);
+  buildChannel(
+    title: string,
+    pubDate: Date,
+    siteUrl: string,
+    imageUrl: string
+  ): any {
+    const channel = super.buildChannel(title, pubDate, siteUrl, imageUrl);
 
     channel.feed_url = `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/podcast.xml`;
 
@@ -56,7 +61,7 @@ export class Podcast extends RSS {
     channel.custom_elements = [];
     channel.custom_elements.push({
       "itunes:image": {
-        _attr: { href: firstItem.source?.image || firstItem.image }
+        _attr: { href: imageUrl }
       }
     });
 

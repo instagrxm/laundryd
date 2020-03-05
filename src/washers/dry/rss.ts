@@ -3,6 +3,7 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
 import RSSFactory from "rss";
+import urlUtils from "url";
 import { Config } from "../../core/config";
 import { LoadedItem } from "../../core/item";
 import { Dry } from "../../core/washers/dry";
@@ -23,21 +24,35 @@ export class RSS extends Dry {
     }),
 
     title: flags.string({
-      required: true,
       description: "the title of the feed"
+    }),
+
+    siteUrl: flags.string({
+      description: "URL to a web page containing the contents of the feed"
+    }),
+
+    imageUrl: flags.string({
+      description: "URL to an image representing the contents of the feed"
     })
   };
 
   config!: OutputFlags<typeof RSS.settings>;
 
-  buildChannel(pubDate: Date): any {
+  buildChannel(
+    title: string,
+    pubDate: Date,
+    siteUrl: string,
+    imageUrl: string
+  ): any {
     return {
-      title: this.config.title,
-      generator: Config.config.pjson.name,
-      feed_url: `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/rss.xml`,
-      docs: Config.config.pjson.homepage,
+      title,
       pubDate,
-      buildDate: new Date()
+      site_url: siteUrl,
+      image_url: imageUrl,
+      buildDate: new Date(),
+      docs: Config.config.pjson.homepage,
+      generator: Config.config.pjson.name,
+      feed_url: `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/rss.xml`
     };
   }
 
@@ -105,9 +120,24 @@ export class RSS extends Dry {
     this.memory.lastItems = feedItems;
 
     // Build the feed
-    const pubDate = feedItems[0] ? feedItems[0].date : new Date();
-    const feed = new RSSFactory(this.buildChannel(pubDate));
+    const title = this.config.title || items[0]?.source?.title || "";
+    const pubDate = items[0]?.created.toJSDate() || new Date();
+    const imageUrl = this.config.imageUrl || items[0]?.source?.image || "";
+    let siteUrl = this.config.siteUrl;
+    if (!siteUrl && items[0]) {
+      const { protocol, host } = urlUtils.parse(
+        items[0].source?.url || items[0].url
+      );
+      siteUrl = `${protocol}//${host}`;
+    }
+    const feed = new RSSFactory(
+      this.buildChannel(title, pubDate, siteUrl, imageUrl)
+    );
+
+    // Build the items
     feedItems.forEach(i => feed.item(i));
+
+    // Return the XML
     return feed.xml({ indent: "  " });
   }
 
