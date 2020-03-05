@@ -57,7 +57,6 @@ export class Email extends Dry {
     })(),
 
     cc: flags.build<string[]>({
-      required: true,
       parse: (input: string) => {
         if (!input || !(typeof input === "string")) {
           throw new Error("missing to");
@@ -140,7 +139,7 @@ export class Email extends Dry {
       cc: this.config.cc,
       subject: subject.trim(),
       text: text.trim(),
-      html: `<div>${html}</div>`,
+      html: html.trim(),
       attachments
     };
 
