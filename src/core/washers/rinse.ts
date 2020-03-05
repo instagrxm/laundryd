@@ -1,10 +1,10 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
-import { Database } from "../../storage/database";
-import { Downloader } from "../../storage/downloader";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
 import { Settings } from "../settings";
+import { Database } from "../storage/database";
+import { Downloader } from "../storage/downloader";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";

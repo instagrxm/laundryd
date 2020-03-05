@@ -1,4 +1,4 @@
-import { Item } from "../core/item";
+import { Item } from "../item";
 
 /**
  * Describes a download request to be passed to {@link Downloader}, which can download

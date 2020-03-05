@@ -8,12 +8,12 @@ import {
   FindOneOptions,
   MongoClient
 } from "mongodb";
-import { Item, LoadedItem, LogItem, MongoLanguage } from "../core/item";
-import { Log } from "../core/log";
-import { Memory } from "../core/memory";
-import { Rinse } from "../core/washers/rinse";
-import { Wash } from "../core/washers/wash";
-import { Washer } from "../core/washers/washer";
+import { Item, LoadedItem, LogItem, MongoLanguage } from "../item";
+import { Log } from "../log";
+import { Memory } from "../memory";
+import { Rinse } from "../washers/rinse";
+import { Wash } from "../washers/wash";
+import { Washer } from "../washers/washer";
 
 /**
  * Helper class for database functions.

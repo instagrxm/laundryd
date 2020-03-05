@@ -53,12 +53,14 @@ const washers: any[] = [
   {
     // enabled: false,
     name: "dry/rss",
+    title: "mixcloud combined",
     schedule: schedule.default,
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
   },
   {
     // enabled: false,
     name: "dry/podcast",
+    title: "mixcloud combined",
     schedule: schedule.default,
     ownerName: "Josh Santangelo",
     ownerEmail: "josh@endquote.com",

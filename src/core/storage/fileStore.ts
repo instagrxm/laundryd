@@ -5,8 +5,8 @@ import { DateTime } from "luxon";
 import mime from "mime";
 import os from "os";
 import path from "path";
-import { Log } from "../core/log";
-import { Washer } from "../core/washers/washer";
+import { Log } from "../log";
+import { Washer } from "../washers/washer";
 import { Download, DownloadResult } from "./download";
 
 /**

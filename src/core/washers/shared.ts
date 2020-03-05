@@ -1,12 +1,12 @@
 import { CronJob } from "cron";
 import { DateTime } from "luxon";
 import asyncPool from "tiny-async-pool";
-import { Database } from "../../storage/database";
-import { Download, DownloadResult } from "../../storage/download";
-import { FileStore } from "../../storage/fileStore";
-import { S3 } from "../../storage/s3";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
+import { Database } from "../storage/database";
+import { Download, DownloadResult } from "../storage/download";
+import { FileStore } from "../storage/fileStore";
+import { S3 } from "../storage/s3";
 import { Dry } from "./dry";
 import { Fix } from "./fix";
 import { Rinse } from "./rinse";

@@ -1,9 +1,9 @@
 import Autolinker from "autolinker";
 import { DateTime } from "luxon";
 import { Item } from "../../../core/item";
+import { Download, DownloadResult } from "../../../core/storage/download";
 import { Wash } from "../../../core/washers/wash";
 import { WasherInfo } from "../../../core/washers/washerInfo";
-import { Download, DownloadResult } from "../../../storage/download";
 
 export class Mixcloud extends Wash {
   static readonly info = new WasherInfo({

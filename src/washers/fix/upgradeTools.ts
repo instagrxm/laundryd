@@ -1,6 +1,6 @@
+import { Downloader } from "../../core/storage/downloader";
 import { Fix } from "../../core/washers/fix";
 import { WasherInfo } from "../../core/washers/washerInfo";
-import { Downloader } from "../../storage/downloader";
 
 export class UpgradeTools extends Fix {
   static readonly info = new WasherInfo({

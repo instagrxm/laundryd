@@ -7,9 +7,9 @@ import mime from "mime";
 import path from "path";
 import shortid from "shortid";
 import util from "util";
-import { Config } from "../core/config";
-import { Log } from "../core/log";
-import { Washer } from "../core/washers/washer";
+import { Config } from "../config";
+import { Log } from "../log";
+import { Washer } from "../washers/washer";
 import { Download, DownloadResult } from "./download";
 
 // @ts-ignore: no types available for ffbinaries

@@ -6,6 +6,7 @@ import BaseCommand from "../core/baseCommand";
 import { Config } from "../core/config";
 import { Log } from "../core/log";
 import { Settings } from "../core/settings";
+import { Database } from "../core/storage/database";
 import { Dry } from "../core/washers/dry";
 import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
@@ -13,7 +14,6 @@ import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
 import { WasherInfo } from "../core/washers/washerInfo";
-import { Database } from "../storage/database";
 
 export default class Run extends BaseCommand {
   static description = "";

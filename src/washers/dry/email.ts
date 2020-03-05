@@ -5,9 +5,9 @@ import Mail, { Attachment } from "nodemailer/lib/mailer";
 import path from "path";
 import { LoadedItem } from "../../core/item";
 import { Settings } from "../../core/settings";
+import { Database } from "../../core/storage/database";
 import { Dry } from "../../core/washers/dry";
 import { WasherInfo } from "../../core/washers/washerInfo";
-import { Database } from "../../storage/database";
 
 export class Email extends Dry {
   static readonly info = new WasherInfo({

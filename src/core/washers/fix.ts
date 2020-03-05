@@ -1,8 +1,8 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
-import { Database } from "../../storage/database";
 import { Log } from "../log";
 import { Settings } from "../settings";
+import { Database } from "../storage/database";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";

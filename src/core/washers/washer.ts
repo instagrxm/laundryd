@@ -3,12 +3,12 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import axios from "axios";
 import { DateTime, Duration } from "luxon";
 import { stringify } from "querystring";
-import { Database } from "../../storage/database";
-import { Downloader } from "../../storage/downloader";
-import { FileStore } from "../../storage/fileStore";
 import { Log } from "../log";
 import { Memory } from "../memory";
 import { Settings } from "../settings";
+import { Database } from "../storage/database";
+import { Downloader } from "../storage/downloader";
+import { FileStore } from "../storage/fileStore";
 import { Shared, Sources } from "./shared";
 import { WasherInfo } from "./washerInfo";
 
