@@ -66,6 +66,7 @@ export class Log {
       level: level,
       saved: date,
       created: date,
+      title: msg.msg,
       text: msg.msg,
       meta: msg,
       url,
