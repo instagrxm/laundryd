@@ -195,10 +195,11 @@ export class Shared {
     washer: Wash | Rinse,
     items: Item[]
   ): Promise<Item[]> {
-    // Don't let bad dates creep in
     if (!items || !items.length) {
       return items;
     }
+
+    // Don't let bad dates creep in
     const invalid = items.filter(i => !i.created || !i.created.isValid);
     if (invalid.length) {
       await Log.error(washer, {
@@ -207,6 +208,9 @@ export class Shared {
       });
       items = items.filter(i => !invalid.includes(i));
     }
+
+    // Sort so newest is first
+    items.sort((a, b) => b.created.toMillis() - a.created.toMillis());
 
     return items;
   }
