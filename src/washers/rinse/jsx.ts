@@ -46,35 +46,35 @@ export class JSX extends Rinse {
     return items.map(i => this.renderItem(i));
   }
 
-  renderItem(item: LoadedItem): LoadedItem {
+  renderItem(item: LoadedItem): Item {
     const props = {
       jsx: "",
       renderInWrapper: false,
       bindings: { item }
     };
 
-    if (this.config.title) {
+    if (item.title && this.config.title) {
       props.jsx = this.config.title;
       item.title = ReactDOMServer.renderToStaticMarkup(
         React.createElement(JsxParser, props)
       );
     }
 
-    if (this.config.text) {
+    if (item.text && this.config.text) {
       props.jsx = this.config.text;
       item.text = ReactDOMServer.renderToStaticMarkup(
         React.createElement(JsxParser, props)
       );
     }
 
-    if (this.config.html) {
+    if (item.html && this.config.html) {
       props.jsx = this.config.html;
       item.html = ReactDOMServer.renderToStaticMarkup(
         React.createElement(JsxParser, props)
       );
     }
 
-    if (this.config.summary) {
+    if (item.summary && this.config.summary) {
       props.jsx = this.config.summary;
       item.summary = ReactDOMServer.renderToStaticMarkup(
         React.createElement(JsxParser, props)
