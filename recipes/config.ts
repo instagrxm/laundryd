@@ -1,50 +1,9 @@
-const auth = {
-  mixcloud: {
-    key: process.env.MIXCLOUD_KEY,
-    secret: process.env.MIXCLOUD_SECRET,
-    token: process.env.MIXCLOUD_TOKEN
-  },
-  instagram: {
-    username: process.env.INSTAGRAM_USERNAME,
-    password: process.env.INSTAGRAM_PASSWORD
-  },
-  twitter: {
-    key: process.env.TWITTER_KEY,
-    secret: process.env.TWITTER_SECRET,
-    token: process.env.TWITTER_TOKEN
-  },
-  soundcloud: {},
-  youtube: {},
-  vimeo: {
-    key: process.env.VIMEO_KEY,
-    secret: process.env.VIMEO_SECRET,
-    token: process.env.VIMEO_TOKEN
-  },
-  feedbin: {
-    username: process.env.FEEDBIN_USERNAME,
-    password: process.env.FEEDBIN_PASSWORD
-  },
-  podcast: {},
-  email: {}
-};
-
-const retention = {
-  begin: 90,
-  retain: 0
-};
-
 const schedule = {
   default: "*/5 * * * * *",
   daily: "0 0 0 * * *"
 };
 
 const washers: any[] = [
-  {
-    name: "dry/stdout",
-    color: true,
-    subscribe: ["log"],
-    filter: { level: { $in: ["debug", "info", "warn", "error"] } }
-  },
   {
     name: "fix/backupDatabase"
   },
@@ -53,6 +12,23 @@ const washers: any[] = [
   },
   {
     name: "fix/clearCache"
+  },
+  {
+    name: "dry/stdout",
+    color: true,
+    subscribe: ["log"],
+    filter: { level: { $in: ["debug", "info", "warn", "error"] } }
+  },
+  {
+    name: "dry/email",
+    smtpHost: process.env.SMTP_HOST,
+    smtpUser: process.env.SMTP_USER,
+    smtpPass: process.env.SMTP_PASS,
+    from: "laundry@endquote.com",
+    to: "josh@endquote.com",
+    attachData: true,
+    subscribe: ["log"],
+    filter: { level: "error" }
   },
   {
     // enabled: false,
@@ -64,7 +40,7 @@ const washers: any[] = [
     retain: 0
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "wash/mixcloud/uploads",
     schedule: schedule.default,
     download: true,
@@ -91,19 +67,26 @@ const washers: any[] = [
     subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
   },
   {
+    // enabled: false,
+    id: "wash/mixcloud/user/format",
+    name: "rinse/jsx",
+    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"],
+    html:
+      "<div><strong>{item.title}</strong></div><div><img src={item.image} /></div><div dangerouslySetInnerHTML={{__html:item.html}} />{item.meta.tags.join(',')}"
+  },
+  {
+    id: "wash/mixcloud/user/email",
     name: "dry/email",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
     from: "laundry@endquote.com",
-    to: "josh+to1@endquote.com,josh+to2@endquote.com",
-    cc: "josh+cc1@endquote.com,josh+cc2@endquote.com",
+    to: "josh@endquote.com",
     attachData: true,
     attachImage: true,
     // schedule: schedule.default,
-    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
-    // subscribe: ["log"],
-    // filter: { level: "error" }
+    // subscribe: ["wash/mixcloud/user/format"]
+    subscribe: ["wash/mixcloud/user/format"]
   }
 
   // {
