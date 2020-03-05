@@ -68,6 +68,7 @@ export class RSS extends Dry {
     return {
       title: item.title,
       description: this.buildDescription(item),
+      summary: item.summary,
       url: item.url,
       guid: item.url,
       categories: item.tags,
