@@ -109,7 +109,7 @@ export class RSS extends Dry {
     this.memory.lastItems = feedItems;
 
     // Build the feed
-    const feed = new RSSFactory(this.buildChannel(items[0]));
+    const feed = new RSSFactory(this.buildChannel(feedItems[0]));
     feedItems.forEach(i => feed.item(i));
     return feed.xml({ indent: "  " });
   }
