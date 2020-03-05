@@ -40,8 +40,7 @@ export default class Run extends BaseCommand {
 
     files: Settings.files(),
     fileUrl: Settings.filesUrl(),
-    downloadPool: Settings.downloadPool(),
-    retain: Settings.retain()
+    downloadPool: Settings.downloadPool()
   };
 
   static args = [];
