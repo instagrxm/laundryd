@@ -52,7 +52,7 @@ export class Podcast extends RSS {
   ): any {
     const channel = super.buildChannel(title, pubDate, siteUrl, imageUrl);
 
-    channel.feed_url = `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/podcast.xml`;
+    channel.feed_url = `${this.files.url}/${this.config.id}/${this.files.stringsPrefix}/podcast.xml`;
 
     channel.custom_namespaces = {
       itunes: "http://www.itunes.com/dtds/podcast-1.0.dtd"
@@ -117,6 +117,6 @@ export class Podcast extends RSS {
 
   async run(items: LoadedItem[]): Promise<void> {
     const feed = this.buildFeed(items);
-    await this.fileStore.saveString("podcast.xml", feed);
+    await this.files.saveString("podcast.xml", feed);
   }
 }

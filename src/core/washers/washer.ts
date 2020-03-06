@@ -3,13 +3,13 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import axios from "axios";
 import { DateTime, Duration } from "luxon";
 import { stringify } from "querystring";
+import { Database } from "../database";
+import { Downloader } from "../downloader";
+import { Files } from "../files";
 import { Log } from "../log";
 import { Memory } from "../memory";
 import { Settings } from "../settings";
-import { Database } from "../storage/database";
-import { Downloader } from "../storage/downloader";
-import { FileStore } from "../storage/fileStore";
-import { Shared, Sources } from "./shared";
+import { Sources } from "./shared";
 import { WasherInfo } from "./washerInfo";
 
 export class Washer {
@@ -53,18 +53,20 @@ export class Washer {
   paused = false;
   startTime!: DateTime;
 
-  fileStore!: FileStore;
+  files!: Files;
   downloader: Downloader = new Downloader(this);
 
   // The HTTP client that commands should use.
   protected http = axios.create();
+  database: Database;
 
-  constructor(config: OutputFlags<typeof Washer.settings>) {
+  constructor(config: OutputFlags<typeof Washer.settings>, database: Database) {
     if (this.constructor === Washer) {
       throw new Error("don't instantiate Washer directly, use Wash/Rinse/Dry");
     }
 
     this.config = config;
+    this.database = database;
   }
 
   /**
@@ -72,9 +74,10 @@ export class Washer {
    * by plugins.
    * @param sources washers that can be subscribed to
    */
-  async preInit(sources?: Sources): Promise<void> {
-    this.memory = await Database.loadMemory(this);
-    await Shared.initFileStore(this);
+  async preInit(files: Files, sources?: Sources): Promise<void> {
+    this.files = files;
+
+    this.memory = await this.database.loadMemory(this);
 
     // Log all http requests.
     this.http.interceptors.request.use(async config => {

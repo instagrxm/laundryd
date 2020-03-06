@@ -5,39 +5,14 @@ import { DateTime } from "luxon";
 import mime from "mime";
 import os from "os";
 import path from "path";
-import { Log } from "../log";
-import { Washer } from "../washers/washer";
-import { Download, DownloadResult } from "./download";
+import { Download, DownloadResult } from "../core/download";
+import { Files } from "../core/files";
+import { Log } from "../core/log";
 
 /**
  * Save and load files on the local filesystem.
  */
-export class FileStore {
-  protected washer: Washer;
-  protected connection: string;
-
-  url!: string;
-  protected rootDir!: string;
-  protected downloadsDir!: string;
-  protected stringsDir!: string;
-
-  downloadsPrefix = "downloads";
-  stringsPrefix = "strings";
-
-  /**
-   * Make a new file store.
-   * @param washer the washer that's using this filestore
-   * @param connection the root path from the configuration
-   */
-  constructor(washer: Washer, connection: string, url: string) {
-    this.washer = washer;
-    this.connection = connection;
-    this.url = url;
-  }
-
-  /**
-   * Call before using to make sure the path is good.
-   */
+export class LocalFiles extends Files {
   async validate(): Promise<void> {
     let dir = this.connection;
     if (dir.startsWith("~")) {
@@ -76,11 +51,6 @@ export class FileStore {
     }
   }
 
-  /**
-   * Given a download, see if it's already been loaded. This only checks for the
-   * files on disk, not that they're actually the right size.
-   * @param download the download to check for
-   */
   async existing(download: Download): Promise<DownloadResult | undefined> {
     const dir = path.join(
       this.downloadsDir,
@@ -133,11 +103,6 @@ export class FileStore {
     }
   }
 
-  /**
-   * Once a download has completed, move it from the temp folder to the
-   * configured path.
-   * @param download the completed download
-   */
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
     const targetDir = filenamifyUrl(download.url);
 
@@ -169,12 +134,6 @@ export class FileStore {
     return download;
   }
 
-  /**
-   * Copy a file from a temp folder to the destination.
-   * @param local the local path to the temp file
-   * @param dir the path to the target location
-   * @param date the date associated with this file for cleaning
-   */
   async saveDownload(date: DateTime, local: string, dir = ""): Promise<string> {
     dir = path.join(
       this.downloadsDir,
@@ -188,10 +147,6 @@ export class FileStore {
     return dir;
   }
 
-  /**
-   * Remove files older than a given date.
-   * @param retain the oldest date to keep
-   */
   async clean(): Promise<void> {
     const retainDate = this.washer.retainDate();
     if (!retainDate) {
@@ -211,11 +166,6 @@ export class FileStore {
     }
   }
 
-  /**
-   * Save a string to a file.
-   * @param file the path of the file to save
-   * @param data the string to save
-   */
   async saveString(file: string, data: string | any): Promise<void> {
     if (!data) {
       return this.deleteString(file);
@@ -233,10 +183,6 @@ export class FileStore {
     }
   }
 
-  /**
-   * Read a string from a file.
-   * @param file the path of the file to read
-   */
   async readString(file: string): Promise<string | undefined> {
     file = path.join(this.stringsDir, file);
     try {
@@ -247,10 +193,6 @@ export class FileStore {
     }
   }
 
-  /**
-   * Delete a string file.
-   * @param file the path of the file to remove
-   */
   async deleteString(file: string): Promise<void> {
     file = path.join(this.stringsDir, file);
     try {

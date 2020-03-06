@@ -1,9 +1,9 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
+import { Files } from "../files";
 import { LoadedItem } from "../item";
 import { Log } from "../log";
 import { Settings } from "../settings";
-import { Database } from "../storage/database";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";
@@ -24,8 +24,8 @@ export class Dry extends Washer {
 
   config!: OutputFlags<typeof Dry.settings>;
 
-  async preInit(sources: Sources): Promise<void> {
-    await super.preInit(sources);
+  async preInit(files: Files, sources: Sources): Promise<void> {
+    await super.preInit(files, sources);
 
     Shared.validateSubscriptions(this, sources);
 
@@ -56,8 +56,8 @@ export class Dry extends Washer {
       this.startTime = DateTime.utc();
       await Log.info(this, { msg: "start" });
       await this.run(input);
-      await Database.saveMemory(this);
-      await this.fileStore.clean();
+      await this.database.saveMemory(this);
+      await this.files.clean();
       await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });

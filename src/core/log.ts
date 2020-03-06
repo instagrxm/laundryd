@@ -2,7 +2,6 @@ import { DateTime } from "luxon";
 import util from "util";
 import BaseCommand from "./baseCommand";
 import { LogItem } from "./item";
-import { Database } from "./storage/database";
 import { Dry } from "./washers/dry";
 import { Rinse } from "./washers/rinse";
 import { Washer } from "./washers/washer";
@@ -84,7 +83,7 @@ export class Log {
     }
 
     // console.log(item);
-    await Database.writeLog(item);
+    await source.database.writeLog(item);
   }
 
   static async debug(

@@ -52,7 +52,7 @@ export class RSS extends Dry {
       buildDate: new Date(),
       docs: Config.config.pjson.homepage,
       generator: Config.config.pjson.name,
-      feed_url: `${this.fileStore.url}/${this.config.id}/${this.fileStore.stringsPrefix}/rss.xml`
+      feed_url: `${this.files.url}/${this.config.id}/${this.files.stringsPrefix}/rss.xml`
     };
   }
 
@@ -143,6 +143,6 @@ export class RSS extends Dry {
 
   async run(items: LoadedItem[]): Promise<void> {
     const feed = this.buildFeed(items);
-    await this.fileStore.saveString("rss.xml", feed);
+    await this.files.saveString("rss.xml", feed);
   }
 }

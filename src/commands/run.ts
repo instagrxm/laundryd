@@ -4,9 +4,9 @@ import * as Globby from "globby";
 import path from "path";
 import BaseCommand from "../core/baseCommand";
 import { Config } from "../core/config";
+import { Files } from "../core/files";
 import { Log } from "../core/log";
 import { Settings } from "../core/settings";
-import { Database } from "../core/storage/database";
 import { Dry } from "../core/washers/dry";
 import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
@@ -14,14 +14,14 @@ import { WasherType } from "../core/washers/shared";
 import { Wash } from "../core/washers/wash";
 import { Washer } from "../core/washers/washer";
 import { WasherInfo } from "../core/washers/washerInfo";
+import { LocalFiles } from "../drivers/localFiles";
+import { S3Files } from "../drivers/s3files";
 
 export default class Run extends BaseCommand {
   static description = "";
 
   static flags = {
     ...BaseCommand.flags,
-
-    mongo: Settings.mongo(),
 
     config: flags.string({
       required: true,
@@ -55,8 +55,6 @@ export default class Run extends BaseCommand {
     if (this.flags.files === Settings.filesHelp) {
       this.flags.files = Config.config.dataDir;
     }
-
-    await Database.init(this.flags.mongo);
 
     const washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(this.flags.config);
@@ -208,7 +206,8 @@ export default class Run extends BaseCommand {
       let washer;
       try {
         const { flags } = parse(argv, { flags: types[setting.name].settings });
-        washer = new types[setting.name](flags);
+
+        washer = new types[setting.name](flags, this.database);
       } catch (error) {
         throw new Error(`${setting.id}: ${error.message}`);
       }
@@ -230,11 +229,24 @@ export default class Run extends BaseCommand {
       }
 
       try {
+        let fileStore: Files;
+        if (washer.config.files.startsWith("s3://")) {
+          fileStore = new S3Files(washer, washer.config.files);
+        } else {
+          fileStore = new LocalFiles(
+            washer,
+            washer.config.files,
+            washer.config.fileUrl
+          );
+        }
+        await fileStore.validate();
+        washer.files = fileStore;
+
         if (washer instanceof Rinse || washer instanceof Dry) {
           // Init the washers with any others that they can subscribe to
-          await washer.preInit(sources);
+          await washer.preInit(fileStore, sources);
         } else {
-          await washer.preInit();
+          await washer.preInit(fileStore);
         }
         await washer.init();
       } catch (error) {

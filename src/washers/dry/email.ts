@@ -5,7 +5,6 @@ import Mail, { Attachment } from "nodemailer/lib/mailer";
 import path from "path";
 import { LoadedItem } from "../../core/item";
 import { Settings } from "../../core/settings";
-import { Database } from "../../core/storage/database";
 import { Dry } from "../../core/washers/dry";
 import { WasherInfo } from "../../core/washers/washerInfo";
 
@@ -112,7 +111,7 @@ export class Email extends Dry {
     if (this.config.attachData) {
       attachments.push({
         filename: item.created.toFormat("yyyyMMddHHmmss") + ".json",
-        content: JSON.stringify(Database.dehydrateItem(item), null, 2)
+        content: JSON.stringify(this.database.dehydrateItem(item), null, 2)
       });
     }
 

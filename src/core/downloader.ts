@@ -7,10 +7,10 @@ import mime from "mime";
 import path from "path";
 import shortid from "shortid";
 import util from "util";
-import { Config } from "../config";
-import { Log } from "../log";
-import { Washer } from "../washers/washer";
+import { Config } from "./config";
 import { Download, DownloadResult } from "./download";
+import { Log } from "./log";
+import { Washer } from "./washers/washer";
 
 // @ts-ignore: no types available for ffbinaries
 import ffbinaries = require("ffbinaries");

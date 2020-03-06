@@ -1,10 +1,10 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
+import { Downloader } from "../downloader";
+import { Files } from "../files";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
 import { Settings } from "../settings";
-import { Database } from "../storage/database";
-import { Downloader } from "../storage/downloader";
 import { Shared, Sources } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";
@@ -29,8 +29,8 @@ export class Rinse extends Washer {
 
   downloader: Downloader = new Downloader(this);
 
-  async preInit(sources: Sources): Promise<void> {
-    await super.preInit(sources);
+  async preInit(files: Files, sources: Sources): Promise<void> {
+    await super.preInit(files, sources);
     Shared.validateSubscriptions(this, sources);
 
     if (this.config.schedule) {
@@ -63,9 +63,9 @@ export class Rinse extends Washer {
       items = items || [];
       items = await Shared.checkItems(this, items);
       items = await Shared.downloadItems(this, items);
-      await Database.saveItems(this, items);
-      await Database.saveMemory(this);
-      await this.fileStore.clean();
+      await this.database.saveItems(this, items);
+      await this.database.saveMemory(this);
+      await this.files.clean();
       await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });

@@ -1,10 +1,10 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime, Duration } from "luxon";
+import { Files } from "../files";
 import { Item } from "../item";
 import { Log } from "../log";
 import { Settings } from "../settings";
-import { Database } from "../storage/database";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";
@@ -31,8 +31,8 @@ export class Wash extends Washer {
 
   config!: OutputFlags<typeof Wash.settings>;
 
-  async preInit(): Promise<void> {
-    await super.preInit();
+  async preInit(files: Files): Promise<void> {
+    await super.preInit(files);
 
     if (this.config.retain > 0 && this.config.retain < this.config.begin) {
       throw new Error("retain should be larger than begin");
@@ -66,9 +66,9 @@ export class Wash extends Washer {
       items = items || [];
       items = await Shared.checkItems(this, items);
       items = await Shared.downloadItems(this, items);
-      await Database.saveItems(this, items);
-      await Database.saveMemory(this);
-      await this.fileStore.clean();
+      await this.database.saveItems(this, items);
+      await this.database.saveMemory(this);
+      await this.files.clean();
       await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });

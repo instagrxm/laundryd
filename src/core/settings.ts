@@ -1,15 +1,14 @@
 import { flags } from "@oclif/command";
 import { IBooleanFlag } from "@oclif/parser/lib/flags";
 import { CronTime } from "cron";
-import { FilterQuery } from "mongodb";
 
 export const Settings = {
-  mongo: (): flags.IOptionFlag<string | undefined> => {
+  database: (): flags.IOptionFlag<string | undefined> => {
     return flags.string({
       required: true,
       default: () =>
-        process.env.LAUNDRY_MONGO || "mongodb://localhost:27017/laundry",
-      description: "mongodb connection string\n(env: LAUNDRY_MONGO)"
+        process.env.LAUNDRY_DB || "mongodb://localhost:27017/laundry",
+      description: "database connection string\n(env: LAUNDRY_DB)"
     });
   },
 
@@ -98,8 +97,8 @@ export const Settings = {
   },
 
   // https://docs.mongodb.com/manual/reference/operator/query/#query-selectors
-  filter: (): flags.IOptionFlag<FilterQuery<any> | undefined> => {
-    return flags.build<FilterQuery<any>>({
+  filter: (): flags.IOptionFlag<any | undefined> => {
+    return flags.build<any>({
       default: undefined,
       required: false,
       parse: (input: string) => {

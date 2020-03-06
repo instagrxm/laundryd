@@ -1,8 +1,8 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
+import { Files } from "../files";
 import { Log } from "../log";
 import { Settings } from "../settings";
-import { Database } from "../storage/database";
 import { Shared } from "./shared";
 import { Washer } from "./washer";
 import { WasherInfo } from "./washerInfo";
@@ -24,8 +24,8 @@ export class Fix extends Washer {
 
   runExclusive!: (washer: Fix) => Promise<void>;
 
-  async preInit(): Promise<void> {
-    await super.preInit();
+  async preInit(files: Files): Promise<void> {
+    await super.preInit(files);
     Shared.startSchedule(this, async () => {
       await this.exec();
     });
@@ -40,8 +40,8 @@ export class Fix extends Washer {
       this.startTime = DateTime.utc();
       await Log.info(this, { msg: "start" });
       await this.runExclusive(this);
-      await Database.saveMemory(this);
-      await this.fileStore.clean();
+      await this.database.saveMemory(this);
+      await this.files.clean();
       await Log.info(this, { msg: "complete" });
     } catch (error) {
       await Log.error(this, { error });

@@ -20,7 +20,7 @@ export class BackupDatabase extends Fix {
 
   static settings = {
     ...Fix.settings,
-    mongo: Settings.mongo()
+    mongo: Settings.database()
   };
 
   config!: OutputFlags<typeof BackupDatabase.settings>;
@@ -44,9 +44,9 @@ export class BackupDatabase extends Fix {
     await exec(cmd);
 
     await Log.debug(this, { msg: "saving dump file", dest });
-    const dir = await this.fileStore.saveDownload(DateTime.utc(), dest);
+    const dir = await this.files.saveDownload(DateTime.utc(), dest, "");
 
-    const url = `${this.fileStore.url}/${dir}/${file}`;
+    const url = `${this.files.url}/${dir}/${file}`;
     await Log.debug(this, { msg: "backup complete", url });
 
     await fs.remove(localDir);

@@ -1,12 +1,9 @@
 import { CronJob } from "cron";
 import { DateTime } from "luxon";
 import asyncPool from "tiny-async-pool";
+import { Download, DownloadResult } from "../download";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
-import { Database } from "../storage/database";
-import { Download, DownloadResult } from "../storage/download";
-import { FileStore } from "../storage/fileStore";
-import { S3 } from "../storage/s3";
 import { Dry } from "./dry";
 import { Fix } from "./fix";
 import { Rinse } from "./rinse";
@@ -77,7 +74,7 @@ export class Shared {
   ): Promise<LoadedItem[]> {
     let input: LoadedItem[] = [];
     for (const id of washer.config.subscribe) {
-      const items = await Database.loadItems(
+      const items = await washer.database.loadItems(
         sources[id],
         since,
         washer.config.filter
@@ -100,37 +97,18 @@ export class Shared {
   ): void {
     for (const id of washer.config.subscribe) {
       if (id === Log.collection) {
-        Database.subscribeToLog(
+        washer.database.subscribeToLog(
           (item: LoadedItem) => callback(item),
           washer.config.filter
         );
       } else {
-        Database.subscribeToWasher(
+        washer.database.subscribeToWasher(
           sources[id],
           (item: LoadedItem) => callback(item),
           washer.config.filter
         );
       }
     }
-  }
-
-  /**
-   * Initialize a FileStore for a washer.
-   * @param washer the washer that will own the FileStore
-   */
-  static async initFileStore(washer: Washer): Promise<void> {
-    let fileStore: FileStore;
-    if (washer.config.files.startsWith("s3://")) {
-      fileStore = new S3(washer, washer.config.files);
-    } else {
-      fileStore = new FileStore(
-        washer,
-        washer.config.files,
-        washer.config.fileUrl
-      );
-    }
-    await fileStore.validate();
-    washer.fileStore = fileStore;
   }
 
   /**
@@ -162,7 +140,7 @@ export class Shared {
       downloads,
       async (download: Download) => {
         // Check for an existing download.
-        const existing = await washer.fileStore.existing(download);
+        const existing = await washer.files.existing(download);
         if (existing) {
           // Call the complete handler with the existing data.
           download.complete(existing);
@@ -175,7 +153,7 @@ export class Shared {
             download,
             async (result: DownloadResult) => {
               // Process the download, modifying the result.
-              result = await washer.fileStore.downloaded(result);
+              result = await washer.files.downloaded(result);
               // Pass the result to the complete handler.
               download.complete(result);
             }

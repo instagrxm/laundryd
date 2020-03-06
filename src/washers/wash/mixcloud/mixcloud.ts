@@ -1,7 +1,7 @@
 import Autolinker from "autolinker";
 import { DateTime } from "luxon";
+import { Download, DownloadResult } from "../../../core/download";
 import { Item } from "../../../core/item";
-import { Download, DownloadResult } from "../../../core/storage/download";
 import { Wash } from "../../../core/washers/wash";
 import { WasherInfo } from "../../../core/washers/washerInfo";
 

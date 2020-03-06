@@ -8,45 +8,46 @@ import {
   FindOneOptions,
   MongoClient
 } from "mongodb";
-import { Item, LoadedItem, LogItem, MongoLanguage } from "../item";
-import { Log } from "../log";
-import { Memory } from "../memory";
-import { Rinse } from "../washers/rinse";
-import { Wash } from "../washers/wash";
-import { Washer } from "../washers/washer";
+import { Database } from "../core/database";
+import { Item, LoadedItem, LogItem, MongoLanguage } from "../core/item";
+import { Log } from "../core/log";
+import { Memory } from "../core/memory";
+import { Rinse } from "../core/washers/rinse";
+import { Wash } from "../core/washers/wash";
+import { Washer } from "../core/washers/washer";
 
 /**
  * Helper class for database functions.
  */
-export class Database {
-  private static db: Db;
-  private static memory: Collection<any>;
-  private static log: Collection<any>;
+export class MongoDB extends Database {
+  private db!: Db;
+  private memory!: Collection<any>;
+  private log!: Collection<any>;
 
   /**
    * Set up the database connection.
    * @param connection a mongodb:// connection string
    */
-  static async init(connection: string): Promise<void> {
+  async init(connection: string): Promise<void> {
     const client = await new MongoClient(connection, {
       useNewUrlParser: true,
       useUnifiedTopology: true
     }).connect();
-    Database.db = client.db();
+    this.db = client.db();
 
     // A collection to save state for each washer
-    const memory = Database.db.collection("memory");
+    const memory = this.db.collection("memory");
     await memory.createIndexes([
       { name: "washerId", key: { washerId: 1 }, unique: true }
     ]);
-    Database.memory = memory;
+    this.memory = memory;
 
     // A collection to save logs
-    Database.log = await Database.db.createCollection(Log.collection, {
+    this.log = await this.db.createCollection(Log.collection, {
       capped: true,
       size: 1048576 * 10 // 10MB
     });
-    await Database.log.createIndexes([
+    await this.log.createIndexes([
       { name: "created", key: { created: -1 } },
       { name: "saved", key: { saved: -1 } }
     ]);
@@ -57,7 +58,7 @@ export class Database {
    * @param document the raw document from the database
    * @param washer the washer that created the item
    */
-  static hydrateItem(document: any, name?: string, id?: string): LoadedItem {
+  hydrateItem(document: any, name?: string, id?: string): LoadedItem {
     delete document._id;
     if (name) {
       document.washerName = name;
@@ -70,15 +71,15 @@ export class Database {
     return document;
   }
 
-  private static hydrateWasherItem(document: any, washer: Washer): LoadedItem {
-    return Database.hydrateItem(document, washer.info.name, washer.config.id);
+  hydrateWasherItem(document: any, washer: Washer): LoadedItem {
+    return this.hydrateItem(document, washer.info.name, washer.config.id);
   }
 
   /**
    * Prepare an item to be saved to the database.
    * @param item the item being saved
    */
-  static dehydrateItem(item: Item): any {
+  dehydrateItem(item: Item): any {
     const document: any = clone(item);
     delete document.downloads;
     document.saved = DateTime.utc();
@@ -100,8 +101,8 @@ export class Database {
    * Return the memory object for a washer, or an empty object if there isn't one.
    * @param washer the washer
    */
-  static async loadMemory(washer: Washer): Promise<Memory> {
-    let memory = await Database.memory.findOne({
+  async loadMemory(washer: Washer): Promise<Memory> {
+    let memory = await this.memory.findOne({
       washerId: washer.config.id
     });
     memory = memory || {};
@@ -122,7 +123,7 @@ export class Database {
    * @param washer the washer
    * @param memory the memory object
    */
-  static async saveMemory(washer: Washer): Promise<void> {
+  async saveMemory(washer: Washer): Promise<void> {
     if (!washer.info.memory && !washer.config.schedule) {
       return;
     }
@@ -133,7 +134,7 @@ export class Database {
     ).milliseconds;
     washer.memory.config = washer.config;
 
-    await Database.memory.replaceOne(
+    await this.memory.replaceOne(
       { washerId: washer.config.id },
       { $set: washer.memory },
       { upsert: true }
@@ -145,7 +146,7 @@ export class Database {
    * @param washer the washer
    * @param since return items newer than this date
    */
-  static async loadItems(
+  async loadItems(
     washer: Washer,
     since: DateTime,
     filter: FilterQuery<any> = {}
@@ -157,12 +158,12 @@ export class Database {
     filter = Object.assign(filter, { saved: { $gt: since } });
     const options: FindOneOptions = { sort: { saved: -1 } };
 
-    const items: any[] = await Database.db
+    const items: any[] = await this.db
       .collection(washer.config.id)
       .find(filter, options)
       .toArray();
 
-    const loadedItems = items.map(i => Database.hydrateWasherItem(i, washer));
+    const loadedItems = items.map(i => this.hydrateWasherItem(i, washer));
 
     return loadedItems;
   }
@@ -172,13 +173,13 @@ export class Database {
    * @param washer the washer
    * @param saveItems the items generated by the washer
    */
-  static async saveItems(washer: Wash | Rinse, items: Item[]): Promise<void> {
+  async saveItems(washer: Wash | Rinse, items: Item[]): Promise<void> {
     if (!washer || !items || !items.length) {
       return;
     }
 
     // Set up the collection
-    const collection = Database.db.collection(washer.config.id);
+    const collection = this.db.collection(washer.config.id);
 
     await collection.createIndexes([
       { name: "created", key: { created: -1 } },
@@ -192,7 +193,7 @@ export class Database {
     ]);
 
     // Prepare the items for saving
-    const saveItems: any[] = items.map(i => Database.dehydrateItem(i));
+    const saveItems: any[] = items.map(i => this.dehydrateItem(i));
 
     // Save the items
     await Promise.all(
@@ -216,15 +217,15 @@ export class Database {
    * @param callback a callback to receive new items on
    * @param filter receive only items that match this filter
    */
-  static subscribeToWasher(
+  subscribeToWasher(
     washer: Wash | Rinse,
     callback: (item: LoadedItem) => void,
     filter: FilterQuery<any> = {}
   ): void {
-    Database.subscribeToCollection(
+    this.subscribeToCollection(
       washer.config.id,
       (change: any) => {
-        const item: LoadedItem = Database.hydrateWasherItem(
+        const item: LoadedItem = this.hydrateWasherItem(
           change.fullDocument,
           washer
         );
@@ -240,14 +241,14 @@ export class Database {
    * @param callback a callback to receive new log messages on
    * @param filter receive only messages that match this filter
    */
-  static subscribeToLog(
+  subscribeToLog(
     callback: (item: LoadedItem) => void,
     filter: FilterQuery<any> = {}
   ): void {
-    Database.subscribeToCollection(
+    this.subscribeToCollection(
       Log.collection,
       (change: any) => {
-        const item: LoadedItem = Database.hydrateItem(change.fullDocument);
+        const item: LoadedItem = this.hydrateItem(change.fullDocument);
 
         callback(item);
       },
@@ -255,7 +256,7 @@ export class Database {
     );
   }
 
-  private static subscribeToCollection(
+  subscribeToCollection(
     collection: string,
     callback: (item: LoadedItem) => void,
     filter: FilterQuery<any> = {}
@@ -266,7 +267,7 @@ export class Database {
 
     const pipeline = [{ $match: match }];
 
-    const changeStream = Database.db.collection(collection).watch(pipeline);
+    const changeStream = this.db.collection(collection).watch(pipeline);
 
     changeStream.on("change", change => {
       callback(change);
@@ -277,7 +278,7 @@ export class Database {
    * Write a message to the log file.
    * @param log the log message
    */
-  static async writeLog(log: LogItem): Promise<void> {
-    await Database.log.insertOne(log);
+  async writeLog(log: LogItem): Promise<void> {
+    await this.log.insertOne(log);
   }
 }

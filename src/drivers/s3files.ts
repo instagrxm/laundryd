@@ -7,12 +7,12 @@ import { DateTime } from "luxon";
 import mime from "mime";
 import path from "path";
 import urlUtils from "url";
-import { Log } from "../log";
-import { Washer } from "../washers/washer";
-import { Download, DownloadResult } from "./download";
-import { FileStore } from "./fileStore";
+import { Download, DownloadResult } from "../core/download";
+import { Files } from "../core/files";
+import { Log } from "../core/log";
+import { Washer } from "../core/washers/washer";
 
-export class S3 extends FileStore {
+export class S3Files extends Files {
   static urlFormat =
     "S3 connection string should be s3://[AWS_KEY]:[AWS_SECRET]@[S3_BUCKET].s3-[S3_REGION].amazonaws.com";
 
@@ -22,7 +22,7 @@ export class S3 extends FileStore {
   constructor(washer: Washer, connection: string) {
     const url = urlUtils.parse(connection, true);
     if (!url.auth || !url.hostname) {
-      throw new Error(S3.urlFormat);
+      throw new Error(S3Files.urlFormat);
     }
 
     // Remove auth so it doesn't appear in logs
@@ -35,7 +35,7 @@ export class S3 extends FileStore {
 
     const [key, secret] = url.auth.split(":");
     if (!endpoint || !bucket || !key || !secret) {
-      throw new Error(S3.urlFormat);
+      throw new Error(S3Files.urlFormat);
     }
 
     this.bucket = bucket;

@@ -1,4 +1,4 @@
-import { Downloader } from "../../core/storage/downloader";
+import { Downloader } from "../../core/downloader";
 import { Fix } from "../../core/washers/fix";
 import { WasherInfo } from "../../core/washers/washerInfo";
 

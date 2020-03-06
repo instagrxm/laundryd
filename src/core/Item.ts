@@ -1,6 +1,6 @@
 import { LogLevel } from "aws-sdk/clients/iot";
 import { DateTime } from "luxon";
-import { Download } from "./storage/download";
+import { Download } from "./download";
 
 /**
  * An object created by washers.
