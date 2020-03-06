@@ -5,22 +5,22 @@ const schedule = {
 
 const washers: any[] = [
   {
-    name: "fix/backupDatabase"
+    name: "maintenance/mongoBackup"
   },
   {
-    name: "fix/upgradeTools"
+    name: "maintenance/upgradeTools"
   },
   {
-    name: "fix/clearCache"
+    name: "maintenance/clearCache"
   },
   {
-    name: "dry/stdout",
+    name: "stdout",
     color: true,
     subscribe: ["log"],
     filter: { level: { $in: ["debug", "info", "warn", "error"] } }
   },
   {
-    name: "dry/email",
+    name: "email",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
@@ -32,7 +32,7 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    name: "wash/mixcloud/user",
+    name: "mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
     download: true,
@@ -41,7 +41,7 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    name: "wash/mixcloud/uploads",
+    name: "mixcloud/uploads",
     schedule: schedule.default,
     download: true,
     begin: 10,
@@ -52,27 +52,27 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    name: "dry/rss",
+    name: "rss/rss",
     title: "mixcloud combined",
     schedule: schedule.default,
-    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
+    subscribe: ["mixcloud/user", "mixcloud/uploads"]
   },
   {
     // enabled: false,
-    name: "dry/podcast",
+    name: "rss/podcast",
     title: "mixcloud combined",
     schedule: schedule.default,
     ownerName: "Josh Santangelo",
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"]
+    subscribe: ["mixcloud/user", "mixcloud/uploads"]
   },
   {
     enabled: false,
-    id: "wash/mixcloud/user/jsx",
-    name: "rinse/jsx",
-    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"],
+    id: "mixcloud/user/jsx",
+    name: "jsx",
+    subscribe: ["mixcloud/user", "mixcloud/uploads"],
     html: `
       <div><strong>{item.title}</strong></div>
       <div><img src={item.image} /></div>
@@ -82,9 +82,9 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    id: "wash/mixcloud/user/handlebars",
-    name: "rinse/handlebars",
-    subscribe: ["wash/mixcloud/user", "wash/mixcloud/uploads"],
+    id: "mixcloud/user/handlebars",
+    name: "handlebars",
+    subscribe: ["mixcloud/user", "mixcloud/uploads"],
     html: `
       <div><strong>{{title}}</strong></div>
       <div><img src={{image}} /></div>
@@ -94,8 +94,8 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    id: "wash/mixcloud/user/email",
-    name: "dry/email",
+    id: "mixcloud/user/email",
+    name: "email",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
@@ -104,50 +104,10 @@ const washers: any[] = [
     attachData: true,
     attachImage: true,
     // schedule: schedule.default,
-    // subscribe: ["wash/mixcloud/user/format"]
-    subscribe: ["wash/mixcloud/user/handlebars"]
+    // subscribe: ["mixcloud/user/format"]
+    subscribe: ["mixcloud/user/handlebars"]
   }
 
-  // {
-  //   name: "test/test-wash",
-  //   id: "test/test-wash/foo",
-  //   schedule: "*/5 * * * * *"
-  //   // retain: 1
-  // },
-  // {
-  //   name: "test/test-wash",
-  //   id: "test/test-wash/bar",
-  //   schedule: "*/5 * * * * *"
-  // },
-  // {
-  //   name: "test/test-rinse",
-  //   schedule: "*/5 * * * * *",
-  //   subscribe: ["test/test-wash/foo", "test/test-wash/bar"],
-  //   filter: { url: { $regex: "endquote.com/2" } }
-  // }
-  // {
-  //   name: "test/test-dry",
-  //   schedule: "*/5 * * * * *",
-  //   subscribe: ["test/test-rinse"]
-  // },
-  // {
-  //   name: "test/test-fix",
-  //   schedule: "*/10 * * * * *"
-  // },
-  // {
-  //   name: "wash/mixcloud/uploads",
-  //   schedule: schedule.default,
-  //   auth: auth.mixcloud,
-  //   begin: retention.begin,
-  //   retain: retention.retain
-  // },
-  // {
-  //   name: "wash/mixcloud/user",
-  //   schedule: schedule.default,
-  //   begin: retention.begin,
-  //   retain: retention.retain,
-  //   user: "redbullradio"
-  // },
   // {
   //   name: "wash/instagram/timeline",
   //   schedule: schedule.default,

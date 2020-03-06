@@ -1,10 +1,10 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import HB from "handlebars";
-import { Item, LoadedItem } from "../../core/item";
-import { Settings } from "../../core/settings";
-import { Rinse } from "../../core/washers/rinse";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, LoadedItem } from "../core/item";
+import { Settings } from "../core/settings";
+import { Rinse } from "../core/washers/rinse";
+import { WasherInfo } from "../core/washers/washerInfo";
 
 export class Handlebars extends Rinse {
   static readonly info = new WasherInfo({

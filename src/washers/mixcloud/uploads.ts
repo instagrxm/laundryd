@@ -1,9 +1,9 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Config } from "../../../core/config";
-import { Item } from "../../../core/item";
-import { Log } from "../../../core/log";
-import { WasherInfo } from "../../../core/washers/washerInfo";
+import { Config } from "../../core/config";
+import { Item } from "../../core/item";
+import { Log } from "../../core/log";
+import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
 export default class Uploads extends Mixcloud {
