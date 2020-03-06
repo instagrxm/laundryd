@@ -4,10 +4,10 @@ import React from "react";
 import ReactDOMServer from "react-dom/server";
 // @ts-ignore: no types available
 import JsxParser from "react-jsx-parser";
-import { Item, LoadedItem } from "../core/item";
-import { Settings } from "../core/settings";
-import { Rinse } from "../core/washers/rinse";
-import { WasherInfo } from "../core/washers/washerInfo";
+import { Item, LoadedItem } from "../../core/item";
+import { Settings } from "../../core/settings";
+import { Rinse } from "../../core/washers/rinse";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 // functions aren't supported https://github.com/TroyAlford/react-jsx-parser/issues/107
 // seeking a better method https://stackoverflow.com/questions/60537327/

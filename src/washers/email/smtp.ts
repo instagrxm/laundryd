@@ -3,12 +3,12 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import nodemailer from "nodemailer";
 import Mail, { Attachment } from "nodemailer/lib/mailer";
 import path from "path";
-import { LoadedItem } from "../core/item";
-import { Settings } from "../core/settings";
-import { Dry } from "../core/washers/dry";
-import { WasherInfo } from "../core/washers/washerInfo";
+import { LoadedItem } from "../../core/item";
+import { Settings } from "../../core/settings";
+import { Dry } from "../../core/washers/dry";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
-export class Email extends Dry {
+export class Smtp extends Dry {
   static readonly info = new WasherInfo({
     title: "email",
     description: "send items via email using an SMTP service",
@@ -81,7 +81,7 @@ export class Email extends Dry {
     })
   };
 
-  config!: OutputFlags<typeof Email.settings>;
+  config!: OutputFlags<typeof Smtp.settings>;
 
   private smtp!: Mail;
 

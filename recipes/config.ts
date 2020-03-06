@@ -14,13 +14,13 @@ const washers: any[] = [
     name: "maintenance/clearCache"
   },
   {
-    name: "stdout",
+    name: "process/stdout",
     color: true,
     subscribe: ["log"],
     filter: { level: { $in: ["debug", "info", "warn", "error"] } }
   },
   {
-    name: "email",
+    name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
@@ -71,7 +71,7 @@ const washers: any[] = [
   {
     enabled: false,
     id: "mixcloud/user/jsx",
-    name: "jsx",
+    name: "format/jsx",
     subscribe: ["mixcloud/user", "mixcloud/uploads"],
     html: `
       <div><strong>{item.title}</strong></div>
@@ -83,7 +83,7 @@ const washers: any[] = [
   {
     // enabled: false,
     id: "mixcloud/user/handlebars",
-    name: "handlebars",
+    name: "format/handlebars",
     subscribe: ["mixcloud/user", "mixcloud/uploads"],
     html: `
       <div><strong>{{title}}</strong></div>
@@ -95,7 +95,7 @@ const washers: any[] = [
   {
     // enabled: false,
     id: "mixcloud/user/email",
-    name: "email",
+    name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
     smtpPass: process.env.SMTP_PASS,
