@@ -1,16 +1,16 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Item } from "../../core/item";
 import { WasherInfo } from "../../core/washers/washerInfo";
-import Uploads from "./uploads";
+import Timeline from "./timeline";
 
-export default class Likes extends Uploads {
+export default class Likes extends Timeline {
   static readonly info = new WasherInfo({
     title: "Mixcloud likes",
     description: "load shows you've liked on Mixcloud"
   });
 
   static settings = {
-    ...Uploads.settings
+    ...Timeline.settings
   };
 
   config!: OutputFlags<typeof Likes.settings>;

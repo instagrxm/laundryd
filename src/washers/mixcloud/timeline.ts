@@ -6,7 +6,7 @@ import { Log } from "../../core/log";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
-export default class Uploads extends Mixcloud {
+export default class Timeline extends Mixcloud {
   static readonly info = new WasherInfo({
     title: "Mixcloud uploads",
     description: "load new uploads from everyone you're following on Mixcloud"
@@ -38,7 +38,7 @@ export default class Uploads extends Mixcloud {
     })
   };
 
-  config!: OutputFlags<typeof Uploads.settings>;
+  config!: OutputFlags<typeof Timeline.settings>;
 
   protected me!: any;
 

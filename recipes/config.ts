@@ -52,7 +52,7 @@ const washers: any[] = [
   },
   {
     enabled: false,
-    name: "mixcloud/uploads",
+    name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
     begin: 10,
@@ -66,7 +66,7 @@ const washers: any[] = [
     name: "feed/rss",
     title: "mixcloud combined",
     schedule: schedule.default,
-    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"]
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"]
   },
   {
     // enabled: false,
@@ -77,13 +77,13 @@ const washers: any[] = [
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"]
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"]
   },
   {
     enabled: false,
-    id: "mixcloud/user/jsx",
+    id: "mixcloud/jsx",
     name: "format/jsx",
-    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"],
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
     html: `
       <div><strong>{item.title}</strong></div>
       <div><img src={item.image} /></div>
@@ -93,9 +93,9 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    id: "mixcloud/user/handlebars",
+    id: "mixcloud/handlebars",
     name: "format/handlebars",
-    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"],
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
     html: `
       <div><strong>{{title}}</strong></div>
       <div><img src={{image}} /></div>
