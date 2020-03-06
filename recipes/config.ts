@@ -31,7 +31,7 @@ const washers: any[] = [
     filter: { level: "error" }
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
@@ -41,6 +41,17 @@ const washers: any[] = [
   },
   {
     // enabled: false,
+    name: "mixcloud/likes",
+    schedule: schedule.default,
+    download: true,
+    begin: 10,
+    retain: 0,
+    clientId: process.env.MIXCLOUD_CLIENTID,
+    clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
+    token: process.env.MIXCLOUD_TOKEN
+  },
+  {
+    enabled: false,
     name: "mixcloud/uploads",
     schedule: schedule.default,
     download: true,
@@ -52,27 +63,27 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    name: "rss/rss",
+    name: "feed/rss",
     title: "mixcloud combined",
     schedule: schedule.default,
-    subscribe: ["mixcloud/user", "mixcloud/uploads"]
+    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"]
   },
   {
     // enabled: false,
-    name: "rss/podcast",
+    name: "feed/podcast",
     title: "mixcloud combined",
     schedule: schedule.default,
     ownerName: "Josh Santangelo",
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["mixcloud/user", "mixcloud/uploads"]
+    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"]
   },
   {
     enabled: false,
     id: "mixcloud/user/jsx",
     name: "format/jsx",
-    subscribe: ["mixcloud/user", "mixcloud/uploads"],
+    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"],
     html: `
       <div><strong>{item.title}</strong></div>
       <div><img src={item.image} /></div>
@@ -84,7 +95,7 @@ const washers: any[] = [
     // enabled: false,
     id: "mixcloud/user/handlebars",
     name: "format/handlebars",
-    subscribe: ["mixcloud/user", "mixcloud/uploads"],
+    subscribe: ["mixcloud/user", "mixcloud/uploads", "mixcloud/likes"],
     html: `
       <div><strong>{{title}}</strong></div>
       <div><img src={{image}} /></div>

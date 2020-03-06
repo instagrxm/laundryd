@@ -65,32 +65,36 @@ export default class Uploads extends Mixcloud {
         msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the command again with --code=[code]`
       });
     }
-  }
 
-  async run(): Promise<Item[]> {
     // Get the user's profile info.
-    if (!this.me) {
+    if (this.config.token) {
       this.me = await this.http.request({
         url: `${this.api}/me/`,
         // eslint-disable-next-line @typescript-eslint/camelcase
         params: { access_token: this.config.token, metadata: 1 }
       });
     }
+  }
 
-    // Set up the first request.
+  async run(): Promise<Item[]> {
+    if (!this.me) {
+      return [];
+    }
+
+    // Set up the first request
     const req = {
       url: this.me.data.metadata.connections.following,
       // eslint-disable-next-line @typescript-eslint/camelcase
       params: { access_token: this.config.token, limit: 50 }
     };
 
-    // Get a paged list of people they're following.
+    // Get a paged list of people they're following
     let data: any[] = [];
     while (true) {
       const response = await this.http.request(req);
 
       for (const user of response.data.data) {
-        // Pass each user to the user command.
+        // Pass each user to the user command
         const shows = await this.getUserShows(
           user.username,
           this.memory.lastRun
@@ -115,8 +119,6 @@ export default class Uploads extends Mixcloud {
   parseShow(data: any): Item {
     const item = super.parseShow(data);
 
-    // Parse data the same as the user command, but change the feed source attributes.
-    // item.sourceImage = this.me.data.pictures.extra_large;
     item.source = {
       image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",
       url: this.me.data.url,
