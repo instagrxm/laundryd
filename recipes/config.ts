@@ -105,7 +105,7 @@ const washers: any[] = [
   },
   {
     // enabled: false,
-    id: "mixcloud/user/email",
+    id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
     smtpUser: process.env.SMTP_USER,
@@ -115,8 +115,7 @@ const washers: any[] = [
     attachData: true,
     attachImage: true,
     // schedule: schedule.default,
-    // subscribe: ["mixcloud/user/format"]
-    subscribe: ["mixcloud/user/handlebars"]
+    subscribe: ["mixcloud/handlebars"]
   }
 
   // {

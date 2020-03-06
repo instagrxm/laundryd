@@ -47,6 +47,11 @@ export default class Likes extends Timeline {
       req.url = response.data.paging.next;
     }
 
+    // Shows don't include descriptions until you request them separately.
+    for (const d of data) {
+      await this.getShowDescription(d);
+    }
+
     return data.map(d => this.parseShow(d));
   }
 

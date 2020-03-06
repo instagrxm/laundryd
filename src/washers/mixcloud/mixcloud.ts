@@ -18,7 +18,12 @@ export class Mixcloud extends Wash {
 
   api = "https://api.mixcloud.com";
 
-  async getUserShows(user: string, since: DateTime): Promise<Item[]> {
+  /**
+   * Get shows from a specific user.
+   * @param user the username to get shows from
+   * @param since how far back to request shows for
+   */
+  protected async getUserShows(user: string, since: DateTime): Promise<Item[]> {
     // Set up the first request.
     const req = {
       url: `${this.api}/${user}/cloudcasts/`,
@@ -45,23 +50,34 @@ export class Mixcloud extends Wash {
       req.url = response.data.paging.next;
     }
 
-    // Shows don't include descriptions until you request them separately.
     for (const d of data) {
-      const response = await this.http.request({
-        url: `${this.api}${d.key}`
-      });
-      d.text = response.data.description;
-      d.html = response.data.description
-        .replace(/\n{2,}/g, "</p><p>")
-        .replace(/\n/g, "<br>");
-      d.html = `<p>${d.html}</p>`;
-      d.html = Autolinker.link(d.html, { newWindow: false });
+      await this.getShowDescription(d);
     }
 
     return data.map(d => this.parseShow(d));
   }
 
-  parseShow(show: any): Item {
+  /**
+   * Add text/html attributes to a show containing its description.
+   * @param show the show to add a description to
+   */
+  protected async getShowDescription(show: any): Promise<void> {
+    const response = await this.http.request({
+      url: `${this.api}${show.key}`
+    });
+    show.text = response.data.description;
+    show.html = response.data.description
+      .replace(/\n{2,}/g, "</p><p>")
+      .replace(/\n/g, "<br>");
+    show.html = `<p>${show.html}</p>`;
+    show.html = Autolinker.link(show.html, { newWindow: false });
+  }
+
+  /**
+   * Convert a raw API object into an Item.
+   * @param show the show object from the API
+   */
+  protected parseShow(show: any): Item {
     show = show.meta || show;
     const embedFeed = encodeURIComponent(show.key);
 
