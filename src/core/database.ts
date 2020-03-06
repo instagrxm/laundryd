@@ -18,12 +18,22 @@ export abstract class Database {
   /**
    * Modify a saved document so that it matches the definition of LoadedItem.
    * @param document the raw document from the database
-   * @param washer the washer that created the item
+   * @param name the washer name to add
+   * @param id the washer id to add
    */
   abstract hydrateItem(document: any, name?: string, id?: string): LoadedItem;
 
+  /**
+   * Modify a saved document so that it matches the definition of LoadedItem.
+   * @param document the raw document from the database
+   * @param washer the washer that created the document
+   */
   abstract hydrateWasherItem(document: any, washer: Washer): LoadedItem;
 
+  /**
+   * Prepare an item to be saved to the database.
+   * @param item the item to save
+   */
   abstract dehydrateItem(item: Item): any;
 
   /**
@@ -79,6 +89,12 @@ export abstract class Database {
     filter: any
   ): void;
 
+  /**
+   * Receive a callback whenever an item is added to a collection.
+   * @param collection the collection to subscribe to
+   * @param callback a callback to receive new items on
+   * @param filter receive only messages that match this filter
+   */
   abstract subscribeToCollection(
     collection: string,
     callback: (item: LoadedItem) => void,
