@@ -39,9 +39,12 @@ export class Wash extends Washer {
     }
 
     // The first time the washer runs, set the last run to be "begin" days in the past
-    const beginDate = DateTime.utc().minus(
-      Duration.fromObject({ days: this.config.begin })
-    );
+    let beginDate = DateTime.fromSeconds(0);
+    if (this.config.begin) {
+      beginDate = DateTime.utc().minus(
+        Duration.fromObject({ days: this.config.begin })
+      );
+    }
 
     const firstRun = beginDate.diff(this.memory.lastRun).milliseconds > 0;
     const lastConfig = this.memory.config as OutputFlags<typeof Wash.settings>;
