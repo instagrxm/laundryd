@@ -44,7 +44,7 @@ const washers: any[] = [
     name: "mixcloud/likes",
     schedule: schedule.default,
     download: true,
-    begin: 10,
+    begin: 0,
     retain: 0,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
@@ -104,7 +104,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,

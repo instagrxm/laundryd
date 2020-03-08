@@ -1,21 +1,27 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { Item } from "../../core/item";
+import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
-import Timeline from "./timeline";
+import { Mixcloud } from "./mixcloud";
 
-export default class Likes extends Timeline {
+export default class Likes extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud likes",
     description: "load shows you've liked on Mixcloud"
   });
 
   static settings = {
-    ...Timeline.settings
+    ...Wash.settings,
+    ...Mixcloud.authSettings
   };
 
   config!: OutputFlags<typeof Likes.settings>;
 
-  protected me!: any;
+  me!: any;
+
+  async init(): Promise<void> {
+    this.me = await Mixcloud.auth(this, this.config);
+  }
 
   async run(): Promise<Item[]> {
     if (!this.me) {
@@ -25,8 +31,12 @@ export default class Likes extends Timeline {
     // Set up the first request
     const req = {
       url: this.me.data.metadata.connections.favorites,
-      // eslint-disable-next-line @typescript-eslint/camelcase
-      params: { access_token: this.config.token, limit: 50 }
+      params: {
+        // eslint-disable-next-line @typescript-eslint/camelcase
+        access_token: this.config.token,
+        limit: 50,
+        since: Math.floor(this.memory.lastRun.toSeconds())
+      }
     };
 
     // Get a paged list of favorite shows
@@ -49,14 +59,14 @@ export default class Likes extends Timeline {
 
     // Shows don't include descriptions until you request them separately.
     for (const d of data) {
-      await this.getShowDescription(d);
+      await Mixcloud.getShowDescription(this, d);
     }
 
     return data.map(d => this.parseShow(d));
   }
 
   parseShow(data: any): Item {
-    const item = super.parseShow(data);
+    const item = Mixcloud.parseShow(data);
 
     item.source = {
       image: this.me.data.pictures.extra_large,

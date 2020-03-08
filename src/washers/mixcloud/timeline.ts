@@ -1,41 +1,18 @@
-import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Config } from "../../core/config";
 import { Item } from "../../core/item";
-import { Log } from "../../core/log";
+import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
-export default class Timeline extends Mixcloud {
+export default class Timeline extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud uploads",
     description: "load new uploads from everyone you're following on Mixcloud"
   });
 
   static settings = {
-    ...Mixcloud.settings,
-
-    clientId: flags.string({
-      required: true,
-      description:
-        "the client id for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/\n(env: MIXCLOUD_CLIENTID)"
-    }),
-
-    clientSecret: flags.string({
-      required: true,
-      description:
-        "the client secret for the Mixcloud application\n(env: MIXCLOUD_CLIENTSECRET)"
-    }),
-
-    token: flags.string({
-      description:
-        "the access token for the Mixcloud API\n(env: MIXCLOUD_TOKEN)"
-    }),
-
-    code: flags.string({
-      hidden: true,
-      description: "the oauth code used to get an access token"
-    })
+    ...Wash.settings,
+    ...Mixcloud.authSettings
   };
 
   config!: OutputFlags<typeof Timeline.settings>;
@@ -43,37 +20,7 @@ export default class Timeline extends Mixcloud {
   protected me!: any;
 
   async init(): Promise<void> {
-    const [user, repo] = Config.config.pjson.repository.split("/");
-    const redirectUrl = encodeURIComponent(
-      `https://${user}.github.io/${repo}/auth/mixcloud.html`
-    );
-    const authUrl = `https://www.mixcloud.com/oauth/authorize?client_id=${this.config.clientId}&redirect_uri=${redirectUrl}`;
-
-    if (this.config.code) {
-      const url = `https://www.mixcloud.com/oauth/access_token?client_id=${this.config.clientId}&redirect_uri=${redirectUrl}&client_secret=${this.config.clientSecret}&code=${this.config.code}`;
-      const response = await this.http.request({ url });
-      const t = response.data.access_token;
-      if (t) {
-        await Log.error(this, {
-          msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this command.`
-        });
-      }
-    }
-
-    if (!this.config.token) {
-      await Log.error(this, {
-        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the command again with --code=[code]`
-      });
-    }
-
-    // Get the user's profile info.
-    if (this.config.token) {
-      this.me = await this.http.request({
-        url: `${this.api}/me/`,
-        // eslint-disable-next-line @typescript-eslint/camelcase
-        params: { access_token: this.config.token, metadata: 1 }
-      });
-    }
+    this.me = await Mixcloud.auth(this, this.config);
   }
 
   async run(): Promise<Item[]> {
@@ -95,7 +42,8 @@ export default class Timeline extends Mixcloud {
 
       for (const user of response.data.data) {
         // Pass each user to the user command
-        const shows = await this.getUserShows(
+        const shows = await Mixcloud.getUserShows(
+          this,
           user.username,
           this.memory.lastRun
         );
@@ -117,7 +65,7 @@ export default class Timeline extends Mixcloud {
   }
 
   parseShow(data: any): Item {
-    const item = super.parseShow(data);
+    const item = Mixcloud.parseShow(data);
 
     item.source = {
       image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",
