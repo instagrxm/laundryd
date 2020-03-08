@@ -57,7 +57,7 @@ export class Washer {
   downloader: Downloader = new Downloader(this);
 
   // The HTTP client that commands should use.
-  protected http = axios.create();
+  http = axios.create();
   database: Database;
 
   constructor(config: OutputFlags<typeof Washer.settings>, database: Database) {
