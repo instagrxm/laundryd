@@ -223,7 +223,7 @@ export class MongoDB extends Database {
   ): void {
     const match: any = {};
     Object.keys(filter).forEach(k => (match[`fullDocument.${k}`] = filter[k]));
-    match.operationType = "insert";
+    match.operationType = { $in: ["insert", "replace"] };
 
     const pipeline = [{ $match: match }];
 
