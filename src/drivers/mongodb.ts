@@ -110,7 +110,7 @@ export class MongoDB extends Database {
     washer.memory.lastDuration = washer.memory.lastRun.diff(
       washer.startTime
     ).milliseconds;
-    washer.memory.config = washer.config;
+    delete washer.memory.config.filter;
 
     await this.memory.replaceOne(
       { washerId: washer.config.id },
