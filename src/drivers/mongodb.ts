@@ -110,6 +110,9 @@ export class MongoDB extends Database {
     washer.memory.lastDuration = washer.memory.lastRun.diff(
       washer.startTime
     ).milliseconds;
+    washer.memory.config = clone(washer.config);
+
+    // filter has filds like $regex which can't be saved
     delete washer.memory.config.filter;
 
     await this.memory.replaceOne(
