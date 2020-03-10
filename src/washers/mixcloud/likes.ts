@@ -42,8 +42,7 @@ export default class Likes extends Wash {
     // Get a paged list of favorite shows
     let data: any[] = [];
     while (true) {
-      const response = await this.http.request(req);
-
+      const response = await Mixcloud.callAPI(this, req);
       data = data.concat(response.data.data);
 
       if (

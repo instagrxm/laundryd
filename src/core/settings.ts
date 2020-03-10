@@ -3,35 +3,6 @@ import { IBooleanFlag } from "@oclif/parser/lib/flags";
 import { CronTime } from "cron";
 
 export const Settings = {
-  database: (): flags.IOptionFlag<string | undefined> => {
-    return flags.string({
-      required: true,
-      default: () =>
-        process.env.LAUNDRY_DB || "mongodb://localhost:27017/laundry",
-      description: "database connection string\n(env: LAUNDRY_DB)"
-    });
-  },
-
-  filesHelp: "OS cache dir",
-  files: (): flags.IOptionFlag<string | undefined> => {
-    return flags.string({
-      required: true,
-      default: () => process.env.LAUNDRY_FILES || Settings.filesHelp,
-      description:
-        "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)"
-    });
-  },
-
-  filesUrl: (): flags.IOptionFlag<string | undefined> => {
-    return flags.string({
-      required: true,
-      default: () =>
-        process.env.LAUNDRY_FILES_URL || "http://localhost:3000/files",
-      description:
-        "a URL which maps to the file location\n(env: LAUNDRY_FILES_URL)"
-    });
-  },
-
   download: (): IBooleanFlag<boolean> => {
     return flags.boolean({
       default: false,
@@ -97,9 +68,9 @@ export const Settings = {
   },
 
   // https://docs.mongodb.com/manual/reference/operator/query/#query-selectors
-  filter: (): flags.IOptionFlag<any | undefined> => {
+  filter: (def?: any): flags.IOptionFlag<any | undefined> => {
     return flags.build<any>({
-      default: undefined,
+      default: def,
       required: false,
       parse: (input: string) => {
         try {

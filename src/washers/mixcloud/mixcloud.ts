@@ -1,15 +1,23 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import Autolinker from "autolinker";
+import { AxiosRequestConfig, AxiosResponse } from "axios";
+import delay from "delay";
 import { DateTime } from "luxon";
 import { Config } from "../../core/config";
 import { Download, DownloadResult } from "../../core/download";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
+import { Settings } from "../../core/settings";
+import { Shared } from "../../core/washers/shared";
 import { Washer } from "../../core/washers/washer";
+import { Like } from "./like";
+import { Repost } from "./repost";
 
 export class Mixcloud {
   static api = "https://api.mixcloud.com";
+
+  static urlPattern = /^http(s)?:\/\/(www.)?mixcloud.com/i;
 
   static authSettings = {
     clientId: flags.string({
@@ -33,6 +41,12 @@ export class Mixcloud {
     })
   };
 
+  static filterSetting = Settings.filter({
+    url: {
+      $regex: Mixcloud.urlPattern
+    }
+  });
+
   /**
    * Authorize against the Mixcloud API and return information about the user
    * @param washer the washer that is making the request
@@ -50,7 +64,7 @@ export class Mixcloud {
 
     if (auth.code) {
       const url = `https://www.mixcloud.com/oauth/access_token?client_id=${auth.clientId}&redirect_uri=${redirectUrl}&client_secret=${auth.clientSecret}&code=${auth.code}`;
-      const response = await washer.http.request({ url });
+      const response = await Mixcloud.callAPI(washer, { url });
       const t = response.data.access_token;
       if (t) {
         await Log.error(washer, {
@@ -67,13 +81,38 @@ export class Mixcloud {
 
     // Get the user's profile info.
     if (auth.token) {
-      const me = await washer.http.request({
+      const me = await Mixcloud.callAPI(washer, {
         url: `${Mixcloud.api}/me/`,
         // eslint-disable-next-line @typescript-eslint/camelcase
         params: { access_token: auth.token, metadata: 1 }
       });
       return me;
     }
+  }
+
+  /**
+   * Queue a request to the Mixcloud API, handling rate limits as needed.
+   * @param washer the washer making the request
+   * @param config the request configuration
+   */
+  static async callAPI(
+    washer: Washer,
+    config: AxiosRequestConfig
+  ): Promise<AxiosResponse<any>> {
+    const retry = async (error: any): Promise<void> => {
+      const limited = error.response.data?.error?.type === "RateLimitException";
+      let time = parseInt(error.response.headers["retry-after"]);
+
+      if (!limited || isNaN(time)) {
+        throw error;
+      }
+
+      time = (time + 5) * 1000;
+      await Log.debug(washer, { msg: `rate limit delay ${time}ms` });
+      await delay(time);
+    };
+
+    return await Shared.queueHttp(washer, config, retry);
   }
 
   /**
@@ -99,7 +138,7 @@ export class Mixcloud {
     // Get a paged list of shows.
     let data: any[] = [];
     while (true) {
-      const response = await washer.http.request(req);
+      const response = await Mixcloud.callAPI(washer, req);
       data = data.concat(response.data.data);
 
       if (
@@ -126,9 +165,10 @@ export class Mixcloud {
    * @param show the show to add a description to
    */
   static async getShowDescription(washer: Washer, show: any): Promise<void> {
-    const response = await washer.http.request({
+    const response = await Mixcloud.callAPI(washer, {
       url: `${Mixcloud.api}${show.key}`
     });
+
     show.text = response.data.description;
     show.html = response.data.description
       .replace(/\n{2,}/g, "</p><p>")
@@ -194,5 +234,26 @@ export class Mixcloud {
     ];
 
     return item;
+  }
+
+  // https://www.mixcloud.com/developers/#following-favoriting
+  static async showAction(washer: Like | Repost, item: Item): Promise<void> {
+    const action = washer instanceof Like ? "favorite" : "repost";
+
+    let url = item.url;
+    url = url.replace(Mixcloud.urlPattern, Mixcloud.api);
+    if (!url.match(/\/$/)) {
+      url += "/";
+    }
+    url += `${action}/`;
+
+    const req: AxiosRequestConfig = {
+      url,
+      method: washer.config.state ? "post" : "delete",
+      // eslint-disable-next-line @typescript-eslint/camelcase
+      params: { access_token: washer.config.token }
+    };
+
+    await Mixcloud.callAPI(washer, req);
   }
 }

@@ -21,7 +21,6 @@ export class Wash extends Washer {
     ...Washer.settings,
     schedule: Settings.schedule(true),
     download: Settings.download(),
-    downloadPool: Settings.downloadPool(),
 
     begin: flags.integer({
       default: 0,
@@ -53,6 +52,8 @@ export class Wash extends Washer {
     if (firstRun || beginChanged) {
       this.memory.lastRun = beginDate;
     }
+
+    await this.init();
 
     Shared.startSchedule(this, async () => await this.exec());
   }

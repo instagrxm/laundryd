@@ -4,6 +4,7 @@ import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
 import isUrl from "is-url";
 import mime from "mime";
+import pRetry from "p-retry";
 import path from "path";
 import shortid from "shortid";
 import util from "util";
@@ -51,42 +52,39 @@ export class Downloader {
     download: Download,
     callback: (result: DownloadResult) => Promise<void>
   ): Promise<void> {
-    const d = download;
-
     // Create a temp folder
     const tmp = path.join(this.tempRoot, shortid());
 
-    let result: DownloadResult = { url: d.url, dir: tmp, item: d.item };
+    let result: DownloadResult = {
+      url: download.url,
+      dir: tmp,
+      item: download.item
+    };
 
-    if (!isUrl(d.url)) {
+    if (!isUrl(download.url)) {
       return callback(result);
     }
 
     await fs.ensureDir(tmp);
 
-    let tries = 0;
-    while (true) {
-      try {
-        tries++;
-
-        // Do the download
-        if (d.isDirect) {
-          result = await this.directDownload(d.url, tmp, result);
-        } else {
-          result = await this.ytdlDownload(d.url, tmp, d, result);
-        }
-
-        // Call the consumer, who must do something with the files
-        await callback(result);
-        await fs.remove(tmp);
-        break;
-      } catch (error) {
-        if (tries >= this.downloadRetries) {
-          // Give up
-          await fs.remove(tmp);
-          throw error;
-        }
+    const task = async (): Promise<void> => {
+      if (download.isDirect) {
+        result = await this.directDownload(download.url, tmp, result);
+      } else {
+        result = await this.ytdlDownload(download.url, tmp, download, result);
       }
+    };
+
+    try {
+      // Do the download
+      await pRetry(task, { retries: this.downloadRetries });
+
+      // Call the consumer, who must do something with the files
+      await callback(result);
+      await fs.remove(tmp);
+    } catch (error) {
+      await fs.remove(tmp);
+      throw error;
     }
   }
 

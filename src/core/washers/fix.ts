@@ -26,6 +26,7 @@ export class Fix extends Washer {
 
   async preInit(files: Files): Promise<void> {
     await super.preInit(files);
+    await this.init();
     Shared.startSchedule(this, async () => {
       await this.exec();
     });

@@ -6,7 +6,6 @@ import path from "path";
 import util from "util";
 import { Config } from "../../core/config";
 import { Log } from "../../core/log";
-import { Settings } from "../../core/settings";
 import { Fix } from "../../core/washers/fix";
 import { WasherInfo } from "../../core/washers/washerInfo";
 
@@ -19,8 +18,7 @@ export class BackupDatabase extends Fix {
   });
 
   static settings = {
-    ...Fix.settings,
-    mongo: Settings.database()
+    ...Fix.settings
   };
 
   config!: OutputFlags<typeof BackupDatabase.settings>;
@@ -39,7 +37,7 @@ export class BackupDatabase extends Fix {
     const file = "mongo.dump";
     const dest = path.join(localDir, file);
 
-    const cmd = `mongodump --uri=${this.config.mongo} --archive=${dest}`;
+    const cmd = `mongodump --uri=${Config.flags.database} --archive=${dest}`;
     await Log.debug(this, { msg: "dumping database", cmd });
     await exec(cmd);
 

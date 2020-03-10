@@ -1,16 +1,53 @@
-import { Command } from "@oclif/command";
+import { Command, flags } from "@oclif/command";
 import { OutputArgs, OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
 import { MongoDB } from "../drivers/mongodb";
 import { Config } from "./config";
 import { Database } from "./database";
-import { Settings } from "./settings";
 
 export type CommandType = typeof Command;
 
 export default class BaseCommand extends Command {
+  static filesHelp: "OS cache dir";
   static flags = {
-    database: Settings.database()
+    database: flags.string({
+      required: true,
+      default: () =>
+        process.env.LAUNDRY_DB || "mongodb://localhost:27017/laundry",
+      description: "database connection string\n(env: LAUNDRY_DB)"
+    }),
+
+    files: flags.string({
+      required: true,
+      default: () => process.env.LAUNDRY_FILES || BaseCommand.filesHelp,
+      description:
+        "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)"
+    }),
+
+    fileUrl: flags.string({
+      required: true,
+      default: () =>
+        process.env.LAUNDRY_FILES_URL || "http://localhost:3000/files",
+      description:
+        "a URL which maps to the file location\n(env: LAUNDRY_FILES_URL)"
+    }),
+
+    downloadPool: flags.integer({
+      required: true,
+      default: () => {
+        const env = process.env.LAUNDRY_DOWNLOAD_POOL;
+        if (env) {
+          const n = parseInt(env);
+          if (!isNaN(n)) {
+            return n;
+          }
+        }
+        return 5;
+      },
+      hidden: true,
+      description:
+        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)"
+    })
   };
 
   static args = [];
@@ -25,7 +62,11 @@ export default class BaseCommand extends Command {
     this.flags = flags as OutputFlags<typeof BaseCommand.flags>;
     this.args = args as OutputArgs<typeof BaseCommand.args>;
 
-    Config.init(this.config);
+    if (this.flags.files === BaseCommand.filesHelp) {
+      this.flags.files = Config.config.dataDir;
+    }
+
+    Config.init(this.config, this.flags, this.args);
 
     this.database = new MongoDB();
     await this.database.init(this.flags.database);

@@ -1,5 +1,5 @@
 const schedule = {
-  default: "*/5 * * * * *",
+  default: "0 * * * * *",
   daily: "0 0 0 * * *"
 };
 
@@ -31,7 +31,7 @@ const washers: any[] = [
     filter: { level: "error" }
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
@@ -51,7 +51,15 @@ const washers: any[] = [
     token: process.env.MIXCLOUD_TOKEN
   },
   {
-    enabled: false,
+    // enabled: false,
+    name: "mixcloud/like",
+    clientId: process.env.MIXCLOUD_CLIENTID,
+    clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
+    token: process.env.MIXCLOUD_TOKEN,
+    subscribe: ["mixcloud/likes"]
+  },
+  {
+    // enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
@@ -97,8 +105,8 @@ const washers: any[] = [
     name: "format/handlebars",
     subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
     html: `
-      <div><strong>{{title}}</strong></div>
-      <div><img src={{image}} /></div>
+      <div><strong><a href="{{url}}">{{title}}</a></strong></div>
+      <div><img src="{{image}}" /></div>
       <div>{{{html}}}</div>
       <div>{{#each meta.tags}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}</div>
     `

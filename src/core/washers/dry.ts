@@ -29,6 +29,8 @@ export class Dry extends Washer {
 
     Shared.validateSubscriptions(this, sources);
 
+    await this.init();
+
     if (this.config.schedule) {
       Shared.startSchedule(this, async () => {
         const input = await Shared.loadSubscriptions(

@@ -2,11 +2,9 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import axios from "axios";
 import { DateTime, Duration } from "luxon";
-import { stringify } from "querystring";
 import { Database } from "../database";
 import { Downloader } from "../downloader";
 import { Files } from "../files";
-import { Log } from "../log";
 import { Memory } from "../memory";
 import { Settings } from "../settings";
 import { Sources } from "./shared";
@@ -44,8 +42,6 @@ export class Washer {
       description: "whether to run this washer at all"
     }),
 
-    files: Settings.files(),
-    fileUrl: Settings.filesUrl(),
     retain: Settings.retain()
   };
 
@@ -76,28 +72,7 @@ export class Washer {
    */
   async preInit(files: Files, sources?: Sources): Promise<void> {
     this.files = files;
-
     this.memory = await this.database.loadMemory(this);
-
-    // Log all http requests.
-    this.http.interceptors.request.use(async config => {
-      const params = config.params ? `?${stringify(config.params)}` : "";
-      const url = `${config.baseURL || ""}${config.url}${params}`;
-      await Log.debug(this, { msg: "http", url });
-      return config;
-    });
-
-    // Handle all http errors.
-    this.http.interceptors.response.use(
-      response => response,
-      async error => {
-        const params = error.config.params
-          ? `?${stringify(error.config.params)}`
-          : "";
-        const url = `${error.config.baseURL || ""}${error.config.url}${params}`;
-        await Log.error(this, { msg: "http", url, error });
-      }
-    );
   }
 
   /**

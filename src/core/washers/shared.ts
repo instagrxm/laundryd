@@ -1,6 +1,10 @@
+import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CronJob } from "cron";
 import { DateTime } from "luxon";
-import asyncPool from "tiny-async-pool";
+import PQueue from "p-queue";
+import pRetry, { FailedAttemptError } from "p-retry";
+import { stringify } from "querystring";
+import { Config } from "../config";
 import { Download, DownloadResult } from "../download";
 import { Item, LoadedItem } from "../item";
 import { Log } from "../log";
@@ -112,6 +116,37 @@ export class Shared {
   }
 
   /**
+   * Validate items before saving them.
+   * @param washer the washer that created the items
+   * @param items the items to check
+   */
+  static async checkItems(
+    washer: Wash | Rinse,
+    items: Item[]
+  ): Promise<Item[]> {
+    if (!items || !items.length) {
+      return items;
+    }
+
+    // Don't let bad dates creep in
+    const invalid = items.filter(i => !i.created || !i.created.isValid);
+    if (invalid.length) {
+      await Log.error(washer, {
+        msg: "invalid created dates",
+        urls: invalid.map(i => i.url)
+      });
+      items = items.filter(i => !invalid.includes(i));
+    }
+
+    // Sort so newest is first
+    items.sort((a, b) => b.created.toMillis() - a.created.toMillis());
+
+    return items;
+  }
+
+  private static downloadQueues: Record<string, PQueue> = {};
+
+  /**
    * Encapsulate the logic of performing file downloads.
    * @param washer the washer that owns the items with the downloads
    * @param items the items with downloads to be processed
@@ -135,61 +170,102 @@ export class Shared {
       return items;
     }
 
-    await asyncPool(
-      washer.config.downloadPool,
-      downloads,
-      async (download: Download) => {
-        // Check for an existing download.
-        const existing = await washer.files.existing(download);
-        if (existing) {
-          // Call the complete handler with the existing data.
-          download.complete(existing);
-          return;
-        }
-
-        // Perform the download.
-        try {
-          await washer.downloader.download(
-            download,
-            async (result: DownloadResult) => {
-              // Process the download, modifying the result.
-              result = await washer.files.downloaded(result);
-              // Pass the result to the complete handler.
-              download.complete(result);
-            }
-          );
-        } catch (error) {
-          // Remove items if the downloads fail.
-          await Log.warn(washer, { msg: "download-fail", error });
-          items = items.filter(i => i !== download.item);
-        }
+    const doDownload = async (download: Download): Promise<void> => {
+      // Check for an existing download.
+      const existing = await washer.files.existing(download);
+      if (existing) {
+        // Call the complete handler with the existing data.
+        download.complete(existing);
+        return;
       }
-    );
+
+      // Perform the download.
+      try {
+        await washer.downloader.download(
+          download,
+          async (result: DownloadResult) => {
+            // Process the download, modifying the result.
+            result = await washer.files.downloaded(result);
+            // Pass the result to the complete handler.
+            download.complete(result);
+          }
+        );
+      } catch (error) {
+        // Remove items if the downloads fail.
+        await Log.warn(washer, { msg: "download-fail", error });
+        items = items.filter(i => i !== download.item);
+      }
+    };
+
+    const queueName = washer.info.name.split("/")[0];
+    if (!this.downloadQueues[queueName]) {
+      this.downloadQueues[queueName] = new PQueue({
+        concurrency: Config.flags.downloadPool
+      });
+    }
+    const queue = this.downloadQueues[queueName];
+    await queue.addAll(downloads.map(d => (): Promise<void> => doDownload(d)));
 
     return items;
   }
 
-  static async checkItems(
-    washer: Wash | Rinse,
-    items: Item[]
-  ): Promise<Item[]> {
-    if (!items || !items.length) {
-      return items;
+  private static taskQueues: Record<string, PQueue> = {};
+
+  /**
+   * Queue an HTTP request from a washer, which will be placed into a queue along
+   * with other requests from the same group of washers.
+   * @param washer the washer making the request
+   * @param config the request configuration
+   * @param retry run when the request fails
+   * @param retries how many times to retry
+   */
+  static async queueHttp(
+    washer: Washer,
+    config: AxiosRequestConfig,
+    retry?: (error: FailedAttemptError) => void | Promise<void>,
+    retries = 1
+  ): Promise<AxiosResponse<any>> {
+    const params = config.params ? `?${stringify(config.params)}` : "";
+    const url = `${config.baseURL || ""}${config.url}${params}`;
+
+    const http = async (attempt: number): Promise<AxiosResponse<any>> => {
+      await Log.debug(washer, { msg: "http", url, attempt });
+      return washer.http.request(config);
+    };
+
+    const task = async (): Promise<AxiosResponse<any>> =>
+      await pRetry(http, { onFailedAttempt: retry, retries });
+
+    return await Shared.queueTask(washer, task);
+  }
+
+  /**
+   * Queue a task from a washer, which will be placed into a queue along with other
+   * tasks from the same group of washers.
+   * @param washer the washer creating the task
+   * @param task the task to run
+   */
+  static async queueTask(
+    washer: Washer,
+    task: () => Promise<any>
+  ): Promise<any> {
+    return await Shared.queueTaskName(washer.info.name.split("/")[0], task);
+  }
+
+  /**
+   * Put a task into a named queue.
+   * @param queueName the name of the queue to add to
+   * @param task the task to run
+   */
+  static async queueTaskName(
+    queueName: string,
+    task: () => Promise<any>
+  ): Promise<any> {
+    if (!Shared.taskQueues[queueName]) {
+      Shared.taskQueues[queueName] = new PQueue({ concurrency: 1 });
     }
 
-    // Don't let bad dates creep in
-    const invalid = items.filter(i => !i.created || !i.created.isValid);
-    if (invalid.length) {
-      await Log.error(washer, {
-        msg: "invalid created dates",
-        urls: invalid.map(i => i.url)
-      });
-      items = items.filter(i => !invalid.includes(i));
-    }
-
-    // Sort so newest is first
-    items.sort((a, b) => b.created.toMillis() - a.created.toMillis());
-
-    return items;
+    const queue = Shared.taskQueues[queueName];
+    return await queue.add(task);
   }
 }

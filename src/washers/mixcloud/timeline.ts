@@ -38,7 +38,7 @@ export default class Timeline extends Wash {
     // Get a paged list of people they're following
     let data: any[] = [];
     while (true) {
-      const response = await this.http.request(req);
+      const response = await Mixcloud.callAPI(this, req);
 
       for (const user of response.data.data) {
         // Pass each user to the user command

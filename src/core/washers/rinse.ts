@@ -21,8 +21,7 @@ export class Rinse extends Washer {
     ...Washer.settings,
     subscribe: Settings.subscribe(),
     filter: Settings.filter(),
-    download: Settings.download(),
-    downloadPool: Settings.downloadPool()
+    download: Settings.download()
   };
 
   config!: OutputFlags<typeof Rinse.settings>;
@@ -32,6 +31,7 @@ export class Rinse extends Washer {
   async preInit(files: Files, sources: Sources): Promise<void> {
     await super.preInit(files, sources);
     Shared.validateSubscriptions(this, sources);
+    await this.init();
 
     if (this.config.schedule) {
       Shared.startSchedule(this, async () => {

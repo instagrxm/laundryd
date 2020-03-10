@@ -6,7 +6,6 @@ import BaseCommand from "../core/baseCommand";
 import { Config } from "../core/config";
 import { Files } from "../core/files";
 import { Log } from "../core/log";
-import { Settings } from "../core/settings";
 import { Dry } from "../core/washers/dry";
 import { Fix } from "../core/washers/fix";
 import { Rinse } from "../core/washers/rinse";
@@ -28,19 +27,7 @@ export default class Run extends BaseCommand {
       env: "LAUNDRY_CONFIG",
       description:
         "path to a javascript file exporting an array of washer settings"
-    }),
-
-    port: flags.integer({
-      required: true,
-      default: 3000,
-      env: "LAUNDRY_PORT",
-      description:
-        "the port to use for the web server which hosts files and the admin interface"
-    }),
-
-    files: Settings.files(),
-    fileUrl: Settings.filesUrl(),
-    downloadPool: Settings.downloadPool()
+    })
   };
 
   static args = [];
@@ -51,10 +38,6 @@ export default class Run extends BaseCommand {
 
   async run(): Promise<void> {
     await super.run(Run);
-
-    if (this.flags.files === Settings.filesHelp) {
-      this.flags.files = Config.config.dataDir;
-    }
 
     const washerTypes = await this.loadWasherTypes();
     const settings = await this.loadSettings(this.flags.config);
@@ -229,13 +212,13 @@ export default class Run extends BaseCommand {
 
       try {
         let fileStore: Files;
-        if (washer.config.files.startsWith("s3://")) {
-          fileStore = new S3Files(washer, washer.config.files);
+        if (Config.flags.files.startsWith("s3://")) {
+          fileStore = new S3Files(washer, Config.flags.files);
         } else {
           fileStore = new LocalFiles(
             washer,
-            washer.config.files,
-            washer.config.fileUrl
+            Config.flags.files,
+            Config.flags.fileUrl
           );
         }
         await fileStore.validate();
@@ -247,7 +230,6 @@ export default class Run extends BaseCommand {
         } else {
           await washer.preInit(fileStore);
         }
-        await washer.init();
       } catch (error) {
         throw new Error(`${washer.config.id}: ${error.message}`);
       }
