@@ -57,6 +57,16 @@ export class Log {
       path = `command/${source.static.id}`;
     }
 
+    // Set a default message for errors.
+    if (!msg.msg && msg.error) {
+      msg.msg = msg.error.message;
+    }
+
+    // Make Axios errors serializable https://github.com/axios/axios/pull/1625
+    if (msg.error && msg.error.isAxiosError) {
+      msg.error = msg.error.toJSON();
+    }
+
     const date = DateTime.utc();
 
     const url = `laundry://${path}/${date.toMillis()}`;
