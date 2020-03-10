@@ -110,9 +110,10 @@ export class MongoDB extends Database {
     washer.memory.lastDuration = washer.memory.lastRun.diff(
       washer.startTime
     ).milliseconds;
-    washer.memory.config = clone(washer.config);
+    washer.memory.config = washer.config;
+    washer.memory = clone(washer.memory);
 
-    // filter has filds like $regex which can't be saved
+    // filter has fields like $regex which can't be saved
     delete washer.memory.config.filter;
 
     await this.memory.replaceOne(
@@ -235,6 +236,6 @@ export class MongoDB extends Database {
   }
 
   async writeLog(log: LogItem): Promise<void> {
-    await this.log.insertOne(log);
+    await this.log.insertOne(clone(log));
   }
 }
