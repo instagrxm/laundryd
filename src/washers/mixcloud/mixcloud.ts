@@ -104,6 +104,7 @@ export class Mixcloud {
       let time = parseInt(error.response.headers["retry-after"]);
 
       if (!limited || isNaN(time)) {
+        // This isn't a rate limit error, so throw it
         throw error;
       }
 
@@ -241,10 +242,16 @@ export class Mixcloud {
     const action = washer instanceof Like ? "favorite" : "repost";
 
     let url = item.url;
+
+    // Use the API endpoint
     url = url.replace(Mixcloud.urlPattern, Mixcloud.api);
+
+    // Add trailing slash
     if (!url.match(/\/$/)) {
       url += "/";
     }
+
+    // Add action
     url += `${action}/`;
 
     const req: AxiosRequestConfig = {
