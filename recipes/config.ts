@@ -1,5 +1,5 @@
 const schedule = {
-  default: "0 * * * * *",
+  default: "*/5 * * * * *",
   daily: "0 0 0 * * *"
 };
 
@@ -31,7 +31,7 @@ const washers: any[] = [
     filter: { level: "error" }
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/user",
     user: "redbullradio",
     schedule: schedule.default,
@@ -40,7 +40,7 @@ const washers: any[] = [
     retain: 0
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/likes",
     schedule: schedule.default,
     download: true,
@@ -51,7 +51,7 @@ const washers: any[] = [
     token: process.env.MIXCLOUD_TOKEN
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/like",
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
@@ -59,7 +59,7 @@ const washers: any[] = [
     subscribe: ["mixcloud/likes"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
@@ -70,14 +70,14 @@ const washers: any[] = [
     token: process.env.MIXCLOUD_TOKEN
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feed/rss",
     title: "mixcloud combined",
     schedule: schedule.default,
     subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feed/podcast",
     title: "mixcloud combined",
     schedule: schedule.default,
@@ -100,7 +100,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/handlebars",
     name: "format/handlebars",
     subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
@@ -112,7 +112,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
@@ -124,6 +124,12 @@ const washers: any[] = [
     attachImage: true,
     // schedule: schedule.default,
     subscribe: ["mixcloud/handlebars"]
+  },
+  {
+    name: "instagram/timeline",
+    schedule: schedule.default,
+    username: process.env.INSTAGRAM_USER,
+    password: process.env.INSTAGRAM_PASS
   }
 ];
 

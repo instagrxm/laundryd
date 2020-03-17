@@ -25,6 +25,7 @@
     "franc": "^5.0.0",
     "fs-extra": "^8.1.0",
     "handlebars": "^4.7.3",
+    "instagram-private-api": "^1.39.1",
     "is-url": "^1.2.4",
     "luxon": "^1.22.0",
     "mime": "^2.4.4",
@@ -38,6 +39,7 @@
     "react-jsx-parser": "^1.21.0",
     "rss": "^1.2.2",
     "shortid": "^2.2.15",
+    "supports-color": "^7.1.0",
     "tslib": "^1.11.1",
     "youtube-dl.js": "^1.1.1"
   },
@@ -96,7 +98,7 @@
     "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && cd docs && oclif-dev readme",
     "test": "echo NO TESTS",
     "version": "cd docs && oclif-dev readme",
-    "postinstall-disabled": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin"
+    "postinstall": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin"
   },
   "types": "lib/index.d.ts"
 }
