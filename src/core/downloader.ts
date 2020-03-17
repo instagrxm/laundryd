@@ -1,5 +1,6 @@
 import axios from "axios";
 import process from "child_process";
+import ffbinaries from "ffbinaries";
 import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
 import isUrl from "is-url";
@@ -12,9 +13,6 @@ import { Config } from "./config";
 import { Download, DownloadResult } from "./download";
 import { Log } from "./log";
 import { Washer } from "./washers/washer";
-
-// @ts-ignore: no types available for ffbinaries
-import ffbinaries = require("ffbinaries");
 
 const ytdlPath = path.join(
   __dirname,

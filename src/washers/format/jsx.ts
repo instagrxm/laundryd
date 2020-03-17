@@ -2,7 +2,6 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
-// @ts-ignore: no types available
 import JsxParser from "react-jsx-parser";
 import { Item, LoadedItem } from "../../core/item";
 import { Settings } from "../../core/settings";
