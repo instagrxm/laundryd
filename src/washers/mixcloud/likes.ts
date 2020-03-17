@@ -61,11 +61,11 @@ export default class Likes extends Wash {
       await Mixcloud.getShowDescription(this, d);
     }
 
-    return data.map(d => this.parseShow(d));
+    return data.map(d => this.parseData(d));
   }
 
-  parseShow(data: any): Item {
-    const item = Mixcloud.parseShow(data);
+  parseData(data: any): Item {
+    const item = Mixcloud.parseData(data);
 
     item.source = {
       image: this.me.data.pictures.extra_large,

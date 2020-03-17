@@ -61,11 +61,11 @@ export default class Timeline extends Wash {
       req.url = response.data.paging.next;
     }
 
-    return data.map(d => this.parseShow(d));
+    return data.map(d => this.parseData(d));
   }
 
-  parseShow(data: any): Item {
-    const item = Mixcloud.parseShow(data);
+  parseData(data: any): Item {
+    const item = Mixcloud.parseData(data);
 
     item.source = {
       image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",

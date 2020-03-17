@@ -157,7 +157,7 @@ export class Mixcloud {
       await Mixcloud.getShowDescription(washer, d);
     }
 
-    return data.map(d => Mixcloud.parseShow(d));
+    return data.map(d => Mixcloud.parseData(d));
   }
 
   /**
@@ -180,26 +180,26 @@ export class Mixcloud {
 
   /**
    * Convert a raw API object into an Item.
-   * @param show the show object from the API
+   * @param data the show object from the API
    */
-  static parseShow(show: any): Item {
-    show = show.meta || show;
-    const embedFeed = encodeURIComponent(show.key);
+  static parseData(data: any): Item {
+    data = data.meta || data;
+    const embedFeed = encodeURIComponent(data.key);
 
     const item: Item = {
-      title: show.name,
-      text: show.text,
-      html: show.html,
-      url: show.url,
+      title: data.name,
+      text: data.text,
+      html: data.html,
+      url: data.url,
       created: DateTime.fromJSDate(
-        new Date(Date.parse(show.created_time))
+        new Date(Date.parse(data.created_time))
       ).toUTC(),
       embed: `<iframe width="100%" height="120" src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&light=1&feed=${embedFeed}" frameborder="0"></iframe>`,
-      meta: show
+      meta: data
     };
 
-    if (show.tags) {
-      item.tags = show.tags
+    if (data.tags) {
+      item.tags = data.tags
         .map((t: any): string => {
           if (typeof t === "object" && t.name !== undefined) {
             t = t.name;
@@ -209,12 +209,12 @@ export class Mixcloud {
         .filter((t: string) => t);
     }
 
-    if (show.user) {
-      item.author = show.user.name;
+    if (data.user) {
+      item.author = data.user.name;
       item.source = {
-        title: show.user.name,
-        image: show.user.pictures.extra_large,
-        url: `https://www.mixcloud.com/${show.user.username}/uploads/`
+        title: data.user.name,
+        image: data.user.pictures.extra_large,
+        url: `https://www.mixcloud.com/${data.user.username}/uploads/`
       };
     }
 
