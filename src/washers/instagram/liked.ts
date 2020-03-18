@@ -6,10 +6,10 @@ import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { IgFeedItem, Instagram } from "./instagram";
 
-export default class Timeline extends Wash {
+export default class Liked extends Wash {
   static readonly info = new WasherInfo({
-    title: "Instagram timeline",
-    description: "load new posts from everyone you're following on Instagram"
+    title: "Instagram likes",
+    description: "load posts you've liked on Instagram"
   });
 
   static settings = {
@@ -18,7 +18,7 @@ export default class Timeline extends Wash {
     ...Instagram.authSettings
   };
 
-  config!: OutputFlags<typeof Timeline.settings>;
+  config!: OutputFlags<typeof Liked.settings>;
 
   client!: IgApiClient;
 
@@ -27,7 +27,7 @@ export default class Timeline extends Wash {
   }
 
   async run(): Promise<Item[]> {
-    const feed = this.client.feed.timeline();
+    const feed = this.client.feed.liked();
     const data = await Instagram.readFeed(this, feed);
     return Promise.all(data.map(d => this.parseData(d)));
   }

@@ -4,7 +4,7 @@ import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
-export default class Likes extends Wash {
+export default class Liked extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud likes",
     description: "load shows you've liked on Mixcloud"
@@ -15,7 +15,7 @@ export default class Likes extends Wash {
     ...Mixcloud.authSettings
   };
 
-  config!: OutputFlags<typeof Likes.settings>;
+  config!: OutputFlags<typeof Liked.settings>;
 
   me!: any;
 

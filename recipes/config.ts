@@ -41,7 +41,7 @@ const washers: any[] = [
   },
   {
     enabled: false,
-    name: "mixcloud/likes",
+    name: "mixcloud/liked",
     schedule: schedule.default,
     download: true,
     begin: 0,
@@ -127,6 +127,10 @@ const washers: any[] = [
   },
   {
     name: "instagram/timeline",
+    // user: "danielarsham",
+    // tag: "covidchic",
+    // locationId: 1031402212,
+    begin: 10,
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS

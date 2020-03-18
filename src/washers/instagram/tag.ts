@@ -1,4 +1,5 @@
 /* eslint-disable @typescript-eslint/camelcase */
+import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { IgApiClient } from "instagram-private-api";
 import { Item } from "../../core/item";
@@ -6,19 +7,23 @@ import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { IgFeedItem, Instagram } from "./instagram";
 
-export default class Timeline extends Wash {
+export default class Tag extends Wash {
   static readonly info = new WasherInfo({
-    title: "Instagram timeline",
-    description: "load new posts from everyone you're following on Instagram"
+    title: "Instagram tag",
+    description: "load new posts from a tag on Instagram"
   });
 
   static settings = {
     ...Wash.settings,
     begin: Instagram.beginSetting,
-    ...Instagram.authSettings
+    ...Instagram.authSettings,
+    tag: flags.string({
+      required: true,
+      description: "the tag to load posts from"
+    })
   };
 
-  config!: OutputFlags<typeof Timeline.settings>;
+  config!: OutputFlags<typeof Tag.settings>;
 
   client!: IgApiClient;
 
@@ -27,7 +32,7 @@ export default class Timeline extends Wash {
   }
 
   async run(): Promise<Item[]> {
-    const feed = this.client.feed.timeline();
+    const feed = this.client.feed.tags(this.config.tag, "recent");
     const data = await Instagram.readFeed(this, feed);
     return Promise.all(data.map(d => this.parseData(d)));
   }
@@ -37,8 +42,8 @@ export default class Timeline extends Wash {
 
     item.source = {
       image: Instagram.icon,
-      url: Instagram.url,
-      title: this.info.title
+      url: `${Instagram.url}/explore/tags/${this.config.tag}/`,
+      title: `Instagram: ${this.config.tag}`
     };
 
     return item;

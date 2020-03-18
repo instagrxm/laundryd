@@ -24,7 +24,8 @@ export class Wash extends Washer {
 
     begin: flags.integer({
       default: 0,
-      description: "the number of days of past items to load in the first run"
+      description:
+        "the number of days of past items to load in the first run, 0 to load all"
     })
   };
 
