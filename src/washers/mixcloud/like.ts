@@ -7,8 +7,8 @@ import { Mixcloud } from "./mixcloud";
 
 export class Like extends Dry {
   static readonly info = new WasherInfo({
-    title: "like a Mixcloud show",
-    description: "like a Mixcloud show"
+    title: "like Mixcloud shows",
+    description: "like Mixcloud shows"
   });
 
   static settings = {

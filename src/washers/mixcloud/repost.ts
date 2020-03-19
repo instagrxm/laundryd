@@ -7,8 +7,8 @@ import { Mixcloud } from "./mixcloud";
 
 export class Repost extends Dry {
   static readonly info = new WasherInfo({
-    title: "repost a Mixcloud show",
-    description: "repost a Mixcloud show"
+    title: "repost Mixcloud shows",
+    description: "repost Mixcloud shows"
   });
 
   static settings = {
