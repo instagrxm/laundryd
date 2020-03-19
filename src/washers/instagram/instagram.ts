@@ -19,6 +19,7 @@ import {
 import { DateTime } from "luxon";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
+import { Settings } from "../../core/settings";
 import { Shared } from "../../core/washers/shared";
 import { Wash } from "../../core/washers/wash";
 import { Washer } from "../../core/washers/washer";
@@ -47,7 +48,9 @@ export class Instagram {
     "https://www.instagram.com/static/images/ico/apple-touch-icon-180x180-precomposed.png/c06fdb2357bd.png";
 
   // The URL to the site
-  static url = "https://www.instagram.com";
+  static url = "https://instagram.com";
+
+  static urlPattern = /^http(s)?:\/\/(www.)?instagram.com/i;
 
   // Settings used by all washers to auth
   static authSettings = {
@@ -73,6 +76,12 @@ export class Instagram {
       "the number of past items to load in the first run, 0 to load all"
   });
 
+  static filterSetting = Settings.filter({
+    url: {
+      $regex: Instagram.urlPattern
+    }
+  });
+
   private static clients: Record<string, IgApiClient> = {};
 
   /**
@@ -87,8 +96,10 @@ export class Instagram {
     if (Instagram.clients[auth.username]) {
       return Instagram.clients[auth.username];
     }
+
     const client = new IgApiClient();
     client.state.generateDevice(auth.username);
+
     try {
       await client.account.login(auth.username, auth.password);
       process.nextTick(async () => await client.simulate.postLoginFlow());
@@ -103,7 +114,9 @@ export class Instagram {
         await client.challenge.sendSecurityCode(auth.code);
       }
     }
+
     await client.simulate.postLoginFlow();
+
     Instagram.clients[auth.username] = client;
     return client;
   }
@@ -118,7 +131,7 @@ export class Instagram {
 
     while (true) {
       const posts = await feed.items();
-      let done = false;
+      let done = !feed.isMoreAvailable();
 
       for (const post of posts) {
         // Skip ads
@@ -146,7 +159,7 @@ export class Instagram {
         data.push(post);
       }
 
-      if (done || !feed.isMoreAvailable()) {
+      if (done) {
         break;
       }
     }
