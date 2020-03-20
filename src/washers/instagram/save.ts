@@ -1,9 +1,7 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import {
   AccountRepositoryCurrentUserResponseUser,
-  IgApiClient,
-  LikeModuleInfoOption
+  IgApiClient
 } from "instagram-private-api";
 import { LoadedItem } from "../../core/item";
 import { Log } from "../../core/log";
@@ -12,10 +10,10 @@ import { Dry } from "../../core/washers/dry";
 import { WasherInfo } from "../../core/washers/washerInfo";
 import { Instagram } from "./instagram";
 
-export class Like extends Dry {
+export class Save extends Dry {
   static readonly info = new WasherInfo({
-    title: "like Instagram posts",
-    description: "like Instagram posts"
+    title: "save Instagram posts",
+    description: "save Instagram posts"
   });
 
   static settings = {
@@ -24,11 +22,11 @@ export class Like extends Dry {
     filter: Instagram.filterSetting,
     state: Settings.boolean({
       default: true,
-      description: "false to unlike the post"
+      description: "false to unsave the post"
     })
   };
 
-  config!: OutputFlags<typeof Like.settings>;
+  config!: OutputFlags<typeof Save.settings>;
 
   client!: IgApiClient;
   user!: AccountRepositoryCurrentUserResponseUser;
@@ -43,20 +41,14 @@ export class Like extends Dry {
       const mediaId = Instagram.urlToId(item.url);
 
       if (!mediaId) {
-        await Log.warn(this, { msg: `couldn't like ${item.url}` });
+        await Log.warn(this, { msg: `couldn't save ${item.url}` });
         continue;
       }
 
-      const moduleInfo: LikeModuleInfoOption = {
-        module_name: "media_view_profile",
-        user_id: this.user.pk,
-        username: this.user.username
-      };
-
       if (this.config.state) {
-        await this.client.media.like({ mediaId, moduleInfo, d: 1 });
+        await this.client.media.save(mediaId);
       } else {
-        await this.client.media.unlike({ mediaId, moduleInfo });
+        await this.client.media.unsave(mediaId);
       }
     }
   }

@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import IgIds from "instagram-id-to-url-segment";
 import {
   IgApiClient,
   LikedFeed,
@@ -215,5 +216,36 @@ export class Instagram {
     item.embed = embed.data.html;
 
     return item;
+  }
+
+  /**
+   * Convert an Instagram URL to an internal post id.
+   * @param url an instagram URL like https://www.instagram.com/p/B9y8sJkjpD2/
+   */
+  static urlToId(url: string): string | undefined {
+    if (!url.match(Instagram.urlPattern)) {
+      return;
+    }
+
+    let segment;
+    const matches = url.match(/\/p\/(.*)[\/$]/);
+    if (matches && matches.length > 1) {
+      segment = matches[1];
+    }
+
+    if (!segment) {
+      return;
+    }
+
+    return IgIds.urlSegmentToInstagramId(segment);
+  }
+
+  /**
+   * Convert an Instagram post ID to a URL
+   * @param id the post id, like 1038059720608660215
+   */
+  static idToUrl(id: string): string {
+    const segment = IgIds.instagramIdToUrlSegment(id);
+    return `${Instagram.url}/p/${segment}`;
   }
 }

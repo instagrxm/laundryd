@@ -26,6 +26,7 @@
     "franc": "^5.0.0",
     "fs-extra": "^9.0.0",
     "handlebars": "^4.7.3",
+    "instagram-id-to-url-segment": "0.0.0",
     "instagram-private-api": "^1.39.1",
     "is-url": "^1.2.4",
     "luxon": "^1.22.0",
