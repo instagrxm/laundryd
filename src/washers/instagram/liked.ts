@@ -8,7 +8,7 @@ import { IgFeedItem, Instagram } from "./instagram";
 
 export default class Liked extends Wash {
   static readonly info = new WasherInfo({
-    title: "Instagram likes",
+    title: "Instagram liked",
     description: "load posts you've liked on Instagram"
   });
 

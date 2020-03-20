@@ -137,8 +137,7 @@ const washers: any[] = [
     password: process.env.INSTAGRAM_PASS
   },
   {
-    name: "instagram/save",
-    state: false,
+    name: "instagram/story",
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,

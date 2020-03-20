@@ -12,7 +12,7 @@ import { Instagram } from "./instagram";
 
 export class Save extends Dry {
   static readonly info = new WasherInfo({
-    title: "save Instagram posts",
+    title: "Instagram save",
     description: "save Instagram posts"
   });
 

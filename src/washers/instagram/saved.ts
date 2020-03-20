@@ -8,7 +8,7 @@ import { IgFeedItem, Instagram } from "./instagram";
 
 export default class Saved extends Wash {
   static readonly info = new WasherInfo({
-    title: "Instagram saves",
+    title: "Instagram saved",
     description: "load posts you've saved on Instagram"
   });
 

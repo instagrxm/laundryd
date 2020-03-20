@@ -14,7 +14,7 @@ import { Instagram } from "./instagram";
 
 export class Like extends Dry {
   static readonly info = new WasherInfo({
-    title: "like Instagram posts",
+    title: "Instagram like",
     description: "like Instagram posts"
   });
 
