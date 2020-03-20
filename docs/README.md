@@ -15,11 +15,11 @@ data laundering tools
 # Usage
 <!-- usage -->
 ```sh-session
-$ npm install -g @laundry/laundry
+$ npm install -g laundry
 $ laundry COMMAND
 running command...
 $ laundry (-v|--version|version)
-@laundry/laundry/0.0.2 darwin-x64 node-v13.8.0
+laundry/0.0.3 darwin-x64 node-v13.11.0
 $ laundry --help [COMMAND]
 USAGE
   $ laundry COMMAND
@@ -72,20 +72,17 @@ USAGE
   $ laundry run
 
 OPTIONS
-  --config=config    (required) path to a javascript file exporting an array of washer settings
+  --config=config      (required) path to a javascript file exporting an array of washer settings
 
-  --fileUrl=fileUrl  (required) [default: http://localhost:3000/files] a URL which maps to the file location
-                     (env: LAUNDRY_FILES_URL)
+  --database=database  (required) [default: mongodb://localhost:27017/laundry] database connection string
+                       (env: LAUNDRY_DB)
 
-  --files=files      (required) [default: OS cache dir] where to store downloaded files, either a local path or an s3://
-                     location
-                     (env: LAUNDRY_FILES)
+  --fileUrl=fileUrl    (required) [default: http://localhost:3000/files] a URL which maps to the file location
+                       (env: LAUNDRY_FILES_URL)
 
-  --mongo=mongo      (required) [default: mongodb://localhost:27017/laundry] mongodb connection string
-                     (env: LAUNDRY_MONGO)
-
-  --port=port        (required) [default: 3000] the port to use for the web server which hosts files and the admin
-                     interface
+  --files=files        (required) [default: ~/.data/laundry] where to store downloaded files, either a local path or an
+                       s3:// location
+                       (env: LAUNDRY_FILES)
 ```
 
 _See code: [src/commands/run.ts](https://github.com/laundryd/laundry/blob/master/src/commands/run.ts)_

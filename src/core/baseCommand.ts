@@ -1,6 +1,7 @@
 import { Command, flags } from "@oclif/command";
 import { OutputArgs, OutputFlags } from "@oclif/parser";
 import fs from "fs-extra";
+import os from "os";
 import { MongoDB } from "../drivers/mongodb";
 import { Config } from "./config";
 import { Database } from "./database";
@@ -8,7 +9,9 @@ import { Database } from "./database";
 export type CommandType = typeof Command;
 
 export default class BaseCommand extends Command {
-  static filesHelp: "OS cache dir";
+  static filesHelp =
+    os.platform() === "win32" ? "%LOCALAPPDATA%laundry" : "~/.data/laundry";
+
   static flags = {
     database: flags.string({
       required: true,
