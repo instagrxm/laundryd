@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import Autolinker from "autolinker";
 import IgIds from "instagram-id-to-url-segment";
 import {
   IgApiClient,
@@ -18,6 +19,7 @@ import {
   UserFeedResponseItemsItem
 } from "instagram-private-api";
 import { DateTime } from "luxon";
+import { Download, DownloadResult } from "../../core/download";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
@@ -81,6 +83,18 @@ export class Instagram {
     url: {
       $regex: Instagram.urlPattern
     }
+  });
+
+  static linker = new Autolinker({
+    urls: true,
+    email: true,
+    phone: true,
+    hashtag: "instagram",
+    mention: "instagram",
+    newWindow: false,
+    stripPrefix: true,
+    stripTrailingSlash: true,
+    truncate: undefined
   });
 
   private static clients: Record<string, IgApiClient> = {};
@@ -179,14 +193,22 @@ export class Instagram {
    */
   static async parseData(washer: Washer, data: IgFeedItem): Promise<Item> {
     const item: Item = {
-      title: data.user.username,
       url: `https://www.instagram.com/p/${data.code}/`,
       created: DateTime.fromSeconds(data.taken_at),
-      meta: data
+      meta: data,
+      title: data.user.username,
+      author: { name: data.user.username },
+
+      // Washers should set source to something that makes sense for them
+      source: {
+        image: Instagram.icon,
+        url: Instagram.url,
+        title: "Instagram"
+      }
     };
 
     if (data.caption) {
-      // Add caption to title
+      // Add caption to title, dryers should truncate this
       item.title += `: ${data.caption.text.replace(/[\r\n]/g, " ")}`;
 
       // Parse tags
@@ -196,6 +218,11 @@ export class Instagram {
       while ((match = re.exec(data.caption.text))) {
         item.tags.push(match[0].substr(1));
       }
+
+      item.text = data.caption.text;
+
+      // @ts-ignore
+      data.caption.html = Instagram.linker.link(data.caption.text);
     }
 
     // @ts-ignore
@@ -208,6 +235,48 @@ export class Instagram {
       };
     }
 
+    // @ts-ignore
+    let carousel = data.carousel_media;
+    if (!carousel) {
+      carousel = [data];
+    }
+
+    // Parse media
+    item.downloads = [];
+    for (const m of carousel) {
+      const media: TimelineFeedResponseMedia_or_ad = m;
+
+      if (media.image_versions2) {
+        const images = media.image_versions2.candidates;
+        images.sort((a, b) => b.width - a.width);
+        const image = images[0];
+        if (carousel[0] === m) {
+          item.image = image.url;
+        }
+        item.downloads.push(
+          Download.direct(item, image.url, (result: DownloadResult) => {
+            image.url = `${result.url}/${result.media}`;
+            if (carousel[0] === m) {
+              item.image = image.url;
+            }
+            Instagram.buildHtml(item);
+          })
+        );
+      }
+
+      if (media.video_versions) {
+        const videos = media.video_versions;
+        videos.sort((a, b) => b.width - a.width);
+        const video = videos[0];
+        item.downloads.push(
+          Download.direct(item, video.url, (result: DownloadResult) => {
+            video.url = `${result.url}/${result.media}`;
+            Instagram.buildHtml(item);
+          })
+        );
+      }
+    }
+
     // Get the embed code
     const embed = await Shared.queueHttp(washer, {
       url: "https://api.instagram.com/oembed/",
@@ -215,7 +284,13 @@ export class Instagram {
     });
     item.embed = embed.data.html;
 
+    Instagram.buildHtml(item);
+
     return item;
+  }
+
+  static buildHtml(item: Item): void {
+    item.html = item.meta?.caption?.html;
   }
 
   /**
