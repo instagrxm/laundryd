@@ -10,7 +10,9 @@ export type CommandType = typeof Command;
 
 export default class BaseCommand extends Command {
   static filesHelp =
-    os.platform() === "win32" ? "%LOCALAPPDATA%laundry" : "~/.data/laundry";
+    os.platform() === "win32"
+      ? "%LOCALAPPDATA%laundry"
+      : "~/.local/share/laundry";
 
   static flags = {
     database: flags.string({
