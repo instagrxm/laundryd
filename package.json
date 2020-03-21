@@ -15,7 +15,7 @@
     "arr-unique": "^1.0.2",
     "array-unique": "^0.3.2",
     "autolinker": "^3.13.0",
-    "aws-sdk": "^2.642.0",
+    "aws-sdk": "^2.643.0",
     "axios": "^0.19.2",
     "clone": "^2.1.2",
     "cron": "^1.8.2",
