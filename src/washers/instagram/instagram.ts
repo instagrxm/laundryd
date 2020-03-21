@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import Autolinker, { HashtagMatch } from "autolinker";
+import { HashtagMatch } from "autolinker";
 import IgIds from "instagram-id-to-url-segment";
 import {
   IgApiClient,
@@ -20,6 +20,7 @@ import {
 } from "instagram-private-api";
 import { DateTime } from "luxon";
 import { Download, DownloadResult } from "../../core/download";
+import { Handlebars, InstagramLinker } from "../../core/formatting";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
@@ -83,18 +84,6 @@ export class Instagram {
     url: {
       $regex: Instagram.urlPattern
     }
-  });
-
-  static linker = new Autolinker({
-    urls: true,
-    email: true,
-    phone: true,
-    hashtag: "instagram",
-    mention: "instagram",
-    newWindow: false,
-    stripPrefix: true,
-    stripTrailingSlash: true,
-    truncate: undefined
   });
 
   private static clients: Record<string, IgApiClient> = {};
@@ -214,11 +203,11 @@ export class Instagram {
       item.text = data.caption.text;
 
       // @ts-ignore: a convenient place to store the html caption
-      data.caption.html = Instagram.linker.link(data.caption.text);
+      data.caption.html = InstagramLinker.link(data.caption.text);
 
       // Parse tags
       item.tags = [];
-      const matches = Instagram.linker.parse(data.caption.text);
+      const matches = InstagramLinker.parse(data.caption.text);
       for (const match of matches) {
         if (match instanceof HashtagMatch) {
           item.tags.push(match.getHashtag());
@@ -290,8 +279,50 @@ export class Instagram {
     return item;
   }
 
-  static buildHtml(item: Item): void {
-    item.html = item.meta?.caption?.html;
+  static htmlTemplate = Handlebars.compile(`
+    <div class="laundry-instagram">
+    {{#each carousel}}
+    <p>
+      {{#if this.video_versions}}
+      <video controls loop playsinline muted
+        src="{{this.video_versions.0.url}}"
+        poster="{{this.image_versions2.candidates.0.url}}"
+        width="{{this.video_versions.0.width}}"
+        height="{{this.video_versions.0.height}}" />
+      {{else}}
+      <img
+        src="{{this.image_versions2.candidates.0.url}}"
+        width="{{this.image_versions2.candidates.0.width}}"
+        height="{{this.image_versions2.candidates.0.height}}" />
+      {{/if}}
+    </p>
+    {{/each}}
+    <p>{{{instagramLinker post.caption.text}}}</p>
+    {{~#if post.like_count~}}
+    <p>{{toLocaleString post.like_count}} likes
+      {{~#each post.top_likers~}}
+      {{~#if @first}}: {{/if~}}
+      <a href="https://instagram.com/{{this}}">{{this}}</a>
+      {{~#unless @last}}, {{/unless~}}
+      {{~/each~}}
+    </p>
+    {{~/if~}}
+    {{~#if post.comment_count}}<p>{{toLocaleString post.comment_count}} comments{{#if post.preview_comments}}: {{/if}}</p>{{/if~}}
+    {{~#each post.preview_comments}}<p><strong><a href="https://instagram.com/{{this.user.username}}">{{this.user.username}}</a></strong>: {{{instagramLinker this.text}}}</p>{{/each~}}
+    </div>
+  `);
+
+  static buildHtml(item: Item): string {
+    let carousel = {};
+    if (item.meta) {
+      carousel = item.meta.carousel_media;
+      if (!carousel) {
+        carousel = [item.meta];
+      }
+    }
+
+    item.html = Instagram.htmlTemplate({ carousel, post: item.meta });
+    return item.html;
   }
 
   /**
