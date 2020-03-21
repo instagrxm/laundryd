@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import Autolinker from "autolinker";
+import Autolinker, { HashtagMatch } from "autolinker";
 import IgIds from "instagram-id-to-url-segment";
 import {
   IgApiClient,
@@ -211,21 +211,22 @@ export class Instagram {
       // Add caption to title, dryers should truncate this
       item.title += `: ${data.caption.text.replace(/[\r\n]/g, " ")}`;
 
-      // Parse tags
-      item.tags = [];
-      const re = /#([\w]+)/g;
-      let match;
-      while ((match = re.exec(data.caption.text))) {
-        item.tags.push(match[0].substr(1));
-      }
-
       item.text = data.caption.text;
 
-      // @ts-ignore
+      // @ts-ignore: a convenient place to store the html caption
       data.caption.html = Instagram.linker.link(data.caption.text);
+
+      // Parse tags
+      item.tags = [];
+      const matches = Instagram.linker.parse(data.caption.text);
+      for (const match of matches) {
+        if (match instanceof HashtagMatch) {
+          item.tags.push(match.getHashtag());
+        }
+      }
     }
 
-    // @ts-ignore
+    // @ts-ignore: not all posts have locations
     const location = data.location;
     if (location) {
       // Parse location
@@ -235,7 +236,7 @@ export class Instagram {
       };
     }
 
-    // @ts-ignore
+    // @ts-ignore: not all posts have carousels
     let carousel = data.carousel_media;
     if (!carousel) {
       carousel = [data];
