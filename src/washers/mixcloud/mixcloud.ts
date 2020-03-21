@@ -1,11 +1,11 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import Autolinker from "autolinker";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import delay from "delay";
 import { DateTime } from "luxon";
 import { Config } from "../../core/config";
 import { Download, DownloadResult } from "../../core/download";
+import { Handlebars } from "../../core/formatting";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
@@ -160,6 +160,10 @@ export class Mixcloud {
     return data.map(d => Mixcloud.parseData(d));
   }
 
+  static htmlTemplate = Handlebars.compile(
+    `<div class="laundry-mixcloud">{{{basicLinker (breaksToHtml description)}}}</div>`
+  );
+
   /**
    * Add text/html attributes to a show containing its description.
    * @param washer the washer that is making the request
@@ -171,11 +175,7 @@ export class Mixcloud {
     });
 
     show.text = response.data.description;
-    show.html = response.data.description
-      .replace(/\n{2,}/g, "</p><p>")
-      .replace(/\n/g, "<br>");
-    show.html = `<p>${show.html}</p>`;
-    show.html = Autolinker.link(show.html, { newWindow: false });
+    show.html = Mixcloud.htmlTemplate(response.data);
   }
 
   /**

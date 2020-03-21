@@ -56,10 +56,10 @@ const washers: any[] = [
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
     token: process.env.MIXCLOUD_TOKEN,
-    subscribe: ["mixcloud/likes"]
+    subscribe: ["mixcloud/liked"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
@@ -74,7 +74,7 @@ const washers: any[] = [
     name: "feed/rss",
     title: "mixcloud combined",
     schedule: schedule.default,
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"]
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"]
   },
   {
     enabled: false,
@@ -85,13 +85,13 @@ const washers: any[] = [
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"]
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"]
   },
   {
     enabled: false,
     id: "mixcloud/jsx",
     name: "format/jsx",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"],
     html: `
       <div><strong>{item.title}</strong></div>
       <div><img src={item.image} /></div>
@@ -100,10 +100,10 @@ const washers: any[] = [
     `
   },
   {
-    enabled: false,
+    // enabled: false,
     id: "mixcloud/handlebars",
     name: "format/handlebars",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/likes"],
+    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"],
     html: `
       <div><strong><a href="{{url}}">{{title}}</a></strong></div>
       <div><img src="{{image}}" /></div>
@@ -112,7 +112,7 @@ const washers: any[] = [
     `
   },
   {
-    enabled: false,
+    // enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
@@ -127,7 +127,8 @@ const washers: any[] = [
   },
   {
     enabled: false,
-    name: "instagram/timeline",
+    name: "instagram/saved",
+    download: true,
     // user: "danielarsham",
     // tag: "covidchic",
     // locationId: 1031402212,
@@ -137,6 +138,7 @@ const washers: any[] = [
     password: process.env.INSTAGRAM_PASS
   },
   {
+    enabled: false,
     name: "instagram/story",
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
