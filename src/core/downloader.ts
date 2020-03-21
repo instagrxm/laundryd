@@ -1,7 +1,6 @@
 import axios from "axios";
 import process from "child_process";
 import ffbinaries from "ffbinaries";
-import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
 import isUrl from "is-url";
 import mime from "mime";
@@ -12,6 +11,7 @@ import util from "util";
 import { Config } from "./config";
 import { Download, DownloadResult } from "./download";
 import { Log } from "./log";
+import { Shared } from "./washers/shared";
 import { Washer } from "./washers/washer";
 
 const ytdlPath = path.join(
@@ -98,21 +98,25 @@ export class Downloader {
     dir: string,
     result: DownloadResult
   ): Promise<DownloadResult> {
-    result.media = filenamifyUrl(url);
+    result.media = Shared.urlToFilename(url);
     const file = path.join(dir, result.media);
 
-    return new Promise(async (resolve, reject) => {
-      await Log.debug(this.washer, { msg: "download-http", url });
-      axios(url, { responseType: "stream" })
+    await Log.debug(this.washer, { msg: "download-http", url });
+
+    await new Promise((resolve, reject) => {
+      axios({ url, responseType: "stream" })
         .then(response => {
           result.size = response.headers["content-length"];
           result.type = response.headers["content-type"];
-          response.data.pipe(fs.createWriteStream(file));
+
+          const stream = fs.createWriteStream(file);
+          response.data.pipe(stream);
+          stream.on("close", resolve);
         })
-        .catch(async error => {
-          await Log.error(this.washer, { msg: "download-http", url, error });
-        });
+        .catch(error => reject(error));
     });
+
+    return result;
   }
 
   /**

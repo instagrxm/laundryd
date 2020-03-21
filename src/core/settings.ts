@@ -7,6 +7,7 @@ export const Settings = {
     return flags.boolean({
       default: false,
       allowNo: true,
+      required: true,
       description: "whether to download media"
     });
   },

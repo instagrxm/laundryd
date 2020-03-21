@@ -1,7 +1,6 @@
 import AWS from "aws-sdk";
 import { ListObjectsV2Request } from "aws-sdk/clients/s3";
 import { PromiseResult } from "aws-sdk/lib/request";
-import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
 import { DateTime } from "luxon";
 import mime from "mime";
@@ -10,6 +9,7 @@ import urlUtils from "url";
 import { Download, DownloadResult } from "../core/download";
 import { Files } from "../core/files";
 import { Log } from "../core/log";
+import { Shared } from "../core/washers/shared";
 import { Washer } from "../core/washers/washer";
 
 export class S3Files extends Files {
@@ -68,7 +68,7 @@ export class S3Files extends Files {
     const key = path.join(
       this.downloadsDir,
       Math.floor(download.item.created.toSeconds()).toString(),
-      filenamifyUrl(download.url)
+      Shared.urlToFilename(download.url)
     );
 
     const result: DownloadResult = {
@@ -81,7 +81,7 @@ export class S3Files extends Files {
       const files = await this.s3
         .listObjectsV2({ Prefix: key, Bucket: this.bucket })
         .promise();
-      if (!files.Contents) {
+      if (!files.Contents || !files.Contents.length) {
         return;
       }
 
@@ -107,11 +107,16 @@ export class S3Files extends Files {
         result.image = path.parse(result.image).base;
       }
 
-      if (download.media) {
-        result.media = keys.find(f => !f.match(/\.(jpg|jpeg|png|gif|json)$/));
+      if (download.media || download.isDirect) {
+        result.media = keys[0];
+        if (!download.isDirect) {
+          result.media = keys.find(f => !f.match(/\.(jpg|jpeg|png|gif|json)$/));
+        }
+
         if (!result.media) {
           return;
         }
+
         const stats = await this.s3
           .headObject({ Key: result.media, Bucket: this.bucket })
           .promise();
@@ -127,7 +132,7 @@ export class S3Files extends Files {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const targetDir = filenamifyUrl(download.url);
+    const targetDir = Shared.urlToFilename(download.url);
 
     let local: string;
     const date = download.item.created;

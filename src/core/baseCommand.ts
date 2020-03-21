@@ -65,11 +65,11 @@ export default class BaseCommand extends Command {
     this.flags = flags as OutputFlags<typeof BaseCommand.flags>;
     this.args = args as OutputArgs<typeof BaseCommand.args>;
 
+    Config.init(this.config, this.flags, this.args);
+
     if (this.flags.files === BaseCommand.filesHelp) {
       this.flags.files = Config.config.dataDir;
     }
-
-    Config.init(this.config, this.flags, this.args);
 
     this.database = new MongoDB();
     await this.database.init(this.flags.database);

@@ -1,5 +1,4 @@
 import filenameify from "filenamify";
-import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
 import { DateTime } from "luxon";
 import mime from "mime";
@@ -8,6 +7,7 @@ import path from "path";
 import { Download, DownloadResult } from "../core/download";
 import { Files } from "../core/files";
 import { Log } from "../core/log";
+import { Shared } from "../core/washers/shared";
 
 /**
  * Save and load files on the local filesystem.
@@ -55,7 +55,7 @@ export class LocalFiles extends Files {
     const dir = path.join(
       this.downloadsDir,
       Math.floor(download.item.created.toSeconds()).toString(),
-      filenamifyUrl(download.url)
+      Shared.urlToFilename(download.url)
     );
 
     const result: DownloadResult = {
@@ -71,6 +71,9 @@ export class LocalFiles extends Files {
       }
 
       const files = await fs.readdir(dir);
+      if (!files.length) {
+        return;
+      }
 
       if (download.json) {
         result.json = files.find(f => f.match(/\.json$/));
@@ -87,11 +90,18 @@ export class LocalFiles extends Files {
         }
       }
 
-      if (download.media) {
-        result.media = files.find(f => !f.match(/\.(jpg|jpeg|png|gif|json)$/));
+      if (download.media || download.isDirect) {
+        result.media = files[0];
+        if (!download.isDirect) {
+          result.media = files.find(
+            f => !f.match(/\.(jpg|jpeg|png|gif|json)$/)
+          );
+        }
+
         if (!result.media) {
           return;
         }
+
         const stats = await fs.stat(path.join(dir, result.media));
         result.size = stats.size;
         result.type = mime.getType(result.media) || "";
@@ -104,7 +114,7 @@ export class LocalFiles extends Files {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const targetDir = filenamifyUrl(download.url);
+    const targetDir = Shared.urlToFilename(download.url);
 
     let local: string;
     const date = download.item.created;

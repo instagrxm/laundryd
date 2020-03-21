@@ -1,9 +1,11 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CronJob } from "cron";
+import filenamifyUrl from "filenamify-url";
 import { DateTime } from "luxon";
 import PQueue from "p-queue";
 import pRetry, { FailedAttemptError } from "p-retry";
 import { stringify } from "querystring";
+import { parse as urlParse } from "url";
 import { Config } from "../config";
 import { Download, DownloadResult } from "../download";
 import { Item, LoadedItem } from "../item";
@@ -267,5 +269,13 @@ export class Shared {
 
     const queue = Shared.taskQueues[queueName];
     return await queue.add(task);
+  }
+
+  static urlToFilename(url: string): string {
+    const parsed = urlParse(url);
+    if (parsed.search) {
+      url = url.replace(parsed.search, "");
+    }
+    return filenamifyUrl(url, { maxLength: Number.POSITIVE_INFINITY });
   }
 }
