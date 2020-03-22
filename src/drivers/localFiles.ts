@@ -76,7 +76,7 @@ export class LocalFiles extends Files {
       }
 
       if (download.json) {
-        result.json = files.find(f => f.match(/\.json$/));
+        result.json = files.find(f => f === "data.json");
         if (!result.json) {
           return;
         }
@@ -84,7 +84,7 @@ export class LocalFiles extends Files {
       }
 
       if (download.image) {
-        result.image = files.find(f => f.match(/\.(jpg|jpeg|png|gif)$/));
+        result.image = files.find(f => f.match(/^image/));
         if (!result.image) {
           return;
         }
@@ -93,9 +93,7 @@ export class LocalFiles extends Files {
       if (download.media || download.isDirect) {
         result.media = files[0];
         if (!download.isDirect) {
-          result.media = files.find(
-            f => !f.match(/\.(jpg|jpeg|png|gif|json)$/)
-          );
+          result.media = files.find(f => !f.match(/^media/));
         }
 
         if (!result.media) {
@@ -114,7 +112,7 @@ export class LocalFiles extends Files {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const targetDir = Shared.urlToFilename(download.url);
+    const dir = Shared.urlToFilename(download.url);
 
     let local: string;
     const date = download.item.created;
@@ -123,17 +121,20 @@ export class LocalFiles extends Files {
     try {
       if (download.json) {
         local = path.join(download.dir, download.json);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.json = "data.json";
+        remoteDir = await this.saveDownload(date, local, dir, download.json);
       }
 
       if (download.image) {
         local = path.join(download.dir, download.image);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.image = `image${path.parse(download.image).ext}`;
+        remoteDir = await this.saveDownload(date, local, dir, download.image);
       }
 
       if (download.media) {
         local = path.join(download.dir, download.media);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.media = `media${path.parse(download.media).ext}`;
+        remoteDir = await this.saveDownload(date, local, dir, download.media);
       }
     } catch (error) {
       await Log.error(this.washer, error);
@@ -144,13 +145,18 @@ export class LocalFiles extends Files {
     return download;
   }
 
-  async saveDownload(date: DateTime, local: string, dir = ""): Promise<string> {
+  async saveDownload(
+    date: DateTime,
+    local: string,
+    dir: string,
+    name: string
+  ): Promise<string> {
     dir = path.join(
       this.downloadsDir,
       Math.floor(date.toSeconds()).toString(),
       dir
     );
-    const file = path.join(dir, path.parse(local).base);
+    const file = path.join(dir, name);
 
     await fs.copy(local, file, { overwrite: true });
 

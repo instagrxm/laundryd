@@ -88,7 +88,7 @@ export class S3Files extends Files {
       const keys = files.Contents.map(f => f.Key as string);
 
       if (download.json) {
-        result.json = keys.find(f => f.match(/\.json$/));
+        result.json = keys.find(f => f === "data.json");
         if (!result.json) {
           return;
         }
@@ -100,7 +100,7 @@ export class S3Files extends Files {
       }
 
       if (download.image) {
-        result.image = keys.find(f => f.match(/\.(jpg|jpeg|png|gif)$/));
+        result.image = keys.find(f => f.match(/^image/));
         if (!result.image) {
           return;
         }
@@ -110,7 +110,7 @@ export class S3Files extends Files {
       if (download.media || download.isDirect) {
         result.media = keys[0];
         if (!download.isDirect) {
-          result.media = keys.find(f => !f.match(/\.(jpg|jpeg|png|gif|json)$/));
+          result.media = keys.find(f => !f.match(/^media/));
         }
 
         if (!result.media) {
@@ -132,7 +132,7 @@ export class S3Files extends Files {
   }
 
   async downloaded(download: DownloadResult): Promise<DownloadResult> {
-    const targetDir = Shared.urlToFilename(download.url);
+    const dir = Shared.urlToFilename(download.url);
 
     let local: string;
     const date = download.item.created;
@@ -141,17 +141,20 @@ export class S3Files extends Files {
     try {
       if (download.json) {
         local = path.join(download.dir, download.json);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.json = "data.json";
+        remoteDir = await this.saveDownload(date, local, dir, download.json);
       }
 
       if (download.image) {
         local = path.join(download.dir, download.image);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.image = `image${path.parse(download.image).ext}`;
+        remoteDir = await this.saveDownload(date, local, dir, download.image);
       }
 
       if (download.media) {
         local = path.join(download.dir, download.media);
-        remoteDir = await this.saveDownload(date, local, targetDir);
+        download.media = `media${path.parse(download.media).ext}`;
+        remoteDir = await this.saveDownload(date, local, dir, download.media);
       }
     } catch (error) {
       await Log.error(this.washer, error);
@@ -162,13 +165,18 @@ export class S3Files extends Files {
     return download;
   }
 
-  async saveDownload(date: DateTime, local: string, dir = ""): Promise<string> {
+  async saveDownload(
+    date: DateTime,
+    local: string,
+    dir: string,
+    name: string
+  ): Promise<string> {
     dir = path.join(
       this.downloadsDir,
       Math.floor(date.toSeconds()).toString(),
       dir
     );
-    const file = path.join(dir, path.parse(local).base);
+    const file = path.join(dir, name);
 
     const send = async (): Promise<AWS.S3.ManagedUpload.SendData> => {
       const params: AWS.S3.PutObjectRequest = {

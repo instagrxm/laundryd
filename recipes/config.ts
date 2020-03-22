@@ -59,7 +59,7 @@ const washers: any[] = [
     subscribe: ["mixcloud/liked"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
@@ -100,7 +100,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/handlebars",
     name: "format/handlebars",
     subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"],
@@ -112,7 +112,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
@@ -126,7 +126,7 @@ const washers: any[] = [
     subscribe: ["mixcloud/handlebars"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "instagram/saved",
     download: true,
     // user: "danielarsham",

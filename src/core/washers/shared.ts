@@ -276,6 +276,8 @@ export class Shared {
     if (parsed.search) {
       url = url.replace(parsed.search, "");
     }
-    return filenamifyUrl(url, { maxLength: Number.POSITIVE_INFINITY });
+
+    const options = { maxLength: Number.POSITIVE_INFINITY };
+    return filenamifyUrl(url, options).toLowerCase();
   }
 }

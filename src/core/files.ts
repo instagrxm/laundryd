@@ -53,12 +53,14 @@ export abstract class Files {
    * Copy a file from a temp folder to the destination.
    * @param local the local path to the temp file
    * @param dir the path to the target location
+   * @param name the target filename
    * @param date the date associated with this file for cleaning
    */
   abstract async saveDownload(
     date: DateTime,
     local: string,
-    dir: string
+    dir: string,
+    name: string
   ): Promise<string>;
 
   /**

@@ -11,7 +11,6 @@ import util from "util";
 import { Config } from "./config";
 import { Download, DownloadResult } from "./download";
 import { Log } from "./log";
-import { Shared } from "./washers/shared";
 import { Washer } from "./washers/washer";
 
 const ytdlPath = path.join(
@@ -98,9 +97,6 @@ export class Downloader {
     dir: string,
     result: DownloadResult
   ): Promise<DownloadResult> {
-    result.media = Shared.urlToFilename(url);
-    const file = path.join(dir, result.media);
-
     await Log.debug(this.washer, { msg: "download-http", url });
 
     await new Promise((resolve, reject) => {
@@ -108,8 +104,9 @@ export class Downloader {
         .then(response => {
           result.size = response.headers["content-length"];
           result.type = response.headers["content-type"];
+          result.media = "media." + mime.getExtension(result.type as string);
 
-          const stream = fs.createWriteStream(file);
+          const stream = fs.createWriteStream(path.join(dir, result.media));
           response.data.pipe(stream);
           stream.on("close", resolve);
         })
