@@ -10,6 +10,7 @@ import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
 import { Shared } from "../../core/washers/shared";
+import { Wash } from "../../core/washers/wash";
 import { Washer } from "../../core/washers/washer";
 import { Like } from "./like";
 import { Repost } from "./repost";
@@ -123,7 +124,7 @@ export class Mixcloud {
    * @param since how far back to request shows for
    */
   static async getUserShows(
-    washer: Washer,
+    washer: Wash,
     user: string,
     since: DateTime
   ): Promise<Item[]> {
@@ -157,7 +158,7 @@ export class Mixcloud {
       await Mixcloud.getShowDescription(washer, d);
     }
 
-    return data.map(d => Mixcloud.parseData(d));
+    return data.map(d => Mixcloud.parseData(washer, d));
   }
 
   static htmlTemplate = Handlebars.compile(
@@ -169,7 +170,7 @@ export class Mixcloud {
    * @param washer the washer that is making the request
    * @param show the show to add a description to
    */
-  static async getShowDescription(washer: Washer, show: any): Promise<void> {
+  static async getShowDescription(washer: Wash, show: any): Promise<void> {
     const response = await Mixcloud.callAPI(washer, {
       url: `${Mixcloud.api}${show.key}`
     });
@@ -182,7 +183,7 @@ export class Mixcloud {
    * Convert a raw API object into an Item.
    * @param data the show object from the API
    */
-  static parseData(data: any): Item {
+  static parseData(washer: Wash, data: any): Item {
     data = data.meta || data;
     const embedFeed = encodeURIComponent(data.key);
 
@@ -197,6 +198,10 @@ export class Mixcloud {
       embed: `<iframe width="100%" height="120" src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&light=1&feed=${embedFeed}" frameborder="0"></iframe>`,
       meta: data
     };
+
+    if (!washer.config.download) {
+      item.html = `${item.html}${item.embed}`;
+    }
 
     if (data.tags) {
       item.tags = data.tags

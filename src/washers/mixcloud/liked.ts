@@ -65,7 +65,7 @@ export default class Liked extends Wash {
   }
 
   parseData(data: any): Item {
-    const item = Mixcloud.parseData(data);
+    const item = Mixcloud.parseData(this, data);
 
     item.source = {
       image: this.me.data.pictures.extra_large,

@@ -65,7 +65,7 @@ export default class Timeline extends Wash {
   }
 
   parseData(data: any): Item {
-    const item = Mixcloud.parseData(data);
+    const item = Mixcloud.parseData(this, data);
 
     item.source = {
       image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",
