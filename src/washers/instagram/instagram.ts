@@ -297,7 +297,7 @@ export class Instagram {
       {{/if}}
     </p>
     {{/each}}
-    <p>{{{instagramLinker post.caption.text}}}</p>
+    {{{instagramLinker (breaksToHtml post.caption.text)}}}
     {{~#if post.like_count~}}
     <p>{{toLocaleString post.like_count}} likes
       {{~#each post.top_likers~}}
