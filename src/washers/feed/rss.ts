@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import ellipsize from "ellipsize";
 import { DateTime } from "luxon";
 import RSSFactory from "rss";
 import urlUtils from "url";
@@ -33,6 +34,11 @@ export class RSS extends Dry {
 
     imageUrl: flags.string({
       description: "URL to an image representing the contents of the feed"
+    }),
+
+    titleLength: flags.integer({
+      default: 30,
+      description: "truncate titles to this many characters"
     })
   };
 
@@ -77,7 +83,7 @@ export class RSS extends Dry {
 
   buildItem(item: LoadedItem): any {
     return {
-      title: item.title,
+      title: ellipsize(item.title, this.config.titleLength),
       description: this.buildDescription(item),
       summary: item.summary,
       url: item.url,
