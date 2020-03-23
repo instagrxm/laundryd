@@ -62,23 +62,20 @@ export class RSS extends Dry {
     };
   }
 
-  buildDescription(item: LoadedItem): string {
-    let description = item.html || "";
-    if (item.embed) {
-      // Add media embed
-      description += item.embed;
-    } else if (item.media) {
-      // Add inline player
+  buildDescription(item: LoadedItem): string | undefined {
+    let desc = item.html || item.text || item.summary || item.embed;
+
+    if (!desc && item.media) {
       if (item.media.type) {
         if (item.media.type.startsWith("audio")) {
-          description += `<audio controls src=${item.media.file}></audio>`;
+          desc = `<audio controls src=${item.media.file}></audio>`;
         } else if (item.media.type.startsWith("video")) {
-          description += `<video controls muted playsinline poster=${item.image} src=${item.media.file}></video>`;
+          desc = `<video controls muted playsinline poster=${item.image} src=${item.media.file}></video>`;
         }
       }
     }
 
-    return description;
+    return desc;
   }
 
   buildItem(item: LoadedItem): any {
