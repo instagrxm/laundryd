@@ -217,12 +217,14 @@ export class Shared {
    * Queue an HTTP request from a washer, which will be placed into a queue along
    * with other requests from the same group of washers.
    * @param washer the washer making the request
+   * @param queueName queue requests with the same name, or empty to use the washer source
    * @param config the request configuration
    * @param retry run when the request fails
    * @param retries how many times to retry
    */
   static async queueHttp(
     washer: Washer,
+    queueName: string | undefined,
     config: AxiosRequestConfig,
     retry?: (error: FailedAttemptError) => void | Promise<void>,
     retries = 1
@@ -238,31 +240,23 @@ export class Shared {
     const task = async (): Promise<AxiosResponse<any>> =>
       await pRetry(http, { onFailedAttempt: retry, retries });
 
-    return await Shared.queueTask(washer, task);
+    return await Shared.queueTask(washer, queueName, task);
   }
 
   /**
    * Queue a task from a washer, which will be placed into a queue along with other
    * tasks from the same group of washers.
    * @param washer the washer creating the task
+   * @param queueName queue requests with the same name, or empty to use the washer source
    * @param task the task to run
    */
   static async queueTask(
     washer: Washer,
+    queueName: string | undefined,
     task: () => Promise<any>
   ): Promise<any> {
-    return await Shared.queueTaskName(washer.info.name.split("/")[0], task);
-  }
+    queueName = queueName || washer.info.name.split("/")[0];
 
-  /**
-   * Put a task into a named queue.
-   * @param queueName the name of the queue to add to
-   * @param task the task to run
-   */
-  static async queueTaskName(
-    queueName: string,
-    task: () => Promise<any>
-  ): Promise<any> {
     if (!Shared.taskQueues[queueName]) {
       Shared.taskQueues[queueName] = new PQueue({ concurrency: 1 });
     }

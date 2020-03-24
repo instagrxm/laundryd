@@ -24,7 +24,7 @@ export class Mixcloud {
     clientId: flags.string({
       required: true,
       description:
-        "the client id for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/"
+        "the client ID for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/"
     }),
 
     clientSecret: flags.string({
@@ -114,7 +114,10 @@ export class Mixcloud {
       await delay(time);
     };
 
-    return await Shared.queueHttp(washer, config, retry);
+    // @ts-ignore: token doesn't exist on all washers
+    const queueName = washer.config.token;
+
+    return await Shared.queueHttp(washer, queueName, config, retry);
   }
 
   /**
