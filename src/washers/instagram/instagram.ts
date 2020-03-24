@@ -19,8 +19,9 @@ import {
   UserFeedResponseItemsItem
 } from "instagram-private-api";
 import { DateTime } from "luxon";
+import path from "path";
 import { Download, DownloadResult } from "../../core/download";
-import { Handlebars, InstagramLinker } from "../../core/formatting";
+import { InstagramLinker } from "../../core/formatting";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
@@ -279,38 +280,9 @@ export class Instagram {
     return item;
   }
 
-  static htmlTemplate = Handlebars.compile(`
-    <div class="laundry-instagram">
-    {{#each carousel}}
-    <p>
-      {{#if this.video_versions}}
-      <video controls loop playsinline muted
-        src="{{this.video_versions.0.url}}"
-        poster="{{this.image_versions2.candidates.0.url}}"
-        width="{{this.video_versions.0.width}}"
-        height="{{this.video_versions.0.height}}" />
-      {{else}}
-      <img
-        src="{{this.image_versions2.candidates.0.url}}"
-        width="{{this.image_versions2.candidates.0.width}}"
-        height="{{this.image_versions2.candidates.0.height}}" />
-      {{/if}}
-    </p>
-    {{/each}}
-    {{{instagramLinker (breaksToHtml post.caption.text)}}}
-    {{~#if post.like_count~}}
-    <p>{{toLocaleString post.like_count}} likes
-      {{~#each post.top_likers~}}
-      {{~#if @first}}: {{/if~}}
-      <a href="https://instagram.com/{{this}}">{{this}}</a>
-      {{~#unless @last}}, {{/unless~}}
-      {{~/each~}}
-    </p>
-    {{~/if~}}
-    {{~#if post.comment_count}}<p>{{toLocaleString post.comment_count}} comments{{#if post.preview_comments}}: {{/if}}</p>{{/if~}}
-    {{~#each post.preview_comments}}<p><strong><a href="https://instagram.com/{{this.user.username}}">{{this.user.username}}</a></strong>: {{{instagramLinker this.text}}}</p>{{/each~}}
-    </div>
-  `);
+  static htmlTemplate = Shared.loadTemplate(
+    path.join(__dirname, "template.hbs")
+  );
 
   static buildHtml(item: Item): string {
     let carousel = {};

@@ -3,9 +3,9 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import delay from "delay";
 import { DateTime } from "luxon";
+import path from "path";
 import { Config } from "../../core/config";
 import { Download, DownloadResult } from "../../core/download";
-import { Handlebars } from "../../core/formatting";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
 import { Settings } from "../../core/settings";
@@ -164,8 +164,8 @@ export class Mixcloud {
     return data.map(d => Mixcloud.parseData(washer, d));
   }
 
-  static htmlTemplate = Handlebars.compile(
-    `<div class="laundry-mixcloud">{{{basicLinker (breaksToHtml description)}}}</div>`
+  static htmlTemplate = Shared.loadTemplate(
+    path.join(__dirname, "template.hbs")
   );
 
   /**

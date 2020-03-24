@@ -1,11 +1,13 @@
 import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CronJob } from "cron";
 import filenamifyUrl from "filenamify-url";
+import fs from "fs-extra";
 import { DateTime } from "luxon";
 import PQueue from "p-queue";
 import pRetry, { FailedAttemptError } from "p-retry";
 import { stringify } from "querystring";
 import { parse as urlParse } from "url";
+import { Handlebars } from "../../core/formatting";
 import { Config } from "../config";
 import { Download, DownloadResult } from "../download";
 import { Item, LoadedItem } from "../item";
@@ -265,6 +267,10 @@ export class Shared {
     return await queue.add(task);
   }
 
+  /**
+   * Convert a URL to a safe filename.
+   * @param url the url to convert
+   */
   static urlToFilename(url: string): string {
     const parsed = urlParse(url);
     if (parsed.search) {
@@ -273,5 +279,13 @@ export class Shared {
 
     const options = { maxLength: Number.POSITIVE_INFINITY };
     return filenamifyUrl(url, options).toLowerCase();
+  }
+
+  /**
+   * Load and compile a handlebars template.
+   * @param fileName the file containing the handlebars template
+   */
+  static loadTemplate(fileName: string): HandlebarsTemplateDelegate<any> {
+    return Handlebars.compile(fs.readFileSync(fileName).toString());
   }
 }
