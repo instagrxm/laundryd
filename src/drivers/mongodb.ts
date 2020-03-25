@@ -72,7 +72,9 @@ export class MongoDB extends Database {
     document.saved = DateTime.utc();
 
     if (!document.language) {
-      document.franc = franc(`${item.title} ${item.text} ${item.tags}`);
+      document.franc = franc(
+        `${item.title} ${item.text || item.html} ${item.tags}`
+      );
       const francLangs = Object.values(MongoLanguage);
       const mongoLangs = Object.keys(MongoLanguage);
       const mongoLang = mongoLangs[francLangs.indexOf(document.franc)];
