@@ -4,7 +4,7 @@ import { IgApiClient } from "instagram-private-api";
 import { Item } from "../../core/item";
 import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
-import { IgFeedItem, Instagram } from "./instagram";
+import { Instagram } from "./instagram";
 
 export default class Saved extends Wash {
   static readonly info = new WasherInfo({
@@ -29,18 +29,6 @@ export default class Saved extends Wash {
   async run(): Promise<Item[]> {
     const feed = this.client.feed.saved();
     const data = await Instagram.readFeed(this, feed);
-    return Promise.all(data.map(d => this.parseData(d)));
-  }
-
-  async parseData(data: IgFeedItem): Promise<Item> {
-    const item = await Instagram.parseData(this, data);
-
-    item.source = {
-      image: Instagram.icon,
-      url: Instagram.url,
-      title: this.info.title
-    };
-
-    return item;
+    return Promise.all(data.map(d => Instagram.parseData(this, d)));
   }
 }

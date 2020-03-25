@@ -70,7 +70,7 @@ export default class Liked extends Wash {
     item.source = {
       image: this.me.data.pictures.extra_large,
       url: `${this.me.data.url}/favorites`,
-      title: "Mixcloud - favorites"
+      title: this.info.title
     };
 
     return item;

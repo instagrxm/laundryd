@@ -61,7 +61,12 @@ export class Feedbin {
       created: DateTime.fromISO(data.published),
       title: data.title,
       summary: data.summary,
-      html: data.content
+      html: data.content,
+      source: {
+        image: Feedbin.icon,
+        url: Feedbin.url,
+        title: washer.info.title
+      }
     };
 
     if (data.author) {

@@ -70,7 +70,7 @@ export default class Timeline extends Wash {
     item.source = {
       image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",
       url: this.me.data.url,
-      title: "Mixcloud - New Shows"
+      title: this.info.title
     };
 
     return item;

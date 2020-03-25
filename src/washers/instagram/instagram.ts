@@ -193,7 +193,7 @@ export class Instagram {
       source: {
         image: Instagram.icon,
         url: Instagram.url,
-        title: "Instagram"
+        title: washer.info.title
       }
     };
 

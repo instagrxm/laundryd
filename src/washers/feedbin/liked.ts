@@ -54,18 +54,6 @@ export default class Liked extends Wash {
     }
 
     // Convert entries to Items
-    return Promise.all(data.map(d => this.parseData(d)));
-  }
-
-  async parseData(data: any): Promise<Item> {
-    const item = await Feedbin.parseData(this, data);
-
-    item.source = {
-      image: Feedbin.icon,
-      url: Feedbin.url,
-      title: this.info.title
-    };
-
-    return item;
+    return Promise.all(data.map(d => Feedbin.parseData(this, d)));
   }
 }
