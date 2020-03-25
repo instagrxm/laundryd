@@ -126,7 +126,7 @@ const washers: any[] = [
     subscribe: ["mixcloud/handlebars"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "instagram/saved",
     download: true,
     // user: "danielarsham",
@@ -143,7 +143,7 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
-    subscribe: ["instagram/timeline"]
+    subscribe: ["instagram/saved"]
   }
 ];
 
