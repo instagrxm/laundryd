@@ -234,13 +234,16 @@ export class Shared {
     const params = config.params ? `?${stringify(config.params)}` : "";
     const url = `${config.baseURL || ""}${config.url}${params}`;
 
-    const http = async (attempt: number): Promise<AxiosResponse<any>> => {
-      await Log.debug(washer, { msg: "http", url, attempt });
+    const http = async (): Promise<AxiosResponse<any>> => {
+      await Log.debug(washer, { msg: "http", url });
       return washer.http.request(config);
     };
 
-    const task = async (): Promise<AxiosResponse<any>> =>
-      await pRetry(http, { onFailedAttempt: retry, retries });
+    let task = http;
+    if (retry && retries) {
+      task = async (): Promise<AxiosResponse<any>> =>
+        await pRetry(http, { onFailedAttempt: retry, retries });
+    }
 
     return await Shared.queueTask(washer, queueName, task);
   }
