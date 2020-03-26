@@ -95,8 +95,7 @@ export class Feedbin {
       }
     }
 
-    // TODO: Get item.text by putting html into phantomjs, then reading .innerText?
-    // https://stackoverflow.com/a/5002618/468472
+    item.text = Shared.htmlToText(item.html);
 
     return item;
   }

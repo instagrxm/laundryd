@@ -2,6 +2,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 import { CronJob } from "cron";
 import filenamifyUrl from "filenamify-url";
 import fs from "fs-extra";
+import { JSDOM } from "jsdom";
 import { DateTime } from "luxon";
 import PQueue from "p-queue";
 import pRetry, { FailedAttemptError } from "p-retry";
@@ -290,5 +291,21 @@ export class Shared {
    */
   static loadTemplate(fileName: string): HandlebarsTemplateDelegate<any> {
     return Handlebars.compile(fs.readFileSync(fileName).toString());
+  }
+
+  /**
+   * Convert an HTML string to text-only using JSDOM.
+   * @param html the html to convert
+   */
+  static htmlToText(html?: string): string | undefined {
+    if (!html) {
+      return;
+    }
+
+    let text = new JSDOM(html).window.document.body.textContent;
+    if (text) {
+      text = text.replace(/\s{2,}/gm, " ").trim();
+      return text;
+    }
   }
 }
