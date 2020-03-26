@@ -2,7 +2,6 @@ import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { AxiosResponse } from "axios";
 import { Item } from "../../core/item";
-import { Log } from "../../core/log";
 import { Shared } from "../../core/washers/shared";
 import { Wash } from "../../core/washers/wash";
 import { WasherInfo } from "../../core/washers/washerInfo";
@@ -17,9 +16,9 @@ export default class Search extends Wash {
   static settings = {
     ...Wash.settings,
     ...Feedbin.authSettings,
-    query: flags.string({
+    search: flags.string({
       required: true,
-      description: "the search query"
+      description: "the name of the saved search"
     })
   };
 
@@ -43,36 +42,13 @@ export default class Search extends Wash {
         auth: { username: this.config.username, password: this.config.password }
       });
       const searches = res.data as any[];
-      const search = searches.find(s => s.query === this.config.query);
+      const search = searches.find(s => s.name === this.config.search);
       if (search) {
         this.searchId = search.id;
       }
     }
 
     if (!this.searchId) {
-      // We didn't find a saved search, so make one
-      res = await Shared.queueHttp(this, undefined, {
-        url: `${Feedbin.api}/saved_searches.json`,
-        responseType: "json",
-        method: "POST",
-        auth: {
-          username: this.config.username,
-          password: this.config.password
-        },
-        headers: { "Content-Type": "application/json; charset=utf-8" },
-        data: JSON.stringify({
-          name: this.config.query,
-          query: this.config.query
-        })
-      });
-      this.searchId = parseInt(res.headers.location.match(/(\d+)\.json/)[1]);
-    }
-
-    if (!this.searchId) {
-      await Log.error(this, {
-        msg: `couldn't create search`,
-        query: this.config.query
-      });
       return [];
     }
 
@@ -97,7 +73,7 @@ export default class Search extends Wash {
     item.source = {
       image: Feedbin.icon,
       url: Feedbin.url,
-      title: `Feedbin: ${this.config.query}`
+      title: `Feedbin: ${this.config.search}`
     };
 
     return item;

@@ -9,7 +9,7 @@ import { Feedbin } from "./feedbin";
 export class Save extends Dry {
   static readonly info = new WasherInfo({
     title: "Feedbin save",
-    description: "save Feedbin entries"
+    description: "save any URL to Feedbin as a page"
   });
 
   static settings = {
