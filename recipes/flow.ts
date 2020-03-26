@@ -143,7 +143,7 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
-    subscribe: ["instagram/saved"]
+    subscribe: ["feedbin/liked"]
   },
   {
     enabled: false,
@@ -160,6 +160,31 @@ const washers: any[] = [
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS,
     subscribe: ["feedbin/liked"]
+  },
+  {
+    enabled: false,
+    name: "feedbin/save",
+    schedule: schedule.default,
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS,
+    subscribe: ["feedbin/search"]
+  },
+  {
+    // enabled: false,
+    name: "feedbin/search",
+    begin: 1,
+    schedule: schedule.default,
+    search: "Instagram",
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS
+  },
+  {
+    enabled: false,
+    name: "feedbin/saved",
+    begin: 10,
+    schedule: schedule.default,
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS
   }
 ];
 

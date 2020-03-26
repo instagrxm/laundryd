@@ -53,15 +53,14 @@ export default class Search extends Wash {
     }
 
     // Get the search results
-    res = await Shared.queueHttp(this, undefined, {
+    const entryIds = await Feedbin.getPagedList(this, {
       url: `${Feedbin.api}/saved_searches/${this.searchId}.json`,
       responseType: "json",
       auth: { username: this.config.username, password: this.config.password }
     });
-    const entryIds = res.data as number[];
 
     // Load the entries
-    const data = await Feedbin.getEntries(this, this.config, entryIds);
+    const data = await Feedbin.getEntriesById(this, this.config, entryIds);
 
     // Convert entries to Items
     return Promise.all(data.map(d => this.parseData(d)));

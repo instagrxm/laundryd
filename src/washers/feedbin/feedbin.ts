@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import { AxiosRequestConfig } from "axios";
 import clone from "clone";
 import { DateTime } from "luxon";
 import { Item } from "../../core/item";
@@ -57,7 +58,8 @@ export class Feedbin {
    * @param data the show object from the API
    */
   static async parseData(washer: Wash, data: any): Promise<Item> {
-    // Create an item from the API response
+    data = clone(data);
+
     const item: Item = {
       url: data.url,
       created: DateTime.fromISO(data.published),
@@ -68,11 +70,6 @@ export class Feedbin {
         image: Feedbin.icon,
         url: Feedbin.url,
         title: washer.info.title
-      },
-      meta: {
-        entry_id: data.id,
-        feed_id: data.feed_id,
-        created_at: data.created_at
       }
     };
 
@@ -101,7 +98,56 @@ export class Feedbin {
 
     item.text = Shared.htmlToText(item.html);
 
+    delete data.summary;
+    delete data.content;
+    item.meta = data;
+
     return item;
+  }
+
+  static async getPagedList(
+    washer: Wash,
+    config: AxiosRequestConfig
+  ): Promise<any[]> {
+    let data: any[] = [];
+    let page = 1;
+    let pages = 1;
+
+    while (page <= pages) {
+      const res = await Shared.queueHttp(washer, undefined, config);
+      data = data.concat(res.data);
+
+      if (res.headers.links && pages === 1) {
+        // Links looks like:
+        // <https://api.feedbin.com/v2/saved_searches/8258.json?page=2>; rel="next", <https://api.feedbin.com/v2/saved_searches/8258.json?page=23>; rel="last"
+        // It should appear in every page request, but I found that it would disappear after
+        // 6 pages in one test. So instead I parse the "last" link and count up to that, without
+        // looking at the header in between.
+        const links: string[] = res.headers.links.split(",");
+        const next = links.find(l => l.includes("next"));
+        if (next) {
+          const match = next.match(/<(.+)>/);
+          if (match && match.length) {
+            config.url = match[1];
+          }
+        }
+
+        const last = links.find(l => l.includes("last"));
+        if (last) {
+          const match = last.match(/page=(\d+)/);
+          if (match && match.length) {
+            pages = parseInt(match[1]);
+          }
+        }
+      }
+
+      page++;
+      if (page > 2) {
+        config.url = config.url?.replace(/page=\d+/, `page=${page}`);
+      }
+    }
+
+    return data;
   }
 
   /**
@@ -111,7 +157,7 @@ export class Feedbin {
    * @param auth the auth settings
    * @param entryIds an array of entry ids to load
    */
-  static async getEntries(
+  static async getEntriesById(
     washer: Wash,
     auth: OutputFlags<typeof Feedbin.authSettings>,
     entryIds: number[]
@@ -137,16 +183,28 @@ export class Feedbin {
       data = data.concat(res.data);
     }
 
-    // Remove old entries
-    if (washer.config.begin) {
-      const now = DateTime.utc();
-      data = data.filter(
-        d =>
-          now.diff(DateTime.fromISO(d.published).toUTC(), "days").days <=
-          washer.config.begin
-      );
-    }
+    data = Feedbin.filterOldEntries(washer, data);
 
     return data;
+  }
+
+  /**
+   * Remove entries created before the "begin" setting.
+   * @param washer the washer making the request
+   * @param entries the entries to filter
+   */
+  static filterOldEntries(washer: Wash, entries: any[]): any[] {
+    if (!washer.config.begin) {
+      return entries;
+    }
+
+    const now = DateTime.utc();
+    entries = entries.filter(
+      e =>
+        now.diff(DateTime.fromISO(e.created_at).toUTC(), "days").days <=
+        washer.config.begin
+    );
+
+    return entries;
   }
 }
