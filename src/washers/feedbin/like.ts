@@ -29,8 +29,9 @@ export class Like extends Dry {
   }
 
   async run(items: LoadedItem[]): Promise<void> {
+    // You can only like items that came from feedbin.
     const ids: number[] = items
-      .filter(i => i.meta?.entry_id && i.washerName.match(/feedbin/))
+      .filter(i => i.meta?.entry_id && i.washerName.match(/^feedbin/))
       .map(i => i.meta?.entry_id);
 
     // https://github.com/feedbin/feedbin-api/blob/master/content/starred-entries.md
