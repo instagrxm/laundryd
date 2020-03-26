@@ -42,7 +42,12 @@ export class BackupDatabase extends Fix {
     await exec(cmd);
 
     await Log.debug(this, { msg: "saving dump file", dest });
-    const dir = await this.files.saveDownload(DateTime.utc(), dest, "");
+    const dir = await this.files.saveDownload(
+      DateTime.utc(),
+      dest,
+      "",
+      "mongo.dump"
+    );
 
     const url = `${this.files.url}/${dir}/${file}`;
     await Log.debug(this, { msg: "backup complete", url });
