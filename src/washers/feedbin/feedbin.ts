@@ -105,6 +105,11 @@ export class Feedbin {
     return item;
   }
 
+  /**
+   * Encapsulates the logic behind hitting a Feedbin API that uses pagination.
+   * @param washer the washer making the request
+   * @param config the HTTP options
+   */
   static async getPagedList(
     washer: Wash,
     config: AxiosRequestConfig
