@@ -302,10 +302,8 @@ export class Shared {
       return;
     }
 
-    let text = new JSDOM(html).window.document.body.textContent;
-    if (text) {
-      text = text.replace(/\s{2,}/gm, " ").trim();
-      return text;
-    }
+    return JSDOM.fragment(html)
+      .textContent?.replace(/\s{2,}/gm, " ")
+      .trim();
   }
 }
