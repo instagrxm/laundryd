@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/camelcase */
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
+import clone from "clone";
 import { DateTime } from "luxon";
 import { Item } from "../../core/item";
 import { Log } from "../../core/log";
@@ -80,7 +81,10 @@ export class Feedbin {
     }
 
     // Try to get the extracted content for more info
-    if (data.extracted_content_url) {
+    if (
+      data.extracted_content_url &&
+      data.extracted_content_url.match(/extract\.feedbin\.com/)
+    ) {
       try {
         const extract = await Shared.queueHttp(washer, undefined, {
           url: data.extracted_content_url
@@ -98,5 +102,34 @@ export class Feedbin {
     item.text = Shared.htmlToText(item.html);
 
     return item;
+  }
+
+  static async getEntries(
+    washer: Wash,
+    auth: OutputFlags<typeof Feedbin.authSettings>,
+    entryIds: number[]
+  ): Promise<any[]> {
+    // IDs don't come back in a useful order, so save them and check against the list so we don't
+    // request the same ones again.
+    let getEntries = entryIds;
+    if (washer.memory.entryIds) {
+      getEntries = entryIds.filter(id => !washer.memory.entryIds.includes(id));
+    }
+    washer.memory.entryIds = clone(entryIds);
+
+    // Request the contents of the entries, 100 at a time
+    let data: any[] = [];
+    while (getEntries.length) {
+      const page = getEntries.splice(0, 100);
+      const res = await Shared.queueHttp(washer, undefined, {
+        url: `${Feedbin.api}/entries.json`,
+        responseType: "json",
+        params: { ids: page.join(",") },
+        auth: { username: auth.username, password: auth.password }
+      });
+      data = data.concat(res.data);
+    }
+
+    return data;
   }
 }
