@@ -130,6 +130,16 @@ export class Feedbin {
       data = data.concat(res.data);
     }
 
+    // Remove old entries
+    if (washer.config.begin) {
+      const now = DateTime.utc();
+      data = data.filter(
+        d =>
+          now.diff(DateTime.fromISO(d.published).toUTC(), "days").days <=
+          washer.config.begin
+      );
+    }
+
     return data;
   }
 }
