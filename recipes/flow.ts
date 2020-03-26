@@ -144,6 +144,22 @@ const washers: any[] = [
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
     subscribe: ["instagram/saved"]
+  },
+  {
+    enabled: false,
+    name: "feedbin/liked",
+    schedule: schedule.default,
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS
+  },
+  {
+    enabled: false,
+    name: "feedbin/like",
+    schedule: schedule.default,
+    state: false,
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS,
+    subscribe: ["feedbin/liked"]
   }
 ];
 
