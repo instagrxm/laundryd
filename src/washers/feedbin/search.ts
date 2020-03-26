@@ -88,6 +88,18 @@ export default class Search extends Wash {
     const data = await Feedbin.getEntries(this, this.config, entryIds);
 
     // Convert entries to Items
-    return Promise.all(data.map(d => Feedbin.parseData(this, d)));
+    return Promise.all(data.map(d => this.parseData(d)));
+  }
+
+  async parseData(data: any): Promise<Item> {
+    const item = await Feedbin.parseData(this, data);
+
+    item.source = {
+      image: Feedbin.icon,
+      url: Feedbin.url,
+      title: `Feedbin: ${this.config.query}`
+    };
+
+    return item;
   }
 }
