@@ -170,7 +170,7 @@ const washers: any[] = [
     subscribe: ["feedbin/search"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feedbin/search",
     begin: 1,
     schedule: schedule.default,

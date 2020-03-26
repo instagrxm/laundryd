@@ -31,7 +31,6 @@ export default class Timeline extends Wash {
     // Set up the first request
     const req = {
       url: this.me.data.metadata.connections.following,
-      // eslint-disable-next-line @typescript-eslint/camelcase
       params: { access_token: this.config.token, limit: 50 }
     };
 

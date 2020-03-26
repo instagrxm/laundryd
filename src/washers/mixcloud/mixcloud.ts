@@ -84,7 +84,6 @@ export class Mixcloud {
     if (auth.token) {
       const me = await Mixcloud.callAPI(washer, {
         url: `${Mixcloud.api}/me/`,
-        // eslint-disable-next-line @typescript-eslint/camelcase
         params: { access_token: auth.token, metadata: 1 }
       });
       return me;
@@ -265,7 +264,6 @@ export class Mixcloud {
     const req: AxiosRequestConfig = {
       url,
       method: washer.config.state ? "post" : "delete",
-      // eslint-disable-next-line @typescript-eslint/camelcase
       params: { access_token: washer.config.token }
     };
 

@@ -32,7 +32,6 @@ export default class Liked extends Wash {
     const req = {
       url: this.me.data.metadata.connections.favorites,
       params: {
-        // eslint-disable-next-line @typescript-eslint/camelcase
         access_token: this.config.token,
         limit: 50,
         since: Math.floor(this.memory.lastRun.toSeconds())

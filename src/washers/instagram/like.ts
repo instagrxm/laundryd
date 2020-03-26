@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/camelcase */
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import {
   AccountRepositoryCurrentUserResponseUser,

@@ -43,7 +43,6 @@ export default class Saved extends Wash {
       responseType: "json",
       params: {
         since: this.memory.lastRun.toISO(),
-        // eslint-disable-next-line @typescript-eslint/camelcase
         include_enclosure: true,
         mode: "extended"
       },
