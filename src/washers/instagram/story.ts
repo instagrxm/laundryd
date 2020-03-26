@@ -10,7 +10,7 @@ import {
 } from "instagram-private-api";
 import { StickerBuilder } from "instagram-private-api/dist/sticker-builder";
 import path from "path";
-import { Item, LoadedItem } from "../../core/item";
+import { LoadedItem } from "../../core/item";
 import { Log } from "../../core/log";
 import { Dry } from "../../core/washers/dry";
 import { WasherInfo } from "../../core/washers/washerInfo";
@@ -59,13 +59,23 @@ export class Like extends Dry {
    * Post a laundry item sourced from Instagram as a story
    * @param item the laundry item
    */
-  async postStory(item: Item): Promise<void> {
+  async postStory(item: LoadedItem): Promise<void> {
     const mediaId = Instagram.urlToId(item.url);
-    const post = item.meta as SavedFeedResponseMedia;
-    const media = (item.meta?.carousel_media
-      ? item.meta?.carousel_media[0]
-      : item.meta) as SavedFeedResponseCarouselMediaItem;
-    const ownerId = item.meta?.user?.pk;
+
+    // If this is an IG post saved by laundry, use the saved data.
+    let post = item.meta as SavedFeedResponseMedia;
+    if (mediaId && !item.washerName.match(/^instagram/)) {
+      // Otherwise, look up the post based on its URL.
+      const res = await this.client.media.info(mediaId);
+      if (res.num_results && res.items && res.items.length) {
+        post = (res.items[0] as unknown) as SavedFeedResponseMedia;
+      }
+    }
+
+    const media = (post.carousel_media
+      ? post.carousel_media[0]
+      : post) as SavedFeedResponseCarouselMediaItem;
+    const ownerId = post.user?.pk;
 
     if (!mediaId || !post || !media || !ownerId) {
       await Log.warn(this, { msg: `couldn't story ${item.url}` });
@@ -97,7 +107,7 @@ export class Like extends Dry {
     media: SavedFeedResponseCarouselMediaItem
   ): Promise<{ image: Buffer; width: number; height: number }> {
     // Parse the media object
-    const caption = post.caption.text;
+    const caption = post.caption?.text || "";
     const imageVersion = media.image_versions2.candidates[0];
     const imageW = imageVersion.width;
     const imageH = imageVersion.height;
