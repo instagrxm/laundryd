@@ -104,6 +104,13 @@ export class Feedbin {
     return item;
   }
 
+  /**
+   * Load a set of entries from feedbin.
+   * https://github.com/feedbin/feedbin-api/blob/master/content/entries.md
+   * @param washer the washer making the request
+   * @param auth the auth settings
+   * @param entryIds an array of entry ids to load
+   */
   static async getEntries(
     washer: Wash,
     auth: OutputFlags<typeof Feedbin.authSettings>,
