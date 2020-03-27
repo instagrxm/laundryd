@@ -160,6 +160,11 @@ export interface Enclosure {
    * The MIME type of the file.
    */
   type: string;
+
+  /**
+   * The duration of the media in seconds.
+   */
+  duration?: number;
 }
 
 /**

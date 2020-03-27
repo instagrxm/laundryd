@@ -98,7 +98,8 @@ export class Podcast extends RSS {
     i.custom_elements = [
       { "itunes:subtitle": item.title },
       { "itunes:author": item.author },
-      { "itunes:image": [{ _attr: { href: item.image } }] }
+      { "itunes:image": [{ _attr: { href: item.image } }] },
+      { "itunes:duration": item.media?.duration }
     ];
 
     if (item.media) {

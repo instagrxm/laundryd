@@ -233,7 +233,8 @@ export class Mixcloud {
           item.media = {
             file: `${result.url}/${result.media}`,
             size: result.size as number,
-            type: result.type as string
+            type: result.type as string,
+            duration: data.audio_length as number
           };
         }
       })
