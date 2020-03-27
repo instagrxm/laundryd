@@ -177,7 +177,7 @@ export class MongoDB extends Database {
       }
       return out;
     }
-    return process(filter, 1);
+    return process(filter);
   }
 
   async saveItems(washer: Wash | Rinse, items: Item[]): Promise<void> {
