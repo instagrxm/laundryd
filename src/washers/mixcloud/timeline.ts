@@ -1,7 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item } from "../../core/item";
-import { Wash } from "../../core/washers/wash";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, Wash, WasherInfo } from "../../core";
 import { Mixcloud } from "./mixcloud";
 
 export default class Timeline extends Wash {

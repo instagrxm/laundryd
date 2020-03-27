@@ -19,14 +19,17 @@ import {
 } from "instagram-private-api";
 import { DateTime } from "luxon";
 import path from "path";
-import { Download, DownloadResult } from "../../core/download";
-import { InstagramLinker } from "../../core/formatting";
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Settings } from "../../core/settings";
-import { Shared } from "../../core/washers/shared";
-import { Wash } from "../../core/washers/wash";
-import { Washer } from "../../core/washers/washer";
+import {
+  Download,
+  DownloadResult,
+  InstagramLinker,
+  Item,
+  Log,
+  Settings,
+  Shared,
+  Wash,
+  Washer
+} from "../../core";
 
 // An alias for the many feed types
 export type IgFeed =

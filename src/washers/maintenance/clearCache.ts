@@ -1,6 +1,4 @@
-import { Downloader } from "../../core/downloader";
-import { Fix } from "../../core/washers/fix";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Downloader, Fix, WasherInfo } from "../../core";
 
 export class ClearCache extends Fix {
   static readonly info = new WasherInfo({

@@ -1,8 +1,6 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { LoadedItem } from "../../core/item";
-import { Dry } from "../../core/washers/dry";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Dry, LoadedItem, WasherInfo } from "../../core";
 import { RSS } from "./rss";
 
 // https://help.apple.com/itc/podcasts_connect/#/itcb54353390

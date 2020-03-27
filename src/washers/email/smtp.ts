@@ -3,10 +3,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import nodemailer from "nodemailer";
 import Mail, { Attachment } from "nodemailer/lib/mailer";
 import path from "path";
-import { LoadedItem } from "../../core/item";
-import { Settings } from "../../core/settings";
-import { Dry } from "../../core/washers/dry";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Dry, LoadedItem, Settings, WasherInfo } from "../../core";
 
 export class Smtp extends Dry {
   static readonly info = new WasherInfo({

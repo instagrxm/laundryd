@@ -4,10 +4,7 @@ import fs from "fs-extra";
 import { DateTime } from "luxon";
 import path from "path";
 import util from "util";
-import { Config } from "../../core/config";
-import { Log } from "../../core/log";
-import { Fix } from "../../core/washers/fix";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Config, Fix, Log, WasherInfo } from "../../core";
 
 const exec = util.promisify(childProcess.exec);
 

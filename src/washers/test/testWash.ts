@@ -1,9 +1,12 @@
 import { DateTime } from "luxon";
-import { Download, DownloadResult } from "../../core/download";
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Wash } from "../../core/washers/wash";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import {
+  Download,
+  DownloadResult,
+  Item,
+  Log,
+  Wash,
+  WasherInfo
+} from "../../core";
 
 export class TestWash extends Wash {
   static readonly info = new WasherInfo({

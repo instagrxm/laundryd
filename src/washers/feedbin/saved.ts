@@ -1,8 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item } from "../../core/item";
-import { Shared } from "../../core/washers/shared";
-import { Wash } from "../../core/washers/wash";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, Shared, Wash, WasherInfo } from "../../core";
 import { Feedbin } from "./feedbin";
 
 export default class Saved extends Wash {
