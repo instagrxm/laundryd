@@ -127,6 +127,7 @@ export class Feedbin {
         // It should appear in every page request, but I found that it would disappear after
         // 6 pages in one test. So instead I parse the "last" link and count up to that, without
         // looking at the header in between.
+        // https://github.com/feedbin/feedbin-api/issues/45
         const links: string[] = res.headers.links.split(",");
         const next = links.find(l => l.includes("next"));
         if (next) {
