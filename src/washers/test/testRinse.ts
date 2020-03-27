@@ -1,4 +1,4 @@
-import { Item, LoadedItem, Log, Rinse, WasherInfo } from "../../core";
+import { Item, Log, Rinse, WasherInfo } from "../../core";
 
 export class TestRinse extends Rinse {
   static readonly info = new WasherInfo({
@@ -7,10 +7,10 @@ export class TestRinse extends Rinse {
     abstract: false
   });
 
-  async run(items: LoadedItem[]): Promise<Item[]> {
+  async run(items: Item[]): Promise<Item[]> {
     await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(
-        i => i.washerId
+        i => i.washer.id
       )}`
     });
     if (!this.memory.foo) {

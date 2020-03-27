@@ -11,7 +11,6 @@ import {
 import {
   Database,
   Item,
-  LoadedItem,
   Log,
   LogItem,
   Memory,
@@ -54,21 +53,11 @@ export class MongoDB extends Database {
     ]);
   }
 
-  hydrateItem(document: any, name?: string, id?: string): LoadedItem {
+  hydrateItem(document: any): Item {
     delete document._id;
-    if (name) {
-      document.washerName = name;
-    }
-    if (id) {
-      document.washerId = id;
-    }
     document.saved = DateTime.fromJSDate(document.saved).toUTC();
     document.created = DateTime.fromJSDate(document.created).toUTC();
     return document;
-  }
-
-  hydrateWasherItem(document: any, washer: Washer): LoadedItem {
-    return this.hydrateItem(document, washer.info.name, washer.config.id);
   }
 
   dehydrateItem(item: Item): any {
@@ -134,22 +123,61 @@ export class MongoDB extends Database {
     washer: Washer,
     since: DateTime,
     filter: FilterQuery<any> = {}
-  ): Promise<LoadedItem[]> {
+  ): Promise<Item[]> {
     if (!washer) {
       return [];
     }
 
-    filter = Object.assign(filter, { saved: { $gt: since } });
+    filter = this.prepareFilter(filter);
+    filter.saved = { $gt: since };
+
     const options: FindOneOptions = { sort: { saved: -1 } };
 
-    const items: any[] = await this.db
+    const docs: any[] = await this.db
       .collection(washer.config.id)
       .find(filter, options)
       .toArray();
 
-    const loadedItems = items.map(i => this.hydrateWasherItem(i, washer));
+    const items = docs.map(i => this.hydrateItem(i));
 
-    return loadedItems;
+    return items;
+  }
+
+  /**
+   * Given a filter object from a washer, format it to work in a MongoDB query.
+   * @param filter a filter object from a waher
+   * @param fullDocument whether to append fullDocument to top-level keys
+   */
+  prepareFilter(filter: any, fullDocument = false): any {
+    function process(obj: any): any {
+      if (typeof obj !== "object") {
+        return obj;
+      }
+      const out: any = {};
+      for (let key in obj) {
+        const val: any = obj[key];
+
+        if (fullDocument && !key.startsWith("$")) {
+          key = `fullDocument.${key}`;
+        }
+
+        if (val instanceof RegExp) {
+          // RegExps need to be a string without the begin/end slashes
+          out[key] = val.toString().replace(/(^\/|\/$)/g, "");
+        } else if (Array.isArray(val)) {
+          // Recursively process arrays
+          out[key] = val.map(i => process(i));
+        } else if (typeof val === "object") {
+          // Recursively process objects
+          out[key] = process(val);
+        } else {
+          // Everything else pass through
+          out[key] = val;
+        }
+      }
+      return out;
+    }
+    return process(filter, 1);
   }
 
   async saveItems(washer: Wash | Rinse, items: Item[]): Promise<void> {
@@ -192,17 +220,13 @@ export class MongoDB extends Database {
 
   subscribeToWasher(
     washer: Wash | Rinse,
-    callback: (item: LoadedItem) => void,
+    callback: (item: Item) => void,
     filter: FilterQuery<any> = {}
   ): void {
     this.subscribeToCollection(
       washer.config.id,
       (change: any) => {
-        const item: LoadedItem = this.hydrateWasherItem(
-          change.fullDocument,
-          washer
-        );
-
+        const item: Item = this.hydrateItem(change.fullDocument);
         callback(item);
       },
       filter
@@ -210,13 +234,13 @@ export class MongoDB extends Database {
   }
 
   subscribeToLog(
-    callback: (item: LoadedItem) => void,
+    callback: (item: Item) => void,
     filter: FilterQuery<any> = {}
   ): void {
     this.subscribeToCollection(
       Log.collection,
       (change: any) => {
-        const item: LoadedItem = this.hydrateItem(change.fullDocument);
+        const item: Item = this.hydrateItem(change.fullDocument);
 
         callback(item);
       },
@@ -226,15 +250,13 @@ export class MongoDB extends Database {
 
   subscribeToCollection(
     collection: string,
-    callback: (item: LoadedItem) => void,
+    callback: (item: Item) => void,
     filter: FilterQuery<any> = {}
   ): void {
-    const match: any = {};
-    Object.keys(filter).forEach(k => (match[`fullDocument.${k}`] = filter[k]));
-    match.operationType = { $in: ["insert", "replace"] };
+    filter = this.prepareFilter(filter, true);
+    filter.operationType = { $in: ["insert", "replace"] };
 
-    const pipeline = [{ $match: match }];
-
+    const pipeline = [{ $match: filter }];
     const changeStream = this.db.collection(collection).watch(pipeline);
 
     changeStream.on("change", change => {

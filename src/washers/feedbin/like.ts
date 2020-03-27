@@ -1,11 +1,12 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Dry, LoadedItem, Settings, Shared, WasherInfo } from "../../core";
+import { Dry, Item, Settings, Shared, WasherInfo } from "../../core";
 import { Feedbin } from "./feedbin";
 
 export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Feedbin like",
-    description: "like Feedbin entries"
+    description: "like Feedbin entries",
+    filter: Feedbin.filter
   });
 
   static settings = {
@@ -23,10 +24,9 @@ export class Like extends Dry {
     await Feedbin.auth(this, this.config);
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
-    // You can only like items that came from feedbin.
+  async run(items: Item[]): Promise<void> {
     const ids: number[] = items
-      .filter(i => i.meta?.entry_id && i.washerName.match(/^feedbin/))
+      .filter(i => i.meta?.entry_id)
       .map(i => i.meta?.entry_id);
 
     // https://github.com/feedbin/feedbin-api/blob/master/content/starred-entries.md

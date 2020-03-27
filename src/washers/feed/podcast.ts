@@ -1,6 +1,6 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Dry, LoadedItem, WasherInfo } from "../../core";
+import { Dry, Item, WasherInfo } from "../../core";
 import { RSS } from "./rss";
 
 // https://help.apple.com/itc/podcasts_connect/#/itcb54353390
@@ -88,11 +88,11 @@ export class Podcast extends RSS {
     return channel;
   }
 
-  buildDescription(item: LoadedItem): string {
+  buildDescription(item: Item): string {
     return item.html || "";
   }
 
-  buildItem(item: LoadedItem): any {
+  buildItem(item: Item): any {
     const i = super.buildItem(item);
 
     i.custom_elements = [
@@ -112,7 +112,7 @@ export class Podcast extends RSS {
     return i;
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     const feed = this.buildFeed(items);
     await this.files.saveString("podcast.xml", feed);
   }

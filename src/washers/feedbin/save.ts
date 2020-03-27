@@ -1,5 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Dry, LoadedItem, Shared, WasherInfo } from "../../core";
+import { Dry, Item, Shared, WasherInfo } from "../../core";
 import { Feedbin } from "./feedbin";
 
 export class Save extends Dry {
@@ -19,7 +19,7 @@ export class Save extends Dry {
     await Feedbin.auth(this, this.config);
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     for (const item of items) {
       // https://github.com/feedbin/feedbin-api/blob/master/content/pages.md
       await Shared.queueHttp(this, undefined, {

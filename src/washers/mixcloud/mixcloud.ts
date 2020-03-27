@@ -10,7 +10,6 @@ import {
   DownloadResult,
   Item,
   Log,
-  Settings,
   Shared,
   Wash,
   Washer
@@ -45,11 +44,7 @@ export class Mixcloud {
     })
   };
 
-  static filterSetting = Settings.filter({
-    url: {
-      $regex: Mixcloud.urlPattern
-    }
-  });
+  static filter = { url: { $regex: Mixcloud.urlPattern } };
 
   /**
    * Authorize against the Mixcloud API and return information about the user
@@ -192,17 +187,17 @@ export class Mixcloud {
     data = data.meta || data;
     const embedFeed = encodeURIComponent(data.key);
 
-    const item: Item = {
-      title: data.name,
-      text: data.text,
-      html: data.html,
-      url: data.url,
-      created: DateTime.fromJSDate(
-        new Date(Date.parse(data.created_time))
-      ).toUTC(),
-      embed: `<iframe width="100%" height="120" src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&light=1&feed=${embedFeed}" frameborder="0"></iframe>`,
-      meta: data
-    };
+    const item = Shared.createItem(
+      data.url,
+      DateTime.fromJSDate(new Date(Date.parse(data.created_time))).toUTC(),
+      washer
+    );
+
+    item.title = data.name;
+    item.text = data.text;
+    item.html = data.html;
+    item.embed = `<iframe width="100%" height="120" src="https://www.mixcloud.com/widget/iframe/?hide_cover=1&light=1&feed=${embedFeed}" frameborder="0"></iframe>`;
+    item.meta = data;
 
     if (!washer.config.download) {
       item.html = `${item.html}${item.embed}`;

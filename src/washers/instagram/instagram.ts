@@ -24,11 +24,11 @@ import {
   DownloadResult,
   Item,
   Log,
-  Settings,
   Shared,
   Wash,
   Washer
 } from "../../core";
+import { Handlebars } from "../../core/formatting";
 
 // An alias for the many feed types
 export type IgFeed =
@@ -103,11 +103,7 @@ export class Instagram {
       "the number of past items to load in the first run, 0 to load all"
   });
 
-  static filterSetting = Settings.filter({
-    url: {
-      $regex: Instagram.urlPattern
-    }
-  });
+  static filter = { url: { $regex: Instagram.urlPattern } };
 
   private static clients: Record<string, IgApiClient> = {};
 
@@ -204,19 +200,21 @@ export class Instagram {
    * @param data the post to parse
    */
   static async parseData(washer: Washer, data: IgFeedItem): Promise<Item> {
-    const item: Item = {
-      url: `https://www.instagram.com/p/${data.code}/`,
-      created: DateTime.fromSeconds(data.taken_at),
-      meta: data,
-      title: data.user.username,
-      author: { name: data.user.username },
+    const item = Shared.createItem(
+      `https://www.instagram.com/p/${data.code}/`,
+      DateTime.fromSeconds(data.taken_at),
+      washer
+    );
 
-      // Washers should set source to something that makes sense for them
-      source: {
-        image: Instagram.icon,
-        url: Instagram.url,
-        title: washer.info.title
-      }
+    item.meta = data;
+    item.title = data.user.username;
+    item.author = { name: data.user.username };
+
+    // Washers should set source to something that makes sense for them
+    item.source = {
+      image: Instagram.icon,
+      url: Instagram.url,
+      title: washer.info.title
     };
 
     if (data.caption) {

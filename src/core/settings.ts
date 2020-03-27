@@ -69,6 +69,7 @@ export const Settings = {
   },
 
   // https://docs.mongodb.com/manual/reference/operator/query/#query-selectors
+  // https://docs.mongodb.com/manual/reference/operator/query/regex/
   filter: (def?: any): flags.IOptionFlag<any | undefined> => {
     return flags.build<any>({
       default: def,

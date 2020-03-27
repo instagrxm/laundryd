@@ -9,19 +9,19 @@ import {
 } from "instagram-private-api";
 import { StickerBuilder } from "instagram-private-api/dist/sticker-builder";
 import path from "path";
-import { Dry, LoadedItem, Log, WasherInfo } from "../../core";
+import { Dry, Item, Log, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
 
 export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Instagram story",
-    description: "repost Instagram posts to your story"
+    description: "repost Instagram posts to your story",
+    filter: Instagram.filter
   });
 
   static settings = {
     ...Dry.settings,
-    ...Instagram.authSettings,
-    filter: Instagram.filterSetting
+    ...Instagram.authSettings
   };
 
   config!: OutputFlags<typeof Like.settings>;
@@ -45,7 +45,7 @@ export class Like extends Dry {
     });
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     for (const item of items) {
       await this.postStory(item);
     }
@@ -55,12 +55,12 @@ export class Like extends Dry {
    * Post a laundry item sourced from Instagram as a story
    * @param item the laundry item
    */
-  async postStory(item: LoadedItem): Promise<void> {
+  async postStory(item: Item): Promise<void> {
     const mediaId = Instagram.urlToId(item.url);
 
     // If this is an IG post saved by laundry, use the saved data.
     let post = item.meta as SavedFeedResponseMedia;
-    if (mediaId && !item.washerName.match(/^instagram/)) {
+    if (mediaId) {
       // Otherwise, look up the post based on its URL.
       const res = await this.client.media.info(mediaId);
       if (res.num_results && res.items && res.items.length) {

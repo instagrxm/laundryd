@@ -27,6 +27,8 @@ export class Feedbin {
     })
   };
 
+  static filter = { "washer.name": { $regex: /^feedbin/ } };
+
   /**
    * Check a username/password against the authentication API. This isn't stateful,
    * you still need to include the auth in every request.
@@ -55,17 +57,19 @@ export class Feedbin {
   static async parseData(washer: Wash, data: any): Promise<Item> {
     data = clone(data);
 
-    const item: Item = {
-      url: data.url,
-      created: DateTime.fromISO(data.published),
-      title: data.title,
-      summary: data.summary,
-      html: data.content,
-      source: {
-        image: Feedbin.icon,
-        url: Feedbin.url,
-        title: washer.info.title
-      }
+    const item = Shared.createItem(
+      data.url,
+      DateTime.fromISO(data.published),
+      washer
+    );
+
+    item.title = data.title;
+    item.summary = data.summary;
+    item.html = data.content;
+    item.source = {
+      image: Feedbin.icon,
+      url: Feedbin.url,
+      title: washer.info.title
     };
 
     if (data.author) {

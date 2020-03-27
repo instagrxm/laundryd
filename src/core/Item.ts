@@ -11,10 +11,27 @@ export interface Item {
    */
   url: string;
 
+  washer: {
+    /**
+     * The user-defined unique ID for the washer instance.
+     */
+    id: string;
+
+    /**
+     * The name of the washer, which is the same for all instances.
+     */
+    name: string;
+  };
+
   /**
    * This item's creation date.
    */
   created: DateTime;
+
+  /**
+   * When the item was saved.
+   */
+  saved?: DateTime;
 
   /**
    * The language to use for full-text searches.
@@ -146,29 +163,9 @@ export interface Enclosure {
 }
 
 /**
- * When an item is loaded from the database, it gets properties indicating where it came from.
- */
-export interface LoadedItem extends Item {
-  /**
-   * When the item was saved.
-   */
-  saved: DateTime;
-
-  /**
-   * The user-defined unique ID for the washer instance.
-   */
-  washerId: string;
-
-  /**
-   * The name of the washer, which is the same for all instances.
-   */
-  washerName: string;
-}
-
-/**
  * Log messages are saved to the database the same as items, but the desription is the log level.
  */
-export interface LogItem extends LoadedItem {
+export interface LogItem extends Item {
   level: LogLevel;
 }
 

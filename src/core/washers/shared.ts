@@ -11,7 +11,7 @@ import { parse as urlParse } from "url";
 import { Handlebars } from "../../core/formatting";
 import { Config } from "../config";
 import { Download, DownloadResult } from "../download";
-import { Item, LoadedItem } from "../item";
+import { Item } from "../item";
 import { Log } from "../log";
 import { Dry } from "./dry";
 import { Fix } from "./fix";
@@ -80,13 +80,13 @@ export class Shared {
     washer: Rinse | Dry,
     sources: Sources,
     since = DateTime.utc(0)
-  ): Promise<LoadedItem[]> {
-    let input: LoadedItem[] = [];
+  ): Promise<Item[]> {
+    let input: Item[] = [];
     for (const id of washer.config.subscribe) {
       const items = await washer.database.loadItems(
         sources[id],
         since,
-        washer.config.filter
+        Shared.buildFilter(washer)
       );
       input = input.concat(items);
     }
@@ -102,22 +102,51 @@ export class Shared {
   static initRealtimeSubscriptions(
     washer: Rinse | Dry,
     sources: Sources,
-    callback: (input: LoadedItem) => Promise<void>
+    callback: (input: Item) => Promise<void>
   ): void {
+    const filter = Shared.buildFilter(washer);
+
     for (const id of washer.config.subscribe) {
       if (id === Log.collection) {
-        washer.database.subscribeToLog(
-          (item: LoadedItem) => callback(item),
-          washer.config.filter
-        );
+        washer.database.subscribeToLog((item: Item) => callback(item), filter);
       } else {
         washer.database.subscribeToWasher(
           sources[id],
-          (item: LoadedItem) => callback(item),
-          washer.config.filter
+          (item: Item) => callback(item),
+          filter
         );
       }
     }
+  }
+
+  /**
+   * Build a filter from the washer info and configuration.
+   * @param washer the washer making the request
+   */
+  private static buildFilter(washer: Rinse | Dry): any {
+    let filter: any = {};
+    if (washer.info.filter && washer.config.filter) {
+      filter = { $and: [washer.info.filter, washer.config.filter] };
+    } else if (washer.info.filter) {
+      filter = washer.info.filter;
+    } else if (washer.config.filter) {
+      filter = washer.config.filter;
+    }
+    return filter;
+  }
+
+  /**
+   * Build a minimal item object.
+   * @param url the url to the item
+   * @param created when the item was created/publushed
+   * @param washer the washer making the item
+   */
+  static createItem(url: string, created: DateTime, washer: Washer): Item {
+    return {
+      washer: { id: washer.config.id, name: washer.info.name },
+      created,
+      url
+    };
   }
 
   /**

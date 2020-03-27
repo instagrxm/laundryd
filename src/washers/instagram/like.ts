@@ -4,19 +4,19 @@ import {
   IgApiClient,
   LikeModuleInfoOption
 } from "instagram-private-api";
-import { Dry, LoadedItem, Log, Settings, WasherInfo } from "../../core";
+import { Dry, Item, Log, Settings, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
 
 export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Instagram like",
-    description: "like Instagram posts"
+    description: "like Instagram posts",
+    filter: Instagram.filter
   });
 
   static settings = {
     ...Dry.settings,
     ...Instagram.authSettings,
-    filter: Instagram.filterSetting,
     state: Settings.boolean({
       default: true,
       description: "false to unlike the post"
@@ -33,7 +33,7 @@ export class Like extends Dry {
     this.user = await this.client.account.currentUser();
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     for (const item of items) {
       const mediaId = Instagram.urlToId(item.url);
 

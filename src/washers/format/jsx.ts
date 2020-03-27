@@ -3,7 +3,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import JsxParser from "react-jsx-parser";
-import { Item, LoadedItem, Rinse, Settings, WasherInfo } from "../../core";
+import { Item, Rinse, Settings, WasherInfo } from "../../core";
 
 // functions aren't supported https://github.com/TroyAlford/react-jsx-parser/issues/107
 // seeking a better method https://stackoverflow.com/questions/60537327/
@@ -38,11 +38,11 @@ export class JSX extends Rinse {
 
   config!: OutputFlags<typeof JSX.settings>;
 
-  async run(items: LoadedItem[]): Promise<Item[]> {
+  async run(items: Item[]): Promise<Item[]> {
     return items.map(i => this.renderItem(i));
   }
 
-  renderItem(item: LoadedItem): Item {
+  renderItem(item: Item): Item {
     const props = {
       jsx: "",
       renderInWrapper: false,

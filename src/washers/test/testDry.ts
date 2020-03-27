@@ -1,4 +1,4 @@
-import { Dry, LoadedItem, Log, WasherInfo } from "../../core";
+import { Dry, Item, Log, WasherInfo } from "../../core";
 
 export class TestDry extends Dry {
   static readonly info = new WasherInfo({
@@ -6,10 +6,10 @@ export class TestDry extends Dry {
     description: "test-dry"
   });
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(
-        i => i.washerId
+        i => i.washer.id
       )}`
     });
     if (!this.memory.foo) {

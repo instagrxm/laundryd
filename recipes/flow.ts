@@ -153,13 +153,14 @@ const washers: any[] = [
     password: process.env.FEEDBIN_PASS
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "feedbin/like",
-    schedule: schedule.default,
-    state: false,
+    // schedule: schedule.default,
+    state: true,
+    filter: { url: { $regex: "vox.com" } },
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS,
-    subscribe: ["feedbin/liked"]
+    subscribe: ["feedbin/search"]
   },
   {
     enabled: false,

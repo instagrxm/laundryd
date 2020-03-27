@@ -63,11 +63,12 @@ export default class Run extends BaseCommand {
     }[] = [];
 
     for (const dir of dirs) {
-      for (const file of Globby.sync(patterns, { cwd: dir })) {
+      const search = Globby.sync(patterns, { cwd: dir });
+      for (const file of search) {
         let exported;
         try {
           exported = await require(path.join(dir, file));
-        } catch {
+        } catch (error) {
           continue;
         }
         const parsedFile = path.parse(file);

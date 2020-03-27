@@ -3,7 +3,6 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import {
   Handlebars as HB,
   Item,
-  LoadedItem,
   Rinse,
   Settings,
   WasherInfo
@@ -41,11 +40,11 @@ export class Handlebars extends Rinse {
 
   config!: OutputFlags<typeof Handlebars.settings>;
 
-  async run(items: LoadedItem[]): Promise<Item[]> {
+  async run(items: Item[]): Promise<Item[]> {
     return items.map(i => this.renderItem(i));
   }
 
-  renderItem(item: LoadedItem): Item {
+  renderItem(item: Item): Item {
     if (item.title && this.config.title) {
       item.title = this.config.title(item);
     }

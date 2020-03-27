@@ -1,7 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { DateTime } from "luxon";
 import { Files } from "../files";
-import { LoadedItem } from "../item";
+import { Item } from "../item";
 import { Log } from "../log";
 import { Settings } from "../settings";
 import { Shared, Sources } from "./shared";
@@ -49,7 +49,7 @@ export class Dry extends Washer {
     }
   }
 
-  async exec(input: LoadedItem[]): Promise<void> {
+  async exec(input: Item[]): Promise<void> {
     if (!this.config.enabled || !input || !input.length) {
       return;
     }
@@ -66,7 +66,7 @@ export class Dry extends Washer {
     }
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     return;
   }
 }

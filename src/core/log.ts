@@ -79,13 +79,14 @@ export class Log {
       text: msg.msg,
       meta: msg,
       url,
-      washerId: sourceId,
-      washerName: sourceName
+      washer: { id: sourceId, name: sourceName }
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {
       const err: any = item;
-      err.saved = item.saved.toJSDate();
+      if (item.saved) {
+        err.saved = item.saved.toJSDate();
+      }
       err.created = item.created.toJSDate();
       // eslint-disable-next-line no-console
       console.error(util.inspect(err));

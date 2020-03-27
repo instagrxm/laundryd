@@ -4,7 +4,7 @@ import ellipsize from "ellipsize";
 import { DateTime } from "luxon";
 import RSSFactory from "rss";
 import urlUtils from "url";
-import { Config, Dry, LoadedItem, WasherInfo } from "../../core";
+import { Config, Dry, Item, WasherInfo } from "../../core";
 
 export class RSS extends Dry {
   static readonly info = new WasherInfo({
@@ -58,7 +58,7 @@ export class RSS extends Dry {
     };
   }
 
-  buildDescription(item: LoadedItem): string | undefined {
+  buildDescription(item: Item): string | undefined {
     let desc = item.html || item.text || item.summary || item.embed;
 
     if (!desc && item.media) {
@@ -74,7 +74,7 @@ export class RSS extends Dry {
     return desc;
   }
 
-  buildItem(item: LoadedItem): any {
+  buildItem(item: Item): any {
     return {
       title: ellipsize(item.title, this.config.titleLength),
       description: this.buildDescription(item),
@@ -89,7 +89,7 @@ export class RSS extends Dry {
     };
   }
 
-  buildFeed(items: LoadedItem[]): string {
+  buildFeed(items: Item[]): string {
     // Build new items from this run of the washer
     let feedItems = items.map(i => this.buildItem(i));
 
@@ -140,7 +140,7 @@ export class RSS extends Dry {
     return feed.xml({ indent: "  " });
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     const feed = this.buildFeed(items);
     await this.files.saveString("rss.xml", feed);
   }

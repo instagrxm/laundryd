@@ -3,7 +3,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import nodemailer from "nodemailer";
 import Mail, { Attachment } from "nodemailer/lib/mailer";
 import path from "path";
-import { Dry, LoadedItem, Settings, WasherInfo } from "../../core";
+import { Dry, Item, Settings, WasherInfo } from "../../core";
 
 export class Smtp extends Dry {
   static readonly info = new WasherInfo({
@@ -96,13 +96,13 @@ export class Smtp extends Dry {
     await this.smtp.verify();
   }
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     for (const item of items) {
       await this.sendItem(item);
     }
   }
 
-  async sendItem(item: LoadedItem): Promise<void> {
+  async sendItem(item: Item): Promise<void> {
     const attachments: Attachment[] = [];
 
     if (this.config.attachData) {
@@ -127,7 +127,7 @@ export class Smtp extends Dry {
       });
     }
 
-    const subject = item.title || item.washerId;
+    const subject = item.title || item.washer.id;
     const text = item.text || item.html || "";
     const html = item.html || item.text || "";
 

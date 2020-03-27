@@ -20,6 +20,11 @@ export class WasherInfo {
   readonly abstract: boolean;
 
   /**
+   * A filter which limits items that Rinse/Dry can process
+   */
+  readonly filter?: any;
+
+  /**
    * The name of the washer generated from its file path.
    */
   name = "";
@@ -28,16 +33,19 @@ export class WasherInfo {
     title,
     description,
     abstract = false,
-    memory = true
+    memory = true,
+    filter
   }: {
     title: string;
     description: string;
     memory?: boolean;
     abstract?: boolean;
+    filter?: any;
   }) {
     this.title = title;
     this.description = description;
     this.memory = memory;
     this.abstract = abstract;
+    this.filter = filter;
   }
 }

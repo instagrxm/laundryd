@@ -1,7 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import clone from "clone";
 import util from "util";
-import { Dry, LoadedItem, Settings, WasherInfo } from "../../core";
+import { Dry, Item, Settings, WasherInfo } from "../../core";
 
 export class Stdout extends Dry {
   static readonly info = new WasherInfo({
@@ -21,10 +21,12 @@ export class Stdout extends Dry {
 
   config!: OutputFlags<typeof Stdout.settings>;
 
-  async run(items: LoadedItem[]): Promise<void> {
+  async run(items: Item[]): Promise<void> {
     for (const item of items) {
       const i: any = clone(item);
-      i.saved = item.saved.toJSDate();
+      if (item.saved) {
+        i.saved = item.saved.toJSDate();
+      }
       i.created = item.created.toJSDate();
       const json = util.inspect(i, undefined, undefined, this.config.color);
       process.stdout.write(json + "\n");
