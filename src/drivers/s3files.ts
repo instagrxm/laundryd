@@ -84,19 +84,19 @@ export class S3Files extends Files {
       const keys = files.Contents.map(f => f.Key as string);
 
       if (download.json) {
-        result.json = keys.find(f => f === "data.json");
+        result.json = keys.find(f => path.parse(f).base === "data.json");
         if (!result.json) {
           return;
         }
-        result.json = path.parse(result.json).base;
         const contents = await this.s3
           .getObject({ Key: result.json, Bucket: this.bucket })
           .promise();
         result.data = JSON.parse((contents.Body as Buffer).toString());
+        result.json = path.parse(result.json).base;
       }
 
       if (download.image) {
-        result.image = keys.find(f => f.match(/^image/));
+        result.image = keys.find(f => path.parse(f).base.match(/^image/));
         if (!result.image) {
           return;
         }
@@ -106,7 +106,7 @@ export class S3Files extends Files {
       if (download.media || download.isDirect) {
         result.media = keys[0];
         if (!download.isDirect) {
-          result.media = keys.find(f => !f.match(/^media/));
+          result.media = keys.find(f => path.parse(f).base.match(/^media/));
         }
 
         if (!result.media) {
