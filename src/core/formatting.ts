@@ -10,27 +10,6 @@ HB.registerHelper("toLocaleString", (context: any) => {
   return context.toLocaleString(process.env.LAUNDRY_LOCALE);
 });
 
-// Add HTML links to Instagram text.
-export const InstagramLinker = new Autolinker({
-  urls: true,
-  email: true,
-  phone: true,
-  hashtag: "instagram",
-  mention: "instagram",
-  newWindow: false,
-  stripPrefix: true,
-  stripTrailingSlash: true,
-  truncate: undefined
-});
-
-HB.registerHelper("instagramLinker", (context: any) => {
-  if (!context) {
-    return "";
-  }
-
-  return InstagramLinker.link(context.toString());
-});
-
 // Add HTML links to general plain text.
 export const BasicLinker = new Autolinker({
   urls: true,

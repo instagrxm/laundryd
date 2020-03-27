@@ -1,6 +1,6 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { HashtagMatch } from "autolinker";
+import Autolinker, { HashtagMatch } from "autolinker";
 import IgIds from "instagram-id-to-url-segment";
 import {
   IgApiClient,
@@ -22,7 +22,6 @@ import path from "path";
 import {
   Download,
   DownloadResult,
-  InstagramLinker,
   Item,
   Log,
   Settings,
@@ -48,6 +47,27 @@ export type IgFeedItem =
   | TagsFeedResponseMedia
   | TimelineFeedResponseMedia_or_ad
   | UserFeedResponseItemsItem;
+
+// Add HTML links to Instagram text.
+export const InstagramLinker = new Autolinker({
+  urls: true,
+  email: true,
+  phone: true,
+  hashtag: "instagram",
+  mention: "instagram",
+  newWindow: false,
+  stripPrefix: true,
+  stripTrailingSlash: true,
+  truncate: undefined
+});
+
+Handlebars.registerHelper("instagramLinker", (context: any) => {
+  if (!context) {
+    return "";
+  }
+
+  return InstagramLinker.link(context.toString());
+});
 
 export class Instagram {
   // The biggest favicon
