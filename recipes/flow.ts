@@ -170,11 +170,11 @@ const washers: any[] = [
     subscribe: ["feedbin/search"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "feedbin/search",
     begin: 1,
     schedule: schedule.default,
-    search: "Instagram",
+    search: "instagram",
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS
   },
