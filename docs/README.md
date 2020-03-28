@@ -80,10 +80,10 @@ OPTIONS
   --fileUrl=fileUrl    (required) [default: http://localhost:3000/files] a URL which maps to the file location
                        (env: LAUNDRY_FILES_URL)
 
-  --files=files        (required) [default: ~/.data/laundry] where to store downloaded files, either a local path or an
-                       s3:// location
+  --files=files        (required) [default: ~/.local/share/laundry] where to store downloaded files, either a local path
+                       or an s3:// location
                        (env: LAUNDRY_FILES)
 ```
 
-_See code: [src/commands/run.ts](https://github.com/laundryd/laundry/blob/master/src/commands/run.ts)_
+_See code: [src/commands/run.ts](https://github.com/endquote/laundryd/blob/master/src/commands/run.ts)_
 <!-- commandsstop -->
