@@ -1,0 +1,130 @@
+- document database setup
+  - dedicated server
+  - MongoDB Atlas
+- document laundry setup
+- test in production
+  - mongoBackup
+  - upgradeTools
+  - mixcloud/timeline > feed/podcast
+  - mixcloud/timeline > format/handlebars > email/smtp
+  - instagram > RSS
+  - feedbin/liked > instagram/like
+  - instagram/liked > instagram/story
+  - maintenance/clearCache
+  - log > email/smtp
+- youtube
+  - wash:timeline
+  - wash:user
+  - wash:liked
+  - dry:like
+  - test in production
+    - youtube/timeline > rss
+    - feedbin/liked > youtube/like
+    - youtube/user > podcast
+    - youtube/liked > save
+- soundcloud
+  - wash:timeline
+  - wash:user
+  - wash:liked
+  - dry:like
+  - dry:repost
+  - test in production
+    - soundcloud/timeline > podcast
+    - soundcloud/liked > save
+- vimeo
+  - wash:timeline
+  - wash:user
+  - wash:liked
+  - wash:category
+  - wash:channel
+  - wash:group
+  - wash:tag
+  - dry:like
+  - test in production
+    - vimeo/timeline > rss
+    - vimeo/group > rss
+    - feedbin/liked > vimeo/like
+    - vimeo/liked > save
+- gmail
+  - wash:search
+  - wash:liked
+  - dry:like
+  - test in production
+    - gmail/search > rss
+    - feedbin/liked > gmail/like
+    - gmail/liked > save
+- twitter
+  - wash:timeline
+  - wash:user
+  - wash:tag
+  - wash:list
+  - wash:liked
+  - dry:like
+  - dry:repost
+  - test in production
+    - twitter/timeline > rss
+    - feedbin/liked > twitter/like
+    - twitter/liked > save
+- look at search language detection
+- think of a better oauth flow?
+- generate washer documentation
+  - abstract washer loading code to a shared function
+  - script runs function and outputs markdown from a handlebars template
+- generate core documentation with tsdoc
+- figure out npm packaging
+- test on windows
+  - can you edit/debug it
+  - can you run it
+- high-level documentation/description
+- deploy, take over npm/laundry
+- start using git-flow
+- move config to database
+  - define default config
+  - config arg is optional
+  - if config passed, parse and validate, save to db
+  - if config is not passed, save default to db
+  - load config from db
+  - parse db config as if it's an external file
+- API server
+  - get washers
+  - get flow
+  - stop washer
+  - reset washer
+  - run washer now (exclusive?)
+  - add/edit/delete washer
+  - [share endpoint](https://feedbin.com/help/sharing-read-it-later-services/)
+    - washers define what url pattern to listen to
+    - wash has a method to accept url
+  - search
+  - shutdown
+  - web/dry:websocket
+- web front-end
+  - look at [autocode](https://autocode.stdlib.com)
+  - [visualize flow](https://observablehq.com/@nitaku/tangled-tree-visualization-ii)
+  - UI for all APIs
+  - oauth walkthrough
+  - UI for search
+  - UI for log
+- release and promote
+  - blog post etc
+- washer ideas (by personal usefulness)
+  - [huginn agents](https://github.com/huginn/huginn/wiki/Agent-Types-&-Descriptions)
+  - [huginn ideas](https://github.com/huginn/huginn/issues/353)
+  - [standard library](https://stdlib.com/search/)
+  - podcast (liked, like)
+  - github stars
+  - wash:rss (including media extraction)
+  - web scraper (jsdoc, phantomjs)
+  - pinboard
+  - slack
+  - facebook notifications/timeline
+  - github notifications
+  - pinterest
+  - pushbullet, prowl
+  - reddit?
+  - IMAP?
+  - spotify?
+- [try album art again](https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg)
+- automated deployment (aws, heroku, dreamcompute?)
+- [automated updates](https://oclif.io/docs/releasing)
+- automated tests

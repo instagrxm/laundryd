@@ -20,3 +20,9 @@ https://docs.mongodb.com/manual/tutorial/enable-authentication/
 
 remove bindIp, add bindIpAll
 https://docs.mongodb.com/manual/reference/configuration-options/#net-options
+
+# Related Projects
+
+- [huginn](https://github.com/huginn/huginn)
+- [standard library](https://stdlib.com)
+- [fraidycat](https://fraidyc.at)
