@@ -12,7 +12,6 @@
   - instagram/liked > instagram/story
   - maintenance/clearCache
   - log > email/smtp
-- blog post: aggregate everything 
 - youtube
   - wash:timeline
   - wash:user
@@ -91,6 +90,7 @@
   - get flow
   - stop washer
   - reset washer
+  - test washer (run without saving)
   - run washer now (exclusive?)
   - add/edit/delete washer
   - [share endpoint](https://feedbin.com/help/sharing-read-it-later-services/)
