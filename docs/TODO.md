@@ -12,6 +12,7 @@
   - instagram/liked > instagram/story
   - maintenance/clearCache
   - log > email/smtp
+- blog post: aggregate everything 
 - youtube
   - wash:timeline
   - wash:user
