@@ -108,9 +108,6 @@
 - release and promote
   - blog post etc
 - washer ideas (by personal usefulness)
-  - [huginn agents](https://github.com/huginn/huginn/wiki/Agent-Types-&-Descriptions)
-  - [huginn ideas](https://github.com/huginn/huginn/issues/353)
-  - [standard library](https://stdlib.com/search/)
   - podcast (liked, like)
   - github stars
   - wash:rss (including media extraction)
@@ -124,7 +121,12 @@
   - reddit?
   - IMAP?
   - spotify?
-- [try album art again](https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg)
-- automated deployment (aws, heroku, dreamcompute?)
-- [automated updates](https://oclif.io/docs/releasing)
-- automated tests
+  - from elsewhere
+    - [huginn agents](https://github.com/huginn/huginn/wiki/Agent-Types-&-Descriptions)
+    - [huginn ideas](https://github.com/huginn/huginn/issues/353)
+    - [standard library](https://stdlib.com/search/)
+- nice-to-have
+  - [try album art again](https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg)
+  - automated deployment (aws, heroku, dreamcompute?)
+  - [automated updates](https://oclif.io/docs/releasing)
+  - automated tests
