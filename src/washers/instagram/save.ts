@@ -3,7 +3,11 @@ import {
   AccountRepositoryCurrentUserResponseUser,
   IgApiClient
 } from "instagram-private-api";
-import { Dry, Item, Log, Settings, WasherInfo } from "../../core";
+import { Item } from "../../core/item";
+import { Log } from "../../core/log";
+import { Settings } from "../../core/settings";
+import { Dry } from "../../core/washers/dry";
+import { WasherInfo } from "../../core/washers/washerInfo";
 import { Instagram } from "./instagram";
 
 export class Save extends Dry {

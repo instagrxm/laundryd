@@ -1,4 +1,7 @@
-import { Dry, Item, Log, WasherInfo } from "../../core";
+import { Item } from "../../core/item";
+import { Log } from "../../core/log";
+import { Dry } from "../../core/washers/dry";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 export class TestDry extends Dry {
   static readonly info = new WasherInfo({

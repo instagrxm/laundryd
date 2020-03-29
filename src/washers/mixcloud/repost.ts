@@ -1,5 +1,8 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Dry, Item, Settings, WasherInfo } from "../../core";
+import { Item } from "../../core/item";
+import { Settings } from "../../core/settings";
+import { Dry } from "../../core/washers/dry";
+import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
 export class Repost extends Dry {

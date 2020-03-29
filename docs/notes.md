@@ -1,25 +1,18 @@
+# Server Setup Notes
+
+- Upgrade system: `sudo apt update && sudo apt upgrade -y`
+- Install Python: `sudo apt-get install python python3`
+- [Install node](https://github.com/nodesource/distributions#debinstall)
+- clone repo
+- `cd laundryd && npm install`
+
 # Mongo Setup Notes
 
-seems to work:
-https://cloud.mongodb.com/
-
-mac conf file
-/usr/local/etc/mongod.conf
-
-mongodb change stream
-https://docs.mongodb.com/manual/changeStreams/
-
-replica set config file
-https://docs.mongodb.com/manual/reference/configuration-options/index.html#replication-options
-
-rs.initiate()
-https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/
-
-access control
-https://docs.mongodb.com/manual/tutorial/enable-authentication/
-
-remove bindIp, add bindIpAll
-https://docs.mongodb.com/manual/reference/configuration-options/#net-options
+- [MongoDB Atlas](https://cloud.mongodb.com/) seems to work well
+- Config file on Mac is at `/usr/local/etc/mongod.conf`
+- Need to [set up](https://docs.mongodb.com/manual/reference/configuration-options/index.html#replication-options) [replica sets](https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/) even on a standalone install
+- Configure [external access](https://docs.mongodb.com/manual/reference/configuration-options/#net-options) by removing `bindIp` from the config file and adding `bindIpAll`
+- Set up [authentication](https://docs.mongodb.com/manual/tutorial/enable-authentication/) for external access
 
 # Related Projects
 

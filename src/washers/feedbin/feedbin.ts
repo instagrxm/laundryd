@@ -3,7 +3,11 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import { AxiosRequestConfig } from "axios";
 import clone from "clone";
 import { DateTime } from "luxon";
-import { Item, Log, Shared, Wash, Washer } from "../../core";
+import { Item } from "../../core/item";
+import { Log } from "../../core/log";
+import { Shared } from "../../core/washers/shared";
+import { Wash } from "../../core/washers/wash";
+import { Washer } from "../../core/washers/washer";
 
 export class Feedbin {
   static api = "https://api.feedbin.com/v2";

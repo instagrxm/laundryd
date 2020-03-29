@@ -8,17 +8,13 @@ import {
   FindOneOptions,
   MongoClient
 } from "mongodb";
-import {
-  Database,
-  Item,
-  Log,
-  LogItem,
-  Memory,
-  MongoLanguage,
-  Rinse,
-  Wash,
-  Washer
-} from "../core";
+import { Database } from "../core/database";
+import { Item, LogItem, MongoLanguage } from "../core/item";
+import { Log } from "../core/log";
+import { Memory } from "../core/memory";
+import { Rinse } from "../core/washers/rinse";
+import { Wash } from "../core/washers/wash";
+import { Washer } from "../core/washers/washer";
 
 /**
  * MongoDB driver.

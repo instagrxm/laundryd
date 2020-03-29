@@ -1,6 +1,8 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item } from "../../core/item";
+import { Wash } from "../../core/washers/wash";
+import { WasherInfo } from "../../core/washers/washerInfo";
 import { Mixcloud } from "./mixcloud";
 
 export default class User extends Wash {

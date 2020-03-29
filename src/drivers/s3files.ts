@@ -6,7 +6,11 @@ import { DateTime } from "luxon";
 import mime from "mime";
 import path from "path";
 import urlUtils from "url";
-import { Download, DownloadResult, Files, Log, Shared, Washer } from "../core";
+import { Download, DownloadResult } from "../core/download";
+import { Files } from "../core/files";
+import { Log } from "../core/log";
+import { Shared } from "../core/washers/shared";
+import { Washer } from "../core/washers/washer";
 
 export class S3Files extends Files {
   static urlFormat =

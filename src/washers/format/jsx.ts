@@ -3,7 +3,10 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import React from "react";
 import ReactDOMServer from "react-dom/server";
 import JsxParser from "react-jsx-parser";
-import { Item, Rinse, Settings, WasherInfo } from "../../core";
+import { Item } from "../../core/item";
+import { Settings } from "../../core/settings";
+import { Rinse } from "../../core/washers/rinse";
+import { WasherInfo } from "../../core/washers/washerInfo";
 
 // functions aren't supported https://github.com/TroyAlford/react-jsx-parser/issues/107
 // seeking a better method https://stackoverflow.com/questions/60537327/

@@ -4,7 +4,10 @@ import { DateTime } from "luxon";
 import mime from "mime";
 import os from "os";
 import path from "path";
-import { Download, DownloadResult, Files, Log, Shared } from "../core";
+import { Download, DownloadResult } from "../core/download";
+import { Files } from "../core/files";
+import { Log } from "../core/log";
+import { Shared } from "../core/washers/shared";
 
 /**
  * Save and load files on the local filesystem.
