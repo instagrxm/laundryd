@@ -4,9 +4,7 @@ import {
   IgApiClient,
   UserRepositorySearchResponseUsersItem
 } from "instagram-private-api";
-import { Item } from "../../core/item";
-import { Wash } from "../../core/washers/wash";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, Wash, WasherInfo } from "../../core";
 import { IgFeedItem, Instagram } from "./instagram";
 
 export default class User extends Wash {

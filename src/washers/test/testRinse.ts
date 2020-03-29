@@ -1,7 +1,4 @@
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Rinse } from "../../core/washers/rinse";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, Log, Rinse, WasherInfo } from "../../core";
 
 export class TestRinse extends Rinse {
   static readonly info = new WasherInfo({

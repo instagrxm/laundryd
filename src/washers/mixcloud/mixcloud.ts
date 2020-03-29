@@ -4,13 +4,16 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 import delay from "delay";
 import { DateTime } from "luxon";
 import path from "path";
-import { Config } from "../../core/config";
-import { Download, DownloadResult } from "../../core/download";
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Shared } from "../../core/washers/shared";
-import { Wash } from "../../core/washers/wash";
-import { Washer } from "../../core/washers/washer";
+import {
+  Config,
+  Download,
+  DownloadResult,
+  Item,
+  Log,
+  Shared,
+  Wash,
+  Washer
+} from "../../core";
 import { Like } from "./like";
 import { Repost } from "./repost";
 

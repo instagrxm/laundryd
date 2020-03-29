@@ -127,7 +127,6 @@
     - [huginn ideas](https://github.com/huginn/huginn/issues/353)
     - [standard library](https://stdlib.com/search/)
 - nice-to-have
-  - figure out core/index.ts -- it was mostly working on mac, but then failed on linux
   - [try album art again](https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg)
   - automated deployment (aws, heroku, dreamcompute?)
   - [automated updates](https://oclif.io/docs/releasing)

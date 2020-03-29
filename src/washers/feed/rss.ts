@@ -4,10 +4,7 @@ import ellipsize from "ellipsize";
 import { DateTime } from "luxon";
 import RSSFactory from "rss";
 import urlUtils from "url";
-import { Config } from "../../core/config";
-import { Item } from "../../core/item";
-import { Dry } from "../../core/washers/dry";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Config, Dry, Item, WasherInfo } from "../../core";
 
 export class RSS extends Dry {
   static readonly info = new WasherInfo({

@@ -9,10 +9,7 @@ import {
 } from "instagram-private-api";
 import { StickerBuilder } from "instagram-private-api/dist/sticker-builder";
 import path from "path";
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Dry } from "../../core/washers/dry";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Dry, Item, Log, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
 
 export class Like extends Dry {

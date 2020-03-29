@@ -1,6 +1,4 @@
-import { Log } from "../../core/log";
-import { Fix } from "../../core/washers/fix";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Fix, Log, WasherInfo } from "../../core";
 
 export class TestFix extends Fix {
   static readonly info = new WasherInfo({

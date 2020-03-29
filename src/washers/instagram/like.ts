@@ -4,11 +4,7 @@ import {
   IgApiClient,
   LikeModuleInfoOption
 } from "instagram-private-api";
-import { Item } from "../../core/item";
-import { Log } from "../../core/log";
-import { Settings } from "../../core/settings";
-import { Dry } from "../../core/washers/dry";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Dry, Item, Log, Settings, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
 
 export class Like extends Dry {

@@ -1,9 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item } from "../../core/item";
-import { Settings } from "../../core/settings";
-import { Dry } from "../../core/washers/dry";
-import { Shared } from "../../core/washers/shared";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Dry, Item, Settings, Shared, WasherInfo } from "../../core";
 import { Feedbin } from "./feedbin";
 
 export class Like extends Dry {

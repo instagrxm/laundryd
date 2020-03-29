@@ -1,8 +1,6 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { IgApiClient } from "instagram-private-api";
-import { Item } from "../../core/item";
-import { Wash } from "../../core/washers/wash";
-import { WasherInfo } from "../../core/washers/washerInfo";
+import { Item, Wash, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
 
 export default class Liked extends Wash {
