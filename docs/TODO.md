@@ -1,3 +1,4 @@
+- license: free non-commercial
 - document database setup
   - dedicated server
   - MongoDB Atlas
