@@ -10,6 +10,7 @@ import {
 } from "mongodb";
 import {
   Database,
+  Item,
   Log,
   LogItem,
   Memory,
@@ -18,7 +19,6 @@ import {
   Wash,
   Washer
 } from "../core";
-import { Item } from "../core/Item";
 
 /**
  * MongoDB driver.
