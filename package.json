@@ -1,12 +1,37 @@
 {
   "name": "laundry",
-  "description": "data laundering tools",
   "version": "0.0.3",
+  "description": "data laundering tools",
+  "keywords": [
+    "oclif"
+  ],
+  "homepage": "https://github.com/endquote/laundryd",
+  "bugs": "https://github.com/endquote/laundryd/issues",
+  "repository": "https://github.com/endquote/laundryd",
+  "license": "SEE LICENSE IN docs/license.md",
   "author": "Josh Santangelo @endquote",
+  "contributors": [
+    "Josh Santangelo @endquote"
+  ],
+  "main": "lib/index.js",
+  "types": "lib/index.d.ts",
   "bin": {
     "laundry": "./bin/run"
   },
-  "bugs": "https://github.com/endquote/laundryd/issues",
+  "files": [
+    "/bin",
+    "/lib",
+    "/npm-shrinkwrap.json",
+    "/oclif.manifest.json"
+  ],
+  "scripts": {
+    "postinstall": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin",
+    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && cd docs/cli && oclif-dev readme",
+    "postpack": "rm -f oclif.manifest.json",
+    "test": "echo NO TESTS",
+    "posttest": "eslint . --ext .ts --config .eslintrc.js",
+    "version": "cd docs/cli && oclif-dev readme"
+  },
   "dependencies": {
     "@oclif/command": "^1.5.19",
     "@oclif/config": "^1.14.0",
@@ -75,18 +100,6 @@
   "engines": {
     "node": ">=8.0.0"
   },
-  "files": [
-    "/bin",
-    "/lib",
-    "/npm-shrinkwrap.json",
-    "/oclif.manifest.json"
-  ],
-  "homepage": "https://github.com/endquote/laundryd",
-  "keywords": [
-    "oclif"
-  ],
-  "license": "MIT",
-  "main": "lib/index.js",
   "oclif": {
     "commands": "./lib/commands",
     "repositoryPrefix": "<%- repo %>/blob/master/<%- commandPath %>",
@@ -95,15 +108,5 @@
       "@oclif/plugin-help",
       "@oclif/plugin-commands"
     ]
-  },
-  "repository": "endquote/laundryd",
-  "scripts": {
-    "postpack": "rm -f oclif.manifest.json",
-    "posttest": "eslint . --ext .ts --config .eslintrc.js",
-    "prepack": "rm -rf lib && tsc -b && oclif-dev manifest && cd docs && oclif-dev readme",
-    "test": "echo NO TESTS",
-    "version": "cd docs && oclif-dev readme",
-    "postinstall": "node node_modules/ffbinaries/cli.js -o node_modules/ffbinaries/bin"
-  },
-  "types": "lib/index.d.ts"
+  }
 }

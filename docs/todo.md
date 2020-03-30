@@ -120,6 +120,7 @@
   - github notifications
   - pinterest
   - pushbullet, prowl
+  - MQTT, websocket, OSC?
   - reddit?
   - IMAP?
   - spotify?
