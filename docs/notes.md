@@ -10,6 +10,7 @@
 
 - [MongoDB Atlas](https://cloud.mongodb.com/) seems to work well
 - Config file on Mac is at `/usr/local/etc/mongod.conf`
+- [Install mongodb](https://docs.mongodb.com/manual/tutorial/install-mongodb-on-ubuntu/#install-mongodb-community-edition)
 - Need to [set up](https://docs.mongodb.com/manual/reference/configuration-options/index.html#replication-options) [replica sets](https://docs.mongodb.com/manual/tutorial/convert-standalone-to-replica-set/) even on a standalone install
 - Configure [external access](https://docs.mongodb.com/manual/reference/configuration-options/#net-options) by removing `bindIp` from the config file and adding `bindIpAll`
 - Set up [authentication](https://docs.mongodb.com/manual/tutorial/enable-authentication/) for external access
