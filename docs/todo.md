@@ -1,8 +1,3 @@
-- license: free non-commercial
-- document database setup
-  - dedicated server
-  - MongoDB Atlas
-- document laundry setup
 - test in production
   - mongoBackup
   - upgradeTools
@@ -68,16 +63,25 @@
     - twitter/liked > save
 - look at search language detection
 - think of a better oauth flow?
-- generate washer documentation
-  - abstract washer loading code to a shared function
-  - script runs function and outputs markdown from a handlebars template
-- generate core documentation with tsdoc
-- figure out npm packaging
 - test on windows
   - can you edit/debug it
   - can you run it
-- high-level documentation/description
-- deploy, take over npm/laundry
+- deployment
+  - figure out npm packaging ([canary](https://docs.npmjs.com/cli/dist-tag))
+  - [installers](https://oclif.io/docs/releasing)
+  - automate releases
+  - [automated updates](https://oclif.io/docs/releasing)
+- docs
+  - generate washer documentation
+    - abstract washer loading code to a shared function
+    - script runs function and outputs markdown from a handlebars template
+  - generate core documentation with tsdoc
+  - database setup
+    - dedicated server
+    - MongoDB Atlas
+  - laundry setup
+  - high-level documentation/description
+  - take over npm/laundry
 - start using git-flow
 - move config to database
   - define default config
@@ -103,6 +107,7 @@
 - web front-end
   - look at [autocode](https://autocode.stdlib.com)
   - [visualize flow](https://observablehq.com/@nitaku/tangled-tree-visualization-ii)
+    - [another flow](https://pudding.cool/2020/03/census-history/)
   - UI for all APIs
   - oauth walkthrough
   - UI for search
@@ -131,5 +136,5 @@
 - nice-to-have
   - [try album art again](https://stackoverflow.com/questions/18710992/how-to-add-album-art-with-ffmpeg)
   - automated deployment (aws, heroku, dreamcompute?)
-  - [automated updates](https://oclif.io/docs/releasing)
   - automated tests
+  - think about [plugins](https://lerna.js.org) again

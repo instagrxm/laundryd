@@ -154,6 +154,9 @@ export default class Run extends BaseCommand {
     const washers: Record<string, Washer> = {};
     const sources: Record<string, Wash | Rinse> = {};
     for (const setting of settings) {
+      // Use the name as the ID by default
+      setting.id = setting.id || setting.name;
+
       // Let washers inherit settings from the run command.
       const flags = Object.keys(types[setting.name].settings);
       const keys = Object.keys(this.flags);

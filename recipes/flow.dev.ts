@@ -153,7 +153,7 @@ const washers: any[] = [
     password: process.env.FEEDBIN_PASS
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feedbin/like",
     // schedule: schedule.default,
     state: true,
@@ -171,7 +171,7 @@ const washers: any[] = [
     subscribe: ["feedbin/search"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feedbin/search",
     begin: 1,
     schedule: schedule.default,
@@ -188,7 +188,5 @@ const washers: any[] = [
     password: process.env.FEEDBIN_PASS
   }
 ];
-
-washers.forEach(w => (w.id = w.id || w.name));
 
 export = washers;

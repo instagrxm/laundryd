@@ -5,6 +5,4 @@ const schedule = {
 
 const washers: any[] = [];
 
-washers.forEach(w => (w.id = w.id || w.name));
-
 export = washers;
