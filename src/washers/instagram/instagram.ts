@@ -160,9 +160,12 @@ export class Instagram {
         // Skip ads
         const timelinePost = post as TimelineFeedResponseMedia_or_ad;
         if (
+          timelinePost.ad_action ||
+          timelinePost.ad_header_style ||
           timelinePost.ad_id ||
+          timelinePost.ad_link_type ||
           timelinePost.ad_metadata ||
-          timelinePost.ad_action
+          timelinePost.dr_ad_type
         ) {
           continue;
         }
