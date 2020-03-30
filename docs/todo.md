@@ -1,13 +1,9 @@
 - test in production
-  - mongoBackup
-  - upgradeTools
-  - mixcloud/timeline > feed/podcast
-  - mixcloud/timeline > format/handlebars > email/smtp
   - instagram > RSS
   - feedbin/liked > instagram/like
   - instagram/liked > instagram/story
-  - maintenance/clearCache
-  - log > email/smtp
+  - mixcloud/timeline > feed/podcast
+  - mixcloud/timeline > format/handlebars > email/smtp
 - youtube
   - wash:timeline
   - wash:user
@@ -82,6 +78,9 @@
   - laundry setup
   - high-level documentation/description
   - take over npm/laundry
+- docker image
+  - [mongodb](https://hub.docker.com/_/mongo/) + [node](https://hub.docker.com/_/node)
+  - test mongodump/mongorestore
 - start using git-flow
 - move config to database
   - define default config

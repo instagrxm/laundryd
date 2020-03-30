@@ -5,6 +5,9 @@
 - [Install node](https://github.com/nodesource/distributions#debinstall)
 - clone repo
 - `cd laundryd && npm install`
+- optional: create recipe to set up environment
+- create flow file which exports washer array
+- `source /home/ubuntu/src/recipes/config.prod.sh && /home/ubuntu/src/bin/run run --config=/home/ubuntu/src/recipes/flow.prod.ts`
 
 # Mongo Setup Notes
 
