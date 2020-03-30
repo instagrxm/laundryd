@@ -4,6 +4,6 @@
 
 # load config
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-source ${DIR}/../recipes/config.sh
+source ${DIR}/../recipes/config.dev.sh
 
 node $*

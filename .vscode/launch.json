@@ -3,7 +3,7 @@
   "configurations": [
     {
       "name": "Launch Program",
-      "args": ["run", "--config=${workspaceRoot}/recipes/flow.ts"],
+      "args": ["run", "--config=${workspaceRoot}/recipes/flow.dev.ts"],
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/.vscode/debug.sh",
