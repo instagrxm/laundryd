@@ -33,7 +33,7 @@ export class RSS extends Dry {
     }),
 
     titleLength: flags.integer({
-      default: 30,
+      default: 40,
       description: "truncate titles to this many characters"
     })
   };
