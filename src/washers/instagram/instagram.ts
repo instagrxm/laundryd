@@ -293,11 +293,13 @@ export class Instagram {
     }
 
     // Get the embed code
-    const embed = await Shared.queueHttp(washer, undefined, {
-      url: "https://api.instagram.com/oembed/",
-      params: { url: item.url, omitscript: true }
-    });
-    item.embed = embed.data.html;
+    if (!data.user.is_private) {
+      const embed = await Shared.queueHttp(washer, undefined, {
+        url: "https://api.instagram.com/oembed/",
+        params: { url: item.url, omitscript: true }
+      });
+      item.embed = embed.data.html;
+    }
 
     Instagram.buildHtml(item);
 
