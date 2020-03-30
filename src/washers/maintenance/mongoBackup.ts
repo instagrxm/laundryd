@@ -21,6 +21,10 @@ export class BackupDatabase extends Fix {
   config!: OutputFlags<typeof BackupDatabase.settings>;
 
   async init(): Promise<void> {
+    if (Config.flags.database.match(/mongodb\.net/)) {
+      throw new Error(`mongodump is not supported on MongoDB Atlas`)
+    }
+
     try {
       await exec("mongodump --version");
     } catch (error) {
@@ -34,7 +38,7 @@ export class BackupDatabase extends Fix {
     const file = "mongo.dump";
     const dest = path.join(localDir, file);
 
-    const cmd = `mongodump --uri=${Config.flags.database} --archive=${dest}`;
+    const cmd = `mongodump --uri="${Config.flags.database}" --archive="${dest}"`;
     await Log.debug(this, { msg: "dumping database", cmd });
     await exec(cmd);
 
