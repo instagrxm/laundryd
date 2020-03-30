@@ -7,5 +7,6 @@
 /yarn.lock
 node_modules
 *.tsbuildinfo
-**/recipes/config.sh
+**/recipes/config.dev.sh
+**/recipes/config.prod.sh
 /oclif.manifest.json
