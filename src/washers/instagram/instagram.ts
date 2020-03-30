@@ -131,7 +131,7 @@ export class Instagram {
       if (!auth.code) {
         await Log.error(washer, {
           msg:
-            "an auth code should have been emailed to you, add that to the washer config"
+            "an auth code should have been sent to you, add that to the washer config"
         });
       } else {
         await client.challenge.sendSecurityCode(auth.code);
@@ -159,7 +159,11 @@ export class Instagram {
       for (const post of posts) {
         // Skip ads
         const timelinePost = post as TimelineFeedResponseMedia_or_ad;
-        if (timelinePost.ad_id) {
+        if (
+          timelinePost.ad_id ||
+          timelinePost.ad_metadata ||
+          timelinePost.ad_action
+        ) {
           continue;
         }
 
