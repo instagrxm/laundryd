@@ -30,14 +30,14 @@ const washers: any[] = [
   {
     name: "instagram/timeline",
     download: true,
-    begin: 10,
+    begin: 14,
+    retain: 14,
     schedule: "0 0,20,30,40 * * * *",
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
     code: 430251
   },
   {
-    enabled: false,
     name: "feed/rss",
     id: "instagram/rss",
     schedule: "0 5,25,35,45 * * * *",
