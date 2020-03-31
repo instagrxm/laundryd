@@ -60,7 +60,7 @@ export class S3Files extends Files {
     }
   }
 
-  async exists(download: Download): Promise<DownloadResult | undefined> {
+  async existing(download: Download): Promise<DownloadResult | undefined> {
     const key = path.join(
       this.downloadsDir,
       Math.floor(download.item.created.toSeconds()).toString(),

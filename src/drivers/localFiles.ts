@@ -48,7 +48,7 @@ export class LocalFiles extends Files {
     }
   }
 
-  async exists(download: Download): Promise<DownloadResult | undefined> {
+  async existing(download: Download): Promise<DownloadResult | undefined> {
     const dir = path.join(
       this.downloadsDir,
       Math.floor(download.item.created.toSeconds()).toString(),

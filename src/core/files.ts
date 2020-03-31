@@ -38,7 +38,7 @@ export abstract class Files {
    * files on disk, not that they're actually the right size.
    * @param download the download to check for
    */
-  abstract async exists(
+  abstract async existing(
     download: Download
   ): Promise<DownloadResult | undefined>;
 
