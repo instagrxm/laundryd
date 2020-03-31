@@ -54,6 +54,9 @@ export class MongoDB extends Database {
   }
 
   hydrateItem(document: any): Item {
+    if (!document) {
+      return document;
+    }
     delete document._id;
     document.saved = DateTime.fromJSDate(document.saved).toUTC();
     document.created = DateTime.fromJSDate(document.created).toUTC();
@@ -266,5 +269,12 @@ export class MongoDB extends Database {
 
   async writeLog(log: LogItem): Promise<void> {
     await this.log.insertOne(clone(log));
+  }
+
+  async existing(washer: Washer, url: string): Promise<Item | undefined> {
+    const document = await this.db
+      .collection(washer.config.id)
+      .findOne({ url });
+    return this.hydrateItem(document);
   }
 }

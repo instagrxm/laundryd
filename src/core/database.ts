@@ -94,4 +94,14 @@ export abstract class Database {
    * @param log the log message
    */
   abstract async writeLog(log: LogItem): Promise<void>;
+
+  /**
+   * Return an existing Item by URL
+   * @param washer the washer making the request
+   * @param url the URL of the item
+   */
+  abstract async existing(
+    washer: Washer,
+    url: string
+  ): Promise<Item | undefined>;
 }
