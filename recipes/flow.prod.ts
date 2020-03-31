@@ -22,10 +22,13 @@ const washers: any[] = [
     filter: { level: "error" }
   },
   {
-    name: "maintenance/upgradeTools",
+    name: "maintenance/mongoBackup"
   },
   {
-    name: "maintenance/clearCache",
+    name: "maintenance/upgradeTools"
+  },
+  {
+    name: "maintenance/clearCache"
   },
   {
     name: "instagram/timeline",
@@ -42,7 +45,7 @@ const washers: any[] = [
     id: "instagram/rss",
     schedule: "0 5,25,35,45 * * * *",
     subscribe: ["instagram/timeline"]
-  },
+  }
 ];
 
 export = washers;
