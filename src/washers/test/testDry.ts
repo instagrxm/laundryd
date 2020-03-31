@@ -6,6 +6,14 @@ export class TestDry extends Dry {
     description: "test-dry"
   });
 
+  static settings = {
+    ...Dry.settings
+  };
+
+  async init(): Promise<void> {
+    const x = 1;
+  }
+
   async run(items: Item[]): Promise<void> {
     await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(

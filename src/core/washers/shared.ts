@@ -83,11 +83,8 @@ export class Shared {
   ): Promise<Item[]> {
     let input: Item[] = [];
     for (const id of washer.config.subscribe) {
-      const items = await washer.database.loadItems(
-        sources[id],
-        since,
-        Shared.buildFilter(washer)
-      );
+      const filter: any = Shared.buildFilter(washer);
+      const items = await washer.database.loadItems(sources[id], since, filter);
       input = input.concat(items);
     }
     return input;

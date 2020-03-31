@@ -22,6 +22,10 @@ export class Mixcloud {
 
   static urlPattern = /^http(s)?:\/\/(www.)?mixcloud.com/i;
 
+  static filter = {
+    url: { $regex: "^http(s)?:\\/\\/(www.)?mixcloud.com/", $options: "i" }
+  };
+
   static authSettings = {
     clientId: flags.string({
       required: true,
@@ -43,8 +47,6 @@ export class Mixcloud {
       description: "the oauth code used to get an access token"
     })
   };
-
-  static filter = { url: { $regex: Mixcloud.urlPattern } };
 
   /**
    * Authorize against the Mixcloud API and return information about the user

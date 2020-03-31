@@ -79,6 +79,10 @@ export class Instagram {
 
   static urlPattern = /^http(s)?:\/\/(www.)?instagram.com/i;
 
+  static filter = {
+    url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com/", $options: "i" }
+  };
+
   // Settings used by all washers to auth
   static authSettings = {
     username: flags.string({
@@ -95,8 +99,6 @@ export class Instagram {
       description: "the challenge code sent for login"
     })
   };
-
-  static filter = { url: { $regex: Instagram.urlPattern } };
 
   private static clients: Record<string, IgApiClient> = {};
 

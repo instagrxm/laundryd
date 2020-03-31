@@ -1,7 +1,4 @@
-- setup/document local mongo
 - test in production
-  - maintenance/mongoBackup
-  - mongorestore
   - feedbin/liked > instagram/like
   - instagram/liked > instagram/story
   - mixcloud/timeline > feed/podcast
@@ -102,7 +99,7 @@
   - [share endpoint](https://feedbin.com/help/sharing-read-it-later-services/)
     - washers define what url pattern to listen to
     - wash has a method to accept url
-    - washers with no schedule or subscribe just use endpoint 
+    - washers with no schedule or subscribe just use endpoint
   - search
   - shutdown
   - web/dry:websocket

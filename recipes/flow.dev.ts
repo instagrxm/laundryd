@@ -126,7 +126,7 @@ const washers: any[] = [
     subscribe: ["mixcloud/handlebars"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "instagram/timeline",
     download: true,
     // user: "danielarsham",
@@ -139,10 +139,11 @@ const washers: any[] = [
   },
   {
     enabled: false,
-    name: "instagram/story",
-    schedule: schedule.default,
+    name: "instagram/like",
+    // schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
+    filter: { url: { $regex: "B-XdztZDTLq" } },
     subscribe: ["feedbin/liked"]
   },
   {
@@ -151,6 +152,15 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS
+  },
+  {
+    enabled: false,
+    name: "test/testDry",
+    // schedule: schedule.default,
+    filter: {
+      url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
+    },
+    subscribe: ["feedbin/liked"]
   },
   {
     enabled: false,

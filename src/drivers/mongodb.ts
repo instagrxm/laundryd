@@ -164,10 +164,7 @@ export class MongoDB extends Database {
           key = `fullDocument.${key}`;
         }
 
-        if (val instanceof RegExp) {
-          // RegExps need to be a string without the begin/end slashes
-          out[key] = val.toString().replace(/(^\/|\/$)/g, "");
-        } else if (Array.isArray(val)) {
+        if (Array.isArray(val)) {
           // Recursively process arrays
           out[key] = val.map(i => process(i));
         } else if (typeof val === "object") {
