@@ -102,6 +102,7 @@
   - [share endpoint](https://feedbin.com/help/sharing-read-it-later-services/)
     - washers define what url pattern to listen to
     - wash has a method to accept url
+    - washers with no schedule or subscribe just use endpoint 
   - search
   - shutdown
   - web/dry:websocket
