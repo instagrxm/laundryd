@@ -175,23 +175,23 @@ export interface LogItem extends Item {
 }
 
 /**
- * Mapping of language names supported by MongoDB full-text search to those in the franc
- * library: https://github.com/wooorm/franc
+ * Languages supported by MongoDB full-text search.
+ * https://docs.mongodb.com/manual/reference/text-search-languages/
  */
 export enum MongoLanguage {
-  danish = "dan",
-  dutch = "nld",
-  english = "eng",
-  finnish = "fin",
-  french = "fra",
-  german = "deu",
-  hungarian = "hun",
-  italian = "ita",
-  norwegian = "nob",
-  portuguese = "por",
-  romanian = "ron",
-  russian = "rus",
-  spanish = "ese",
-  swedish = "swe",
-  turkish = "tur"
+  danish = "danish",
+  dutch = "dutch",
+  english = "english",
+  finnish = "finnish",
+  french = "french",
+  german = "german",
+  hungarian = "hungarian",
+  italian = "italian",
+  norwegian = "norwegian",
+  portuguese = "portuguese",
+  romanian = "romanian",
+  russian = "russian",
+  spanish = "spanish",
+  swedish = "swedish",
+  turkish = "turkish"
 }

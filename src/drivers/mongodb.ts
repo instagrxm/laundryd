@@ -1,5 +1,4 @@
 import clone from "clone";
-import franc from "franc";
 import { DateTime } from "luxon";
 import {
   Collection,
@@ -14,7 +13,6 @@ import {
   Log,
   LogItem,
   Memory,
-  MongoLanguage,
   Rinse,
   Wash,
   Washer
@@ -67,19 +65,6 @@ export class MongoDB extends Database {
     const document: any = clone(item);
     delete document.downloads;
     document.saved = DateTime.utc();
-
-    if (!document.language) {
-      document.franc = franc(
-        `${item.title} ${item.text || item.html} ${item.tags}`
-      );
-      const francLangs = Object.values(MongoLanguage);
-      const mongoLangs = Object.keys(MongoLanguage);
-      const mongoLang = mongoLangs[francLangs.indexOf(document.franc)];
-      if (mongoLang) {
-        document.language = mongoLang;
-      }
-    }
-
     return document;
   }
 

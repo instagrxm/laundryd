@@ -1,18 +1,5 @@
 - test in production
-  - feedbin/liked > instagram/like
-  - instagram/liked > instagram/story
-  - mixcloud/timeline > feed/podcast
   - mixcloud/timeline > format/handlebars > email/smtp
-- youtube
-  - wash:timeline
-  - wash:user
-  - wash:liked
-  - dry:like
-  - test in production
-    - youtube/timeline > rss
-    - feedbin/liked > youtube/like
-    - youtube/user > podcast
-    - youtube/liked > save
 - soundcloud
   - wash:timeline
   - wash:user
@@ -36,6 +23,16 @@
     - vimeo/group > rss
     - feedbin/liked > vimeo/like
     - vimeo/liked > save
+- youtube
+  - wash:timeline
+  - wash:user
+  - wash:liked
+  - dry:like
+  - test in production
+    - youtube/timeline > rss
+    - feedbin/liked > youtube/like
+    - youtube/user > podcast
+    - youtube/liked > save
 - gmail
   - wash:search
   - wash:liked
@@ -56,7 +53,6 @@
     - twitter/timeline > rss
     - feedbin/liked > twitter/like
     - twitter/liked > save
-- look at search language detection
 - think of a better oauth flow?
 - test on windows
   - can you edit/debug it

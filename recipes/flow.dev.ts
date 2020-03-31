@@ -147,7 +147,7 @@ const washers: any[] = [
     subscribe: ["feedbin/liked"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "feedbin/liked",
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
