@@ -98,9 +98,9 @@ export class Instagram {
 
   // Because feeds aren't chronological, you can't specify how many days back to load.
   static beginSetting = flags.integer({
-    default: 0,
-    description:
-      "the number of past items to load in the first run, 0 to load all"
+    default: 100,
+    required: true,
+    description: "the number of past items to load in the first run"
   });
 
   static filter = { url: { $regex: Instagram.urlPattern } };
@@ -158,22 +158,22 @@ export class Instagram {
 
       for (const post of posts) {
         // Skip ads
-        const timelinePost = post as TimelineFeedResponseMedia_or_ad;
+        const p = post as TimelineFeedResponseMedia_or_ad;
         if (
-          timelinePost.ad_action ||
-          timelinePost.ad_header_style ||
-          timelinePost.ad_id ||
-          timelinePost.ad_link_type ||
-          timelinePost.ad_metadata ||
-          timelinePost.dr_ad_type
+          p.ad_action ||
+          p.ad_header_style ||
+          p.ad_id ||
+          p.ad_link_type ||
+          p.ad_metadata ||
+          p.dr_ad_type
         ) {
           continue;
         }
 
         // Limit the number of items loaded on the first run
         if (
+          !washer.memory.lastRun &&
           washer.config.begin &&
-          !washer.memory.lastId &&
           data.length >= washer.config.begin
         ) {
           done = true;
@@ -181,7 +181,11 @@ export class Instagram {
         }
 
         // Skip if we've seen this post before
-        if (post.id === washer.memory.lastId) {
+        const existing = await washer.database.existing(
+          washer,
+          `https://www.instagram.com/p/${p.code}/`
+        );
+        if (existing) {
           done = true;
           break;
         }
@@ -192,10 +196,6 @@ export class Instagram {
       if (done) {
         break;
       }
-    }
-
-    if (data.length) {
-      washer.memory.lastId = data[0].id;
     }
 
     return data;
