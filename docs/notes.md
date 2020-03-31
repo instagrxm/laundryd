@@ -66,9 +66,13 @@ Now the database URI will be `"mongodb://laundry:[password]@localhost:27017/laun
 
 # Running Laundry
 
-- Run laundry: `source /home/ubuntu/src/recipes/config.prod.sh && /home/ubuntu/src/bin/run run --config=/home/ubuntu/src/recipes/flow.prod.ts`
-- Run in background: add `nohup` to the beginning, and `&` to the end
-  - `jobs -l` will show the process id, `kill [id]` to stop
+- The command is something like: `source /home/ubuntu/src/recipes/config.prod.sh && /home/ubuntu/src/bin/run run --config=/home/ubuntu/src/recipes/flow.prod.ts`
+- It is stored in something like: `recipies/start.sh`
+- A service definition is in: `recipes/laundry.service`
+- Install with: `ln /home/ubuntu/src/recipes/laundry.service /etc/systemd/system/laundry.service`
+- Run at startup: `sudo systemctl enable laundry`
+- Control: `sudo systemctl [start|restart|stop] laundry`
+- See stdout: `sudo journalctl --follow -u laundry`
 
 # Related Projects
 
