@@ -14,5 +14,10 @@
     },
     "lib": true,
     "**/*.tsbuildinfo": true
+  },
+  "workbench.colorCustomizations": {
+    "activityBar.background": "#332945",
+    "titleBar.activeBackground": "#473960",
+    "titleBar.activeForeground": "#FCFBFD"
   }
 }
