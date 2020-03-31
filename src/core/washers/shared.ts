@@ -206,7 +206,7 @@ export class Shared {
 
     const doDownload = async (download: Download): Promise<void> => {
       // Check for an existing download.
-      const existing = await washer.files.existing(download);
+      const existing = await washer.files.exists(download);
       if (existing) {
         // Call the complete handler with the existing data.
         download.complete(existing);
