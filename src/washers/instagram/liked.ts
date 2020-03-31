@@ -11,7 +11,6 @@ export default class Liked extends Wash {
 
   static settings = {
     ...Wash.settings,
-    begin: Instagram.beginSetting,
     ...Instagram.authSettings
   };
 

@@ -12,7 +12,6 @@ export default class Location extends Wash {
 
   static settings = {
     ...Wash.settings,
-    begin: Instagram.beginSetting,
     ...Instagram.authSettings,
     locationId: flags.integer({
       required: true,

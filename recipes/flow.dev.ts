@@ -126,13 +126,13 @@ const washers: any[] = [
     subscribe: ["mixcloud/handlebars"]
   },
   {
-    enabled: false,
-    name: "instagram/saved",
+    // enabled: false,
+    name: "instagram/timeline",
     download: true,
     // user: "danielarsham",
     // tag: "covidchic",
     // locationId: 1031402212,
-    begin: 10,
+    begin: 14,
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS

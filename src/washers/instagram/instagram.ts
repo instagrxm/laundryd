@@ -96,13 +96,6 @@ export class Instagram {
     })
   };
 
-  // Because feeds aren't chronological, you can't specify how many days back to load.
-  static beginSetting = flags.integer({
-    default: 100,
-    required: true,
-    description: "the number of past items to load in the first run"
-  });
-
   static filter = { url: { $regex: Instagram.urlPattern } };
 
   private static clients: Record<string, IgApiClient> = {};
@@ -172,9 +165,8 @@ export class Instagram {
 
         // Limit the number of items loaded on the first run
         if (
-          !washer.memory.lastRun &&
-          washer.config.begin &&
-          data.length >= washer.config.begin
+          DateTime.fromSeconds(p.taken_at).diff(washer.memory.lastRun, "days")
+            .days <= 0
         ) {
           done = true;
           break;

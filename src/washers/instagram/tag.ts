@@ -12,7 +12,6 @@ export default class Tag extends Wash {
 
   static settings = {
     ...Wash.settings,
-    begin: Instagram.beginSetting,
     ...Instagram.authSettings,
     tag: flags.string({
       required: true,

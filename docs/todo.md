@@ -1,5 +1,7 @@
+- setup/document local mongo
 - test in production
-  - instagram > RSS
+  - maintenance/mongoBackup
+  - mongorestore
   - feedbin/liked > instagram/like
   - instagram/liked > instagram/story
   - mixcloud/timeline > feed/podcast

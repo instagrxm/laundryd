@@ -15,7 +15,6 @@ export default class User extends Wash {
 
   static settings = {
     ...Wash.settings,
-    begin: Instagram.beginSetting,
     ...Instagram.authSettings,
     user: flags.string({
       required: true,

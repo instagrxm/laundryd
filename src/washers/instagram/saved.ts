@@ -11,7 +11,6 @@ export default class Saved extends Wash {
 
   static settings = {
     ...Wash.settings,
-    begin: Instagram.beginSetting,
     ...Instagram.authSettings
   };
 
