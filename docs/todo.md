@@ -1,3 +1,4 @@
+- memory.washer like item.washer
 - test in production
   - mongobackup
 - ig gap: 10:17a-3:14p
