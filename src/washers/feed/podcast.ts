@@ -56,11 +56,14 @@ export class Podcast extends RSS {
     };
 
     channel.custom_elements = [];
-    channel.custom_elements.push({
-      "itunes:image": {
-        _attr: { href: imageUrl }
-      }
-    });
+
+    if (imageUrl) {
+      channel.custom_elements.push({
+        "itunes:image": {
+          _attr: { href: imageUrl }
+        }
+      });
+    }
 
     channel.custom_elements.push({ language: this.config.language });
 
@@ -98,9 +101,14 @@ export class Podcast extends RSS {
     i.custom_elements = [
       { "itunes:subtitle": item.title },
       { "itunes:author": item.author },
-      { "itunes:image": [{ _attr: { href: item.image } }] },
       { "itunes:duration": item.media?.duration }
     ];
+
+    if (item.image) {
+      i.custom_elements.push({
+        "itunes:image": [{ _attr: { href: item.image } }]
+      });
+    }
 
     if (item.media) {
       i.enclosure = {
