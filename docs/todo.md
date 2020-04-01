@@ -1,5 +1,9 @@
 - test in production
-  - mixcloud/timeline > format/handlebars > email/smtp
+  - mongobackup
+- ig gap: 10:17a-3:14p
+  - look at timeline feed and the seen-all marker again
+- block files.downloadsPrefix and files.stringsPrefix from washer ids
+
 - soundcloud
   - wash:timeline
   - wash:user
@@ -54,6 +58,7 @@
     - feedbin/liked > twitter/like
     - twitter/liked > save
 - think of a better oauth flow?
+- don't crash on bad config or init, just disable
 - test on windows
   - can you edit/debug it
   - can you run it

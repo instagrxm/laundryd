@@ -59,22 +59,15 @@ const washers: any[] = [
     subscribe: ["mixcloud/liked"]
   },
   {
-    enabled: false,
+    // enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
-    begin: 10,
-    retain: 0,
+    begin: 1,
+    retain: 90,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
     token: process.env.MIXCLOUD_TOKEN
-  },
-  {
-    enabled: false,
-    name: "feed/rss",
-    title: "mixcloud combined",
-    schedule: schedule.default,
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"]
   },
   {
     enabled: false,
@@ -85,13 +78,13 @@ const washers: any[] = [
     ownerEmail: "josh@endquote.com",
     category: "Music",
     subcategory: "Music Commentary",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"]
+    subscribe: ["mixcloud/timeline"]
   },
   {
     enabled: false,
     id: "mixcloud/jsx",
     name: "format/jsx",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"],
+    subscribe: ["mixcloud/timeline"],
     html: `
       <div><strong>{item.title}</strong></div>
       <div><img src={item.image} /></div>
@@ -100,10 +93,10 @@ const washers: any[] = [
     `
   },
   {
-    enabled: false,
+    // enabled: false,
     id: "mixcloud/handlebars",
     name: "format/handlebars",
-    subscribe: ["mixcloud/user", "mixcloud/timeline", "mixcloud/liked"],
+    subscribe: ["mixcloud/timeline"],
     html: `
       <div><strong><a href="{{url}}">{{title}}</a></strong></div>
       <div><img src="{{image}}" /></div>
@@ -112,7 +105,7 @@ const washers: any[] = [
     `
   },
   {
-    enabled: false,
+    // enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
@@ -147,7 +140,7 @@ const washers: any[] = [
     subscribe: ["feedbin/liked"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "feedbin/liked",
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
