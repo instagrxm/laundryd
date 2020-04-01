@@ -11,17 +11,7 @@ export interface Item {
    */
   url: string;
 
-  washer: {
-    /**
-     * The user-defined unique ID for the washer instance.
-     */
-    id: string;
-
-    /**
-     * The name of the washer, which is the same for all instances.
-     */
-    name: string;
-  };
+  washer: WasherId;
 
   /**
    * This item's creation date.
@@ -102,6 +92,21 @@ export interface Item {
    * Downloads to process. This field is not saved to the database.
    */
   downloads?: Download[];
+}
+
+/**
+ * Uniquely identify a washer.
+ */
+export interface WasherId {
+  /**
+   * The user-defined unique ID for the washer instance.
+   */
+  id: string;
+
+  /**
+   * The name of the washer, which is the same for all instances.
+   */
+  name: string;
 }
 
 /**

@@ -36,7 +36,8 @@ export class MongoDB extends Database {
     // A collection to save state for each washer
     const memory = this.db.collection("memory");
     await memory.createIndexes([
-      { name: "washerId", key: { washerId: 1 }, unique: true }
+      { name: "washer.id", key: { "washer.id": 1 }, unique: true },
+      { name: "washer.name", key: { "washer.name": 1 }, unique: false }
     ]);
     this.memory = memory;
 
@@ -70,7 +71,8 @@ export class MongoDB extends Database {
 
   async loadMemory(washer: Washer): Promise<Memory> {
     let memory = await this.memory.findOne({
-      washerId: washer.config.id
+      "washer.id": washer.config.id,
+      "washer.name": washer.info.name
     });
     memory = memory || {};
 
@@ -81,6 +83,10 @@ export class MongoDB extends Database {
     }
 
     memory.config = memory.config || washer.config;
+    memory.washer = memory.washer || {
+      name: washer.info.name,
+      id: washer.config.id
+    };
 
     return memory;
   }
@@ -101,7 +107,7 @@ export class MongoDB extends Database {
     delete washer.memory.config.filter;
 
     await this.memory.replaceOne(
-      { washerId: washer.config.id },
+      { "washer.id": washer.config.id, "washer.name": washer.info.name },
       { $set: washer.memory },
       { upsert: true }
     );

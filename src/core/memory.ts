@@ -1,10 +1,13 @@
 import { DateTime } from "luxon";
+import { WasherId } from ".";
 
 /**
  * State that's maintained for a washer between runs.
  */
 export interface Memory {
   [key: string]: any;
+
+  washer: WasherId;
 
   /**
    * The last time the washer was run.
