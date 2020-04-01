@@ -1,3 +1,4 @@
+- memory.washer like item.washer
 - test in production
   - mixcloud/timeline > format/handlebars > email/smtp
 - soundcloud
