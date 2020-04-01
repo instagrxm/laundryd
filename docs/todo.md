@@ -2,8 +2,6 @@
   - mongobackup
 - ig gap: 10:17a-3:14p
   - look at timeline feed and the seen-all marker again
-- block files.downloadsPrefix and files.stringsPrefix from washer ids
-
 - soundcloud
   - wash:timeline
   - wash:user

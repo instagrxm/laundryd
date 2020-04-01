@@ -24,9 +24,15 @@ export class Washer {
     id: flags.string({
       required: true,
       parse: (input: string) => {
+        // flip slashes
+        input = input.replace(/\\/g, "/");
         if (
+          // reserved by MongoDB
           input.startsWith("system.") ||
-          !input.match(/^[\\\/A-Za-z0-9_-]+$/)
+          // don't want to deal with weird characters
+          !input.match(/^[\\\/A-Za-z0-9_-]+$/) ||
+          // used in S3/directory names
+          input.match(/\/(downloads|strings)/)
         ) {
           throw new Error(`invalid washer id "${input}"`);
         }
