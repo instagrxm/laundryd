@@ -170,7 +170,7 @@ export class Downloader {
     args.push(url);
 
     try {
-      await Log.debug(this.washer, { msg: "download-ytdl", url });
+      await Log.debug(this.washer, { msg: "download-ytdl", url, args, opts });
       await exec(ytdlPath, args, opts);
     } catch (error) {
       throw error;
