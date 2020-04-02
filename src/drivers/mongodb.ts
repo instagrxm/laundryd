@@ -245,7 +245,8 @@ export class MongoDB extends Database {
     filter: FilterQuery<any> = {}
   ): void {
     filter = this.prepareFilter(filter, true);
-    filter.operationType = { $in: ["insert", "replace"] };
+    filter.operationType = "insert";
+    // filter.operationType = { $in: ["insert", "replace"] };
 
     const pipeline = [{ $match: filter }];
     const changeStream = this.db.collection(collection).watch(pipeline);
