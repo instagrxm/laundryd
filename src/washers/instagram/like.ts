@@ -48,6 +48,10 @@ export class Like extends Dry {
         username: this.user.username
       };
 
+      await Log.debug(this, {
+        msg: this.config.state ? "like" : "unlike",
+        url: item.url
+      });
       if (this.config.state) {
         await this.client.media.like({ mediaId, moduleInfo, d: 1 });
       } else {

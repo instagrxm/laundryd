@@ -41,6 +41,10 @@ export class Save extends Dry {
         continue;
       }
 
+      await Log.debug(this, {
+        msg: this.config.state ? "save" : "unsave",
+        url: item.url
+      });
       if (this.config.state) {
         await this.client.media.save(mediaId);
       } else {
