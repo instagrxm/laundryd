@@ -145,54 +145,60 @@ export class Instagram {
    * @param feed the feed containing the posts
    */
   static async readFeed(washer: Wash, feed: IgFeed): Promise<IgFeedItem[]> {
-    const data: IgFeedItem[] = [];
+    const data = [];
 
     while (true) {
+      const len = data.length;
       const posts = await feed.items();
-      let done = !feed.isMoreAvailable();
-
       for (const post of posts) {
-        // Skip ads
-        const p = post as TimelineFeedResponseMedia_or_ad;
-        if (
-          p.ad_action ||
-          p.ad_header_style ||
-          p.ad_id ||
-          p.ad_link_type ||
-          p.ad_metadata ||
-          p.dr_ad_type
-        ) {
-          continue;
+        if (await Instagram.valid(washer, post)) {
+          data.push(post);
         }
-
-        // Limit the number of items loaded on the first run
-        if (
-          DateTime.fromSeconds(p.taken_at).diff(washer.memory.lastRun, "days")
-            .days <= 0
-        ) {
-          done = true;
-          break;
-        }
-
-        // Skip if we've seen this post before
-        const existing = await washer.database.existing(
-          washer,
-          `https://www.instagram.com/p/${p.code}/`
-        );
-        if (existing) {
-          done = true;
-          break;
-        }
-
-        data.push(post);
       }
 
-      if (done) {
+      if (!feed.isMoreAvailable() || data.length === len) {
         break;
       }
     }
 
+    data.sort((a, b) => b.taken_at - a.taken_at);
     return data;
+  }
+
+  /**
+   * Examine an Instagram post to see if it should be saved.
+   * @param washer the washer making the request
+   * @param post the post to examine
+   */
+  private static async valid(washer: Wash, post: IgFeedItem): Promise<boolean> {
+    // Skip ads
+    const p = post as any;
+    if (
+      p.ad_action ||
+      p.ad_header_style ||
+      p.ad_id ||
+      p.ad_link_type ||
+      p.ad_metadata ||
+      p.dr_ad_type
+    ) {
+      return false;
+    }
+
+    // Skip old things
+    const taken = DateTime.fromSeconds(post.taken_at);
+    const old = taken.diff(washer.memory.lastRun, "days").days <= 0;
+    if (old) {
+      return false;
+    }
+
+    // Skip existing things
+    const url = `https://www.instagram.com/p/${post.code}/`;
+    const existing = await washer.database.existing(washer, url);
+    if (existing) {
+      return false;
+    }
+
+    return true;
   }
 
   /**
@@ -200,7 +206,7 @@ export class Instagram {
    * @param washer the washer making the request
    * @param data the post to parse
    */
-  static async parseData(washer: Washer, data: IgFeedItem): Promise<Item> {
+  static async parseData(washer: Wash, data: IgFeedItem): Promise<Item> {
     const item = Shared.createItem(
       `https://www.instagram.com/p/${data.code}/`,
       DateTime.fromSeconds(data.taken_at),
