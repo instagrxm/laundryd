@@ -24,7 +24,19 @@ export default class Timeline extends Wash {
 
   async run(): Promise<Item[]> {
     const feed = this.client.feed.timeline();
-    const data = await Instagram.readFeed(this, feed);
+    let data = await Instagram.readFeed(this, feed);
+
+    // Skip ads
+    data = data.filter(
+      (d: any) =>
+        !d.ad_action &&
+        !d.ad_header_style &&
+        !d.ad_id &&
+        !d.ad_link_type &&
+        !d.ad_metadata &&
+        !d.dr_ad_type
+    );
+
     return Promise.all(data.map(d => this.parseData(d)));
   }
 
