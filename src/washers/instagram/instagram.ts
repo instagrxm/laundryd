@@ -80,7 +80,7 @@ export class Instagram {
   static urlPattern = /^http(s)?:\/\/(www.)?instagram.com/i;
 
   static filter = {
-    url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com/", $options: "i" }
+    url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
   };
 
   // Settings used by all washers to auth

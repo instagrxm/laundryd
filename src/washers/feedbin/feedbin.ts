@@ -27,7 +27,7 @@ export class Feedbin {
     })
   };
 
-  static filter = { "washer.name": { $regex: /^feedbin/ } };
+  static filter = { "washer.name": { $regex: "^feedbin" } };
 
   /**
    * Check a username/password against the authentication API. This isn't stateful,

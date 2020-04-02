@@ -23,7 +23,7 @@ export class Mixcloud {
   static urlPattern = /^http(s)?:\/\/(www.)?mixcloud.com/i;
 
   static filter = {
-    url: { $regex: "^http(s)?:\\/\\/(www.)?mixcloud.com/", $options: "i" }
+    url: { $regex: "^http(s)?:\\/\\/(www.)?mixcloud.com", $options: "i" }
   };
 
   static authSettings = {
