@@ -146,9 +146,11 @@ export class Instagram {
    */
   static async readFeed(washer: Wash, feed: IgFeed): Promise<IgFeedItem[]> {
     const data = [];
+    let page = 0;
 
     while (true) {
       const len = data.length;
+      await Log.debug(washer, { msg: "requesting feed", page: ++page });
       const posts = await feed.items();
       for (const post of posts) {
         if (await Instagram.valid(washer, post)) {
