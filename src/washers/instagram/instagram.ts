@@ -171,19 +171,6 @@ export class Instagram {
    * @param post the post to examine
    */
   private static async valid(washer: Wash, post: IgFeedItem): Promise<boolean> {
-    // Skip ads
-    const p = post as any;
-    if (
-      p.ad_action ||
-      p.ad_header_style ||
-      p.ad_id ||
-      p.ad_link_type ||
-      p.ad_metadata ||
-      p.dr_ad_type
-    ) {
-      return false;
-    }
-
     // Skip old things
     const taken = DateTime.fromSeconds(post.taken_at);
     const old = taken.diff(washer.memory.lastRun, "days").days <= 0;
