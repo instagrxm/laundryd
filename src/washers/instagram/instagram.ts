@@ -150,7 +150,7 @@ export class Instagram {
 
     while (true) {
       const len = data.length;
-      await Log.debug(washer, { msg: "requesting feed", page: ++page });
+      await Log.debug(washer, { msg: "http", page: ++page });
       const posts = await feed.items();
       for (const post of posts) {
         if (await Instagram.valid(washer, post)) {
