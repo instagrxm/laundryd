@@ -273,7 +273,7 @@ export class SoundCloud {
             file: `${result.url}/${result.media}`,
             size: result.size as number,
             type: result.type as string,
-            duration: Math.ceil(data.duration / 1000 / 60),
+            duration: Math.ceil(data.duration / 1000),
           };
         }
       }),
