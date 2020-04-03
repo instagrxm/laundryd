@@ -97,9 +97,11 @@ export class MongoDB extends Database {
     }
 
     washer.memory.lastRun = DateTime.utc();
-    washer.memory.lastDuration = washer.memory.lastRun.diff(
-      washer.startTime
-    ).milliseconds;
+    if (washer.startTime) {
+      washer.memory.lastDuration = washer.memory.lastRun.diff(
+        washer.startTime
+      ).milliseconds;
+    }
     washer.memory.config = washer.config;
     washer.memory = clone(washer.memory);
 
