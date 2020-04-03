@@ -89,7 +89,7 @@ export class Log {
       }
       err.created = item.created.toJSDate();
       // eslint-disable-next-line no-console
-      console.error(util.inspect(err));
+      console.error(util.inspect(err, { depth: 5 }));
       process.exit(1);
     }
 
