@@ -6,7 +6,7 @@ import { Mixcloud } from "./mixcloud";
 export default class User extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud user",
-    description: "load mixes from a Mixcloud user"
+    description: "load mixes from a Mixcloud user",
   });
 
   static settings = {
@@ -14,8 +14,8 @@ export default class User extends Wash {
 
     user: flags.string({
       description: "the username to load mixes from",
-      required: true
-    })
+      required: true,
+    }),
   };
 
   config!: OutputFlags<typeof User.settings>;

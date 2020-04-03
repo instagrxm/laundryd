@@ -6,7 +6,7 @@ export class Repost extends Dry {
   static readonly info = new WasherInfo({
     title: "repost Mixcloud shows",
     description: "repost Mixcloud shows",
-    filter: Mixcloud.filter
+    filter: Mixcloud.filter,
   });
 
   static settings = {
@@ -14,8 +14,8 @@ export class Repost extends Dry {
     ...Mixcloud.authSettings,
     state: Settings.boolean({
       default: true,
-      description: "false to un-repost the show"
-    })
+      description: "false to un-repost the show",
+    }),
   };
 
   config!: OutputFlags<typeof Repost.settings>;

@@ -14,7 +14,7 @@ export class Washer {
   static readonly info = new WasherInfo({
     title: "washer base class",
     description: "washer base class",
-    abstract: true
+    abstract: true,
   });
 
   memory!: Memory;
@@ -38,17 +38,17 @@ export class Washer {
         }
         return input;
       },
-      description: "a unique identifier for this washer"
+      description: "a unique identifier for this washer",
     }),
 
     schedule: Settings.schedule(),
 
     enabled: Settings.boolean({
       default: true,
-      description: "whether to run this washer at all"
+      description: "whether to run this washer at all",
     }),
 
-    retain: Settings.retain()
+    retain: Settings.retain(),
   };
 
   config!: OutputFlags<typeof Washer.settings>;

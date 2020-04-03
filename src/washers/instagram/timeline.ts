@@ -6,12 +6,12 @@ import { IgFeedItem, Instagram } from "./instagram";
 export default class Timeline extends Wash {
   static readonly info = new WasherInfo({
     title: "Instagram timeline",
-    description: "load new posts from everyone you're following on Instagram"
+    description: "load new posts from everyone you're following on Instagram",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Instagram.authSettings
+    ...Instagram.authSettings,
   };
 
   config!: OutputFlags<typeof Timeline.settings>;
@@ -37,7 +37,7 @@ export default class Timeline extends Wash {
         !d.dr_ad_type
     );
 
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: IgFeedItem): Promise<Item> {
@@ -46,7 +46,7 @@ export default class Timeline extends Wash {
     item.source = {
       image: Instagram.icon,
       url: Instagram.url,
-      title: this.info.title
+      title: this.info.title,
     };
 
     return item;

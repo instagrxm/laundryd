@@ -5,7 +5,7 @@ import {
   IgApiClient,
   PostingStoryPhotoOptions,
   SavedFeedResponseCarouselMediaItem,
-  SavedFeedResponseMedia
+  SavedFeedResponseMedia,
 } from "instagram-private-api";
 import { StickerBuilder } from "instagram-private-api/dist/sticker-builder";
 import path from "path";
@@ -16,12 +16,12 @@ export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Instagram story",
     description: "repost Instagram posts to your story",
-    filter: Instagram.filter
+    filter: Instagram.filter,
   });
 
   static settings = {
     ...Dry.settings,
-    ...Instagram.authSettings
+    ...Instagram.authSettings,
   };
 
   config!: OutputFlags<typeof Like.settings>;
@@ -37,11 +37,11 @@ export class Like extends Dry {
 
     // https://fonts.google.com/specimen/Inter
     registerFont(`${this.assetPath}/Inter-Regular.ttf`, {
-      family: "laundry"
+      family: "laundry",
     });
 
     registerFont(`${this.assetPath}/Inter-Bold.ttf`, {
-      family: "laundry-bold"
+      family: "laundry-bold",
     });
   }
 
@@ -89,7 +89,7 @@ export class Like extends Dry {
             { width, height }
           ).center()
         )
-        .build()
+        .build(),
     };
 
     await this.client.publish.story(options);
@@ -251,7 +251,7 @@ export class Like extends Dry {
     return {
       image: canvas.toBuffer("image/jpeg"),
       width: stickerW / screenW,
-      height: stickerH / screenH
+      height: stickerH / screenH,
     };
   }
 

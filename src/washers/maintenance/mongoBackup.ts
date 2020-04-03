@@ -11,18 +11,18 @@ const exec = util.promisify(childProcess.exec);
 export class BackupDatabase extends Fix {
   static readonly info = new WasherInfo({
     title: "back up database",
-    description: "dump the database to the file store"
+    description: "dump the database to the file store",
   });
 
   static settings = {
-    ...Fix.settings
+    ...Fix.settings,
   };
 
   config!: OutputFlags<typeof BackupDatabase.settings>;
 
   async init(): Promise<void> {
     if (Config.flags.database.match(/mongodb\.net/)) {
-      throw new Error(`mongodump is not supported on MongoDB Atlas`)
+      throw new Error(`mongodump is not supported on MongoDB Atlas`);
     }
 
     try {

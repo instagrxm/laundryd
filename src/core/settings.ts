@@ -8,7 +8,7 @@ export const Settings = {
       default: false,
       allowNo: true,
       required: true,
-      description: "whether to download media"
+      description: "whether to download media",
     });
   },
 
@@ -27,7 +27,7 @@ export const Settings = {
       },
       hidden: true,
       description:
-        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)"
+        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)",
     });
   },
 
@@ -36,7 +36,7 @@ export const Settings = {
       required: true,
       default: def,
       description:
-        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all"
+        "the number of days to keep items, or 0 to keep forever, or -1 to not keep at all",
     });
   },
 
@@ -51,7 +51,7 @@ export const Settings = {
         const time = new CronTime(input);
         return input;
       },
-      description: "when to run the washer"
+      description: "when to run the washer",
     });
   },
 
@@ -64,7 +64,7 @@ export const Settings = {
         }
         return input.split(",");
       },
-      description: "listen for items from this washer id"
+      description: "listen for items from this washer id",
     })();
   },
 
@@ -81,7 +81,7 @@ export const Settings = {
           throw new Error(`bad filter: ${error.message}`);
         }
       },
-      description: "filter incoming items using a mongodb filter query"
+      description: "filter incoming items using a mongodb filter query",
     })();
   },
 
@@ -90,5 +90,5 @@ export const Settings = {
   boolean: (options: Partial<IBooleanFlag<boolean>>): IBooleanFlag<boolean> => {
     options.allowNo = true;
     return flags.boolean(options);
-  }
+  },
 };

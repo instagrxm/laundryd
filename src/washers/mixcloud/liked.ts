@@ -5,12 +5,12 @@ import { Mixcloud } from "./mixcloud";
 export default class Liked extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud likes",
-    description: "load shows you've liked on Mixcloud"
+    description: "load shows you've liked on Mixcloud",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Mixcloud.authSettings
+    ...Mixcloud.authSettings,
   };
 
   config!: OutputFlags<typeof Liked.settings>;
@@ -32,8 +32,8 @@ export default class Liked extends Wash {
       params: {
         access_token: this.config.token,
         limit: 50,
-        since: Math.floor(this.memory.lastRun.toSeconds())
-      }
+        since: Math.floor(this.memory.lastRun.toSeconds()),
+      },
     };
 
     // Get a paged list of favorite shows
@@ -58,7 +58,7 @@ export default class Liked extends Wash {
       await Mixcloud.getShowDescription(this, d);
     }
 
-    return data.map(d => this.parseData(d));
+    return data.map((d) => this.parseData(d));
   }
 
   parseData(data: any): Item {
@@ -67,7 +67,7 @@ export default class Liked extends Wash {
     item.source = {
       image: this.me.data.pictures.extra_large,
       url: `${this.me.data.url}/favorites`,
-      title: this.info.title
+      title: this.info.title,
     };
 
     return item;

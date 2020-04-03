@@ -7,7 +7,7 @@ import { IgFeedItem, Instagram } from "./instagram";
 export default class Location extends Wash {
   static readonly info = new WasherInfo({
     title: "Instagram location",
-    description: "load new posts from a location on Instagram"
+    description: "load new posts from a location on Instagram",
   });
 
   static settings = {
@@ -17,8 +17,8 @@ export default class Location extends Wash {
       required: true,
       description: "the location to load posts from",
       helpLabel:
-        "search for a location on instagram.com and return the numeric portion of the resulting URL"
-    })
+        "search for a location on instagram.com and return the numeric portion of the resulting URL",
+    }),
   };
 
   config!: OutputFlags<typeof Location.settings>;
@@ -32,7 +32,7 @@ export default class Location extends Wash {
   async run(): Promise<Item[]> {
     const feed = this.client.feed.location(this.config.locationId, "recent");
     const data = await Instagram.readFeed(this, feed);
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: IgFeedItem): Promise<Item> {
@@ -43,7 +43,7 @@ export default class Location extends Wash {
     item.source = {
       image: Instagram.icon,
       url: `${Instagram.url}/explore/locations/${this.config.locationId}/`,
-      title: `Instagram: ${location?.name || this.config.locationId}`
+      title: `Instagram: ${location?.name || this.config.locationId}`,
     };
 
     return item;

@@ -66,7 +66,7 @@ export class Shared {
         await callback();
         washer.running = false;
       },
-      start: true
+      start: true,
     });
   }
 
@@ -142,7 +142,7 @@ export class Shared {
     return {
       washer: { id: washer.config.id, name: washer.info.name },
       created,
-      url
+      url,
     };
   }
 
@@ -160,13 +160,13 @@ export class Shared {
     }
 
     // Don't let bad dates creep in
-    const invalid = items.filter(i => !i.created || !i.created.isValid);
+    const invalid = items.filter((i) => !i.created || !i.created.isValid);
     if (invalid.length) {
       await Log.error(washer, {
         msg: "invalid created dates",
-        urls: invalid.map(i => i.url)
+        urls: invalid.map((i) => i.url),
       });
-      items = items.filter(i => !invalid.includes(i));
+      items = items.filter((i) => !invalid.includes(i));
     }
 
     // Sort so newest is first
@@ -224,18 +224,20 @@ export class Shared {
       } catch (error) {
         // Remove items if the downloads fail.
         await Log.warn(washer, { msg: "download-fail", error });
-        items = items.filter(i => i !== download.item);
+        items = items.filter((i) => i !== download.item);
       }
     };
 
     const queueName = washer.info.name.split("/")[0];
     if (!this.downloadQueues[queueName]) {
       this.downloadQueues[queueName] = new PQueue({
-        concurrency: Config.flags.downloadPool
+        concurrency: Config.flags.downloadPool,
       });
     }
     const queue = this.downloadQueues[queueName];
-    await queue.addAll(downloads.map(d => (): Promise<void> => doDownload(d)));
+    await queue.addAll(
+      downloads.map((d) => (): Promise<void> => doDownload(d))
+    );
 
     return items;
   }

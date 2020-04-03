@@ -7,7 +7,7 @@ import { SoundCloud } from "./soundcloud";
 export default class Playlist extends Wash {
   static readonly info = new WasherInfo({
     title: "SoundCloud playlist",
-    description: "load tracks from a SoundCloud playlist"
+    description: "load tracks from a SoundCloud playlist",
   });
 
   static settings = {
@@ -16,8 +16,8 @@ export default class Playlist extends Wash {
     ...SoundCloud.querySettings,
     playlist: flags.string({
       description: "the full URL to a playlist",
-      required: true
-    })
+      required: true,
+    }),
   };
 
   config!: OutputFlags<typeof Playlist.settings>;
@@ -29,7 +29,7 @@ export default class Playlist extends Wash {
     // https://developers.soundcloud.com/docs/api/reference#resolve
     const res = await SoundCloud.callAPI(this, {
       url: `${SoundCloud.api}/resolve`,
-      params: { client_id: this.config.clientId, url: this.config.playlist }
+      params: { client_id: this.config.clientId, url: this.config.playlist },
     });
 
     if (res.data.kind !== "playlist") {
@@ -40,7 +40,7 @@ export default class Playlist extends Wash {
     this.itemSource = {
       image: res.data.artwork_url.replace("large.jpg", "t500x500.jpg"),
       url: res.data.permalink_url,
-      title: res.data.title
+      title: res.data.title,
     };
   }
 
@@ -48,7 +48,7 @@ export default class Playlist extends Wash {
     // https://developers.soundcloud.com/docs/api/reference#playlists
     const res = await SoundCloud.callAPI(this, {
       url: `${SoundCloud.api}/playlists/${this.playlistId}`,
-      params: { client_id: this.config.clientId }
+      params: { client_id: this.config.clientId },
     });
 
     const data = [];
@@ -60,7 +60,7 @@ export default class Playlist extends Wash {
       }
     }
 
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: any): Promise<Item> {

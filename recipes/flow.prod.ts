@@ -2,7 +2,7 @@ const schedule = {
   twelve: "0 */5 * * * *", // 12x/hr
   three: "0 */20 * * * *", // 3x/hr
   morning: "0 0 13 * * *", // 6am
-  midnight: "0 0 7 * * *" // midnight
+  midnight: "0 0 7 * * *", // midnight
 };
 
 const washers: any[] = [
@@ -11,7 +11,7 @@ const washers: any[] = [
     color: false,
     compact: true,
     subscribe: ["log"],
-    filter: { level: { $in: ["debug", "info", "warn", "error"] } }
+    filter: { level: { $in: ["debug", "info", "warn", "error"] } },
   },
   {
     name: "email/smtp",
@@ -22,16 +22,16 @@ const washers: any[] = [
     to: "josh@endquote.com",
     attachData: true,
     subscribe: ["log"],
-    filter: { level: "error" }
+    filter: { level: "error" },
   },
   {
-    name: "maintenance/mongoBackup"
+    name: "maintenance/mongoBackup",
   },
   {
-    name: "maintenance/upgradeTools"
+    name: "maintenance/upgradeTools",
   },
   {
-    name: "maintenance/clearCache"
+    name: "maintenance/clearCache",
   },
   {
     name: "instagram/timeline",
@@ -40,13 +40,13 @@ const washers: any[] = [
     retain: 14,
     schedule: schedule.three,
     username: process.env.INSTAGRAM_USER,
-    password: process.env.INSTAGRAM_PASS
+    password: process.env.INSTAGRAM_PASS,
   },
   {
     name: "feed/rss",
     id: "instagram/rss",
     schedule: "0 5,25,35,45 * * * *",
-    subscribe: ["instagram/timeline"]
+    subscribe: ["instagram/timeline"],
   },
   {
     name: "mixcloud/timeline",
@@ -56,13 +56,13 @@ const washers: any[] = [
     retain: 90,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
-    token: process.env.MIXCLOUD_TOKEN
+    token: process.env.MIXCLOUD_TOKEN,
   },
   {
     name: "feed/podcast",
     id: "mixcloud/podcast",
     days: 90,
-    subscribe: ["mixcloud/timeline"]
+    subscribe: ["mixcloud/timeline"],
   },
   {
     id: "mixcloud/handlebars",
@@ -73,7 +73,7 @@ const washers: any[] = [
       <div><img src="{{image}}" /></div>
       <div>{{{html}}}</div>
       <div>{{#each meta.tags}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}</div>
-    `
+    `,
   },
   {
     id: "mixcloud/email",
@@ -85,38 +85,38 @@ const washers: any[] = [
     to: "josh@endquote.com",
     attachData: true,
     attachImage: true,
-    subscribe: ["mixcloud/handlebars"]
+    subscribe: ["mixcloud/handlebars"],
   },
   {
     name: "feedbin/liked",
     schedule: schedule.three,
     username: process.env.FEEDBIN_USER,
-    password: process.env.FEEDBIN_PASS
+    password: process.env.FEEDBIN_PASS,
   },
   {
     name: "instagram/like",
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
-    subscribe: ["feedbin/liked"]
+    subscribe: ["feedbin/liked"],
   },
   {
     name: "instagram/liked",
     schedule: schedule.midnight,
     username: process.env.INSTAGRAM_USER,
-    password: process.env.INSTAGRAM_PASS
+    password: process.env.INSTAGRAM_PASS,
   },
   {
     name: "instagram/saved",
     schedule: schedule.three,
     username: process.env.INSTAGRAM_USER,
-    password: process.env.INSTAGRAM_PASS
+    password: process.env.INSTAGRAM_PASS,
   },
   {
     name: "instagram/story",
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
-    subscribe: ["instagram/saved"]
-  }
+    subscribe: ["instagram/saved"],
+  },
 ];
 
 export = washers;

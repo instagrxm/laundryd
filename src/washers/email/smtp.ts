@@ -9,7 +9,7 @@ export class Smtp extends Dry {
   static readonly info = new WasherInfo({
     title: "email",
     description: "send items via email using an SMTP service",
-    memory: false
+    memory: false,
   });
 
   static settings = {
@@ -17,28 +17,28 @@ export class Smtp extends Dry {
 
     smtpHost: flags.string({
       required: true,
-      description: "hostname for SMTP service"
+      description: "hostname for SMTP service",
     }),
 
     smtpPort: flags.integer({
       required: true,
       default: 465,
-      description: "the port to connect to the SMTP service on"
+      description: "the port to connect to the SMTP service on",
     }),
 
     smtpUser: flags.string({
       required: true,
-      description: "username for SMTP service"
+      description: "username for SMTP service",
     }),
 
     smtpPass: flags.string({
       required: true,
-      description: "password for SMTP service"
+      description: "password for SMTP service",
     }),
 
     from: flags.string({
       required: true,
-      description: "address that emails should come from"
+      description: "address that emails should come from",
     }),
 
     to: flags.build<string[]>({
@@ -49,7 +49,7 @@ export class Smtp extends Dry {
         }
         return input.split(",");
       },
-      description: "send messages to these addresses"
+      description: "send messages to these addresses",
     })(),
 
     cc: flags.build<string[]>({
@@ -59,23 +59,23 @@ export class Smtp extends Dry {
         }
         return input.split(",");
       },
-      description: "cc these addresses"
+      description: "cc these addresses",
     })(),
 
     attachData: Settings.boolean({
       default: false,
-      description: "whether to attach items as JSON files"
+      description: "whether to attach items as JSON files",
     }),
 
     attachImage: Settings.boolean({
       default: false,
-      description: "whether to attach item image files"
+      description: "whether to attach item image files",
     }),
 
     attachMedia: Settings.boolean({
       default: false,
-      description: "whether to attach item media files"
-    })
+      description: "whether to attach item media files",
+    }),
   };
 
   config!: OutputFlags<typeof Smtp.settings>;
@@ -89,8 +89,8 @@ export class Smtp extends Dry {
       secure: this.config.smtpPort === 465,
       auth: {
         user: this.config.smtpUser,
-        pass: this.config.smtpPass
-      }
+        pass: this.config.smtpPass,
+      },
     });
 
     await this.smtp.verify();
@@ -108,14 +108,14 @@ export class Smtp extends Dry {
     if (this.config.attachData) {
       attachments.push({
         filename: item.created.toFormat("yyyyMMddHHmmss") + ".json",
-        content: JSON.stringify(this.database.dehydrateItem(item), null, 2)
+        content: JSON.stringify(this.database.dehydrateItem(item), null, 2),
       });
     }
 
     if (this.config.attachImage && item.image) {
       attachments.push({
         filename: path.parse(item.image).base,
-        path: item.image
+        path: item.image,
       });
     }
 
@@ -123,7 +123,7 @@ export class Smtp extends Dry {
       attachments.push({
         filename: path.parse(item.media.file).base,
         contentType: item.media.type,
-        path: item.media.file
+        path: item.media.file,
       });
     }
 
@@ -138,7 +138,7 @@ export class Smtp extends Dry {
       subject: subject.trim(),
       text: text.trim(),
       html: html.trim(),
-      attachments
+      attachments,
     };
 
     await this.smtp.sendMail(mail);

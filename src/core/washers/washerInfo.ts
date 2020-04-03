@@ -34,7 +34,7 @@ export class WasherInfo {
     description,
     abstract = false,
     memory = true,
-    filter
+    filter,
   }: {
     title: string;
     description: string;

@@ -13,13 +13,13 @@ export class Dry extends Washer {
     title: "dry base class",
     description:
       "accept normalized data on a schedule or as it arrives, and take actions on it",
-    abstract: true
+    abstract: true,
   });
 
   static settings = {
     ...Washer.settings,
     subscribe: Settings.subscribe(),
-    filter: Settings.filter()
+    filter: Settings.filter(),
   };
 
   config!: OutputFlags<typeof Dry.settings>;
@@ -44,7 +44,7 @@ export class Dry extends Washer {
       Shared.initRealtimeSubscriptions(
         this,
         sources,
-        async item => await this.exec([item])
+        async (item) => await this.exec([item])
       );
     }
   }

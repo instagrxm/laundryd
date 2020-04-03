@@ -5,12 +5,12 @@ import { Mixcloud } from "./mixcloud";
 export default class Timeline extends Wash {
   static readonly info = new WasherInfo({
     title: "Mixcloud uploads",
-    description: "load new uploads from everyone you're following on Mixcloud"
+    description: "load new uploads from everyone you're following on Mixcloud",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Mixcloud.authSettings
+    ...Mixcloud.authSettings,
   };
 
   config!: OutputFlags<typeof Timeline.settings>;
@@ -29,7 +29,7 @@ export default class Timeline extends Wash {
     // Set up the first request
     const req = {
       url: this.me.data.metadata.connections.following,
-      params: { access_token: this.config.token, limit: 50 }
+      params: { access_token: this.config.token, limit: 50 },
     };
 
     // Get a paged list of people they're following
@@ -49,7 +49,7 @@ export default class Timeline extends Wash {
       req.url = res.data.paging.next;
     }
 
-    return data.map(d => this.parseData(d));
+    return data.map((d) => this.parseData(d));
   }
 
   parseData(data: any): Item {
@@ -58,7 +58,7 @@ export default class Timeline extends Wash {
     item.source = {
       image: Mixcloud.icon,
       url: this.me.data.url,
-      title: this.info.title
+      title: this.info.title,
     };
 
     return item;

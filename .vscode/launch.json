@@ -3,40 +3,26 @@
   "configurations": [
     {
       "name": "dev",
-      "args": [
-        "run",
-        "--config=${workspaceRoot}/recipes/flow.dev.ts"
-      ],
+      "args": ["run", "--config=${workspaceRoot}/recipes/flow.dev.ts"],
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/.vscode/debug.dev.sh",
       "program": "${workspaceFolder}/bin/run",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/lib/**/*.js"
-      ],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/lib/**/*.js"],
       "internalConsoleOptions": "openOnSessionStart",
       // "preLaunchTask": "tsc: build - tsconfig.json",
       "outputCapture": "std"
     },
     {
       "name": "prod",
-      "args": [
-        "run",
-        "--config=${workspaceRoot}/recipes/flow.prod.ts"
-      ],
+      "args": ["run", "--config=${workspaceRoot}/recipes/flow.prod.ts"],
       "type": "node",
       "request": "launch",
       "runtimeExecutable": "${workspaceRoot}/.vscode/debug.prod.sh",
       "program": "${workspaceFolder}/bin/run",
-      "skipFiles": [
-        "<node_internals>/**"
-      ],
-      "outFiles": [
-        "${workspaceFolder}/lib/**/*.js"
-      ],
+      "skipFiles": ["<node_internals>/**"],
+      "outFiles": ["${workspaceFolder}/lib/**/*.js"],
       "internalConsoleOptions": "openOnSessionStart",
       // "preLaunchTask": "tsc: build - tsconfig.json",
       "outputCapture": "std"

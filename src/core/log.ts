@@ -13,7 +13,7 @@ export enum LogLevel {
   debug = "debug",
   info = "info",
   warn = "warn",
-  error = "error"
+  error = "error",
 }
 
 /**
@@ -79,7 +79,7 @@ export class Log {
       text: msg.msg,
       meta: msg,
       url,
-      washer: { id: sourceId, name: sourceName }
+      washer: { id: sourceId, name: sourceName },
     };
 
     if (level === LogLevel.error && process.env.NODE_ENV === "development") {

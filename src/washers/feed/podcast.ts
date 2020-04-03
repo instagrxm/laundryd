@@ -8,7 +8,7 @@ import { RSS } from "./rss";
 export class Podcast extends RSS {
   static readonly info = new WasherInfo({
     title: "podcast",
-    description: "write items to a podcast feed"
+    description: "write items to a podcast feed",
   });
 
   static settings = {
@@ -17,26 +17,26 @@ export class Podcast extends RSS {
 
     language: flags.string({
       description: "the language of the podcast",
-      default: "en_us"
+      default: "en_us",
     }),
 
     ownerName: flags.string({
-      description: "the owner name"
+      description: "the owner name",
     }),
 
     ownerEmail: flags.string({
       description: "the owner email",
-      dependsOn: ["ownerEmail"]
+      dependsOn: ["ownerEmail"],
     }),
 
     category: flags.string({
-      description: "the podcast category"
+      description: "the podcast category",
     }),
 
     subcategory: flags.string({
       description: "the podcast subcategory",
-      dependsOn: ["category"]
-    })
+      dependsOn: ["category"],
+    }),
   };
 
   config!: OutputFlags<typeof Podcast.settings>;
@@ -52,7 +52,7 @@ export class Podcast extends RSS {
     channel.feed_url = `${this.files.url}/${this.config.id}/${this.files.stringsPrefix}/podcast.xml`;
 
     channel.custom_namespaces = {
-      itunes: "http://www.itunes.com/dtds/podcast-1.0.dtd"
+      itunes: "http://www.itunes.com/dtds/podcast-1.0.dtd",
     };
 
     channel.custom_elements = [];
@@ -60,8 +60,8 @@ export class Podcast extends RSS {
     if (imageUrl) {
       channel.custom_elements.push({
         "itunes:image": {
-          _attr: { href: imageUrl }
-        }
+          _attr: { href: imageUrl },
+        },
       });
     }
 
@@ -71,8 +71,8 @@ export class Podcast extends RSS {
       channel.custom_elements.push({
         "itunes:owner": [
           { "itunes:name": this.config.ownerName },
-          { "itunes:email": this.config.ownerEmail }
-        ]
+          { "itunes:email": this.config.ownerEmail },
+        ],
       });
     }
 
@@ -80,11 +80,11 @@ export class Podcast extends RSS {
       let sub;
       if (this.config.subcategory) {
         sub = {
-          "itunes:category": { _attr: { text: this.config.subcategory } }
+          "itunes:category": { _attr: { text: this.config.subcategory } },
         };
       }
       channel.custom_elements.push({
-        "itunes:category": [{ _attr: { text: this.config.category } }, sub]
+        "itunes:category": [{ _attr: { text: this.config.category } }, sub],
       });
     }
 
@@ -101,12 +101,12 @@ export class Podcast extends RSS {
     i.custom_elements = [
       { "itunes:subtitle": item.title },
       { "itunes:author": item.author },
-      { "itunes:duration": item.media?.duration }
+      { "itunes:duration": item.media?.duration },
     ];
 
     if (item.image) {
       i.custom_elements.push({
-        "itunes:image": [{ _attr: { href: item.image } }]
+        "itunes:image": [{ _attr: { href: item.image } }],
       });
     }
 
@@ -114,7 +114,7 @@ export class Podcast extends RSS {
       i.enclosure = {
         url: item.media.file,
         size: item.media.size,
-        type: item.media.type
+        type: item.media.type,
       };
     }
 

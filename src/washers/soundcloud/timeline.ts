@@ -5,13 +5,14 @@ import { SoundCloud } from "./soundcloud";
 export default class Timeline extends Wash {
   static readonly info = new WasherInfo({
     title: "SoundCloud uploads",
-    description: "load new uploads from everyone you're following on SoundCloud"
+    description:
+      "load new uploads from everyone you're following on SoundCloud",
   });
 
   static settings = {
     ...Wash.settings,
     ...SoundCloud.authSettings,
-    ...SoundCloud.querySettings
+    ...SoundCloud.querySettings,
   };
 
   config!: OutputFlags<typeof Timeline.settings>;
@@ -30,7 +31,7 @@ export default class Timeline extends Wash {
     // Set up the first request
     const req = {
       url: `${SoundCloud.api}/users/${this.me.id}/followings`,
-      params: { client_id: this.config.clientId, limit: 50 }
+      params: { client_id: this.config.clientId, limit: 50 },
     };
 
     // Get a paged list of people they're following
@@ -47,12 +48,12 @@ export default class Timeline extends Wash {
 
     // Load shows for each user
     const data = await Promise.all(
-      userIds.map(u =>
+      userIds.map((u) =>
         SoundCloud.getUserTracks(this, this.config, this.config, u)
       )
     );
 
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: any): Promise<Item> {
@@ -61,7 +62,7 @@ export default class Timeline extends Wash {
     item.source = {
       image: SoundCloud.icon,
       url: this.me.data.url,
-      title: this.info.title
+      title: this.info.title,
     };
 
     return item;

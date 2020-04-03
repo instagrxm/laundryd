@@ -13,7 +13,7 @@ import {
   Log,
   Shared,
   Wash,
-  Washer
+  Washer,
 } from "../../core";
 import { Like } from "./like";
 import { Repost } from "./repost";
@@ -27,29 +27,29 @@ export class Mixcloud {
   static urlPattern = /^http(s)?:\/\/(www.)?mixcloud.com/i;
 
   static filter = {
-    url: { $regex: "^http(s)?:\\/\\/(www.)?mixcloud.com", $options: "i" }
+    url: { $regex: "^http(s)?:\\/\\/(www.)?mixcloud.com", $options: "i" },
   };
 
   static authSettings = {
     clientId: flags.string({
       required: true,
       description:
-        "the client ID for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/"
+        "the client ID for the Mixcloud application, which can be created at https://www.mixcloud.com/developers/create/",
     }),
 
     clientSecret: flags.string({
       required: true,
-      description: "the client secret for the Mixcloud application"
+      description: "the client secret for the Mixcloud application",
     }),
 
     code: flags.string({
       hidden: true,
-      description: "the oauth code used to get an access token"
+      description: "the oauth code used to get an access token",
     }),
 
     token: flags.string({
-      description: "the access token for the Mixcloud API"
-    })
+      description: "the access token for the Mixcloud API",
+    }),
   };
 
   /**
@@ -65,7 +65,7 @@ export class Mixcloud {
     const redirectUrl = "https://${user}.github.io/${repo}/auth/mixcloud.html";
     const params = querystring.stringify({
       client_id: auth.clientId,
-      redirect_uri: redirectUrl
+      redirect_uri: redirectUrl,
     });
     const authUrl = `https://www.mixcloud.com/oauth/authorize?${params}`;
 
@@ -76,20 +76,20 @@ export class Mixcloud {
           client_id: auth.clientId,
           redirect_uri: redirectUrl,
           client_secret: auth.clientSecret,
-          code: auth.code
-        }
+          code: auth.code,
+        },
       });
       const t = response.data.access_token;
       if (t) {
         await Log.error(washer, {
-          msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this washer.`
+          msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this washer.`,
         });
       }
     }
 
     if (!auth.token) {
       await Log.error(washer, {
-        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the washer again with --code=[code]`
+        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the washer again with --code=[code]`,
       });
     }
 
@@ -97,7 +97,7 @@ export class Mixcloud {
     if (auth.token) {
       const me = await Mixcloud.callAPI(washer, {
         url: `${Mixcloud.api}/me/`,
-        params: { access_token: auth.token, metadata: 1 }
+        params: { access_token: auth.token, metadata: 1 },
       });
       return me;
     }
@@ -144,8 +144,8 @@ export class Mixcloud {
       url: `${Mixcloud.api}/${user}/cloudcasts/`,
       params: {
         limit: 50,
-        since: Math.floor(washer.memory.lastRun.toSeconds())
-      }
+        since: Math.floor(washer.memory.lastRun.toSeconds()),
+      },
     };
 
     // Get a paged list of shows.
@@ -165,7 +165,7 @@ export class Mixcloud {
       await Mixcloud.getShowDescription(washer, d);
     }
 
-    return data.map(d => Mixcloud.parseData(washer, d));
+    return data.map((d) => Mixcloud.parseData(washer, d));
   }
 
   static htmlTemplate = Shared.loadTemplate(
@@ -179,7 +179,7 @@ export class Mixcloud {
    */
   static async getShowDescription(washer: Wash, show: any): Promise<void> {
     const response = await Mixcloud.callAPI(washer, {
-      url: `${Mixcloud.api}${show.key}`
+      url: `${Mixcloud.api}${show.key}`,
     });
 
     show.text = response.data.description;
@@ -226,7 +226,7 @@ export class Mixcloud {
       item.source = {
         title: data.user.name,
         image: data.user.pictures.extra_large,
-        url: `https://www.mixcloud.com/${data.user.username}/uploads/`
+        url: `https://www.mixcloud.com/${data.user.username}/uploads/`,
       };
     }
 
@@ -244,10 +244,10 @@ export class Mixcloud {
             file: `${result.url}/${result.media}`,
             size: result.size as number,
             type: result.type as string,
-            duration: data.audio_length as number
+            duration: data.audio_length as number,
           };
         }
-      })
+      }),
     ];
 
     return item;
@@ -273,7 +273,7 @@ export class Mixcloud {
     const req: AxiosRequestConfig = {
       url,
       method: washer.config.state ? "post" : "delete",
-      params: { access_token: washer.config.token }
+      params: { access_token: washer.config.token },
     };
 
     await Mixcloud.callAPI(washer, req);

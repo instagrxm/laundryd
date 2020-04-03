@@ -5,13 +5,13 @@ import { SoundCloud } from "./soundcloud";
 export default class Liked extends Wash {
   static readonly info = new WasherInfo({
     title: "SoundCloud likes",
-    description: "load tracks you've liked on SoundCloud"
+    description: "load tracks you've liked on SoundCloud",
   });
 
   static settings = {
     ...Wash.settings,
     ...SoundCloud.authSettings,
-    ...SoundCloud.querySettings
+    ...SoundCloud.querySettings,
   };
 
   config!: OutputFlags<typeof Liked.settings>;
@@ -33,13 +33,13 @@ export default class Liked extends Wash {
       params: {
         client_id: this.config.clientId,
         limit: 50,
-        linked_partitioning: 1
-      }
+        linked_partitioning: 1,
+      },
     };
 
     const data = await SoundCloud.getTrackList(this, req);
 
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: any): Promise<Item> {
@@ -48,7 +48,7 @@ export default class Liked extends Wash {
     item.source = {
       image: this.me.avatar_url.replace("large.jpg", "t500x500.jpg"),
       url: `${SoundCloud.url}/${this.me.username}/likes`,
-      title: this.info.title
+      title: this.info.title,
     };
 
     return item;

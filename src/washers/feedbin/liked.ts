@@ -5,12 +5,12 @@ import { Feedbin } from "./feedbin";
 export default class Liked extends Wash {
   static readonly info = new WasherInfo({
     title: "Feedbin likes",
-    description: "load posts you've starred in Feedbin"
+    description: "load posts you've starred in Feedbin",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Feedbin.authSettings
+    ...Feedbin.authSettings,
   };
 
   config!: OutputFlags<typeof Liked.settings>;
@@ -24,13 +24,13 @@ export default class Liked extends Wash {
     const entryIds = await Feedbin.getPagedList(this, {
       url: `${Feedbin.api}/starred_entries.json`,
       responseType: "json",
-      auth: { username: this.config.username, password: this.config.password }
+      auth: { username: this.config.username, password: this.config.password },
     });
 
     // Load the entries
     const data = await Feedbin.getEntriesById(this, this.config, entryIds);
 
     // Convert entries to Items
-    return Promise.all(data.map(d => Feedbin.parseData(this, d)));
+    return Promise.all(data.map((d) => Feedbin.parseData(this, d)));
   }
 }

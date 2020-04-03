@@ -6,7 +6,7 @@ export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "like Mixcloud shows",
     description: "like Mixcloud shows",
-    filter: Mixcloud.filter
+    filter: Mixcloud.filter,
   });
 
   static settings = {
@@ -14,8 +14,8 @@ export class Like extends Dry {
     ...Mixcloud.authSettings,
     state: Settings.boolean({
       default: true,
-      description: "false to unlike the show"
-    })
+      description: "false to unlike the show",
+    }),
   };
 
   config!: OutputFlags<typeof Like.settings>;

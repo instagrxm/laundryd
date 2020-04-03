@@ -26,8 +26,8 @@ export default class Run extends BaseCommand {
       required: true,
       env: "LAUNDRY_CONFIG",
       description:
-        "path to a javascript file exporting an array of washer settings"
-    })
+        "path to a javascript file exporting an array of washer settings",
+    }),
   };
 
   static args = [];
@@ -50,7 +50,7 @@ export default class Run extends BaseCommand {
   private async loadWasherTypes(): Promise<Record<string, WasherType>> {
     const patterns = [
       "**/*.+(js|ts|tsx)",
-      "!**/*.+(d.ts|test.ts|test.js|spec.ts|spec.js)?(x)"
+      "!**/*.+(d.ts|test.ts|test.js|spec.ts|spec.js)?(x)",
     ];
 
     // Eventually add plugin paths here.
@@ -144,7 +144,7 @@ export default class Run extends BaseCommand {
       }
       if (
         setting.id &&
-        settings.some(s => s !== setting && s.id === setting.id)
+        settings.some((s) => s !== setting && s.id === setting.id)
       ) {
         throw new Error(`duplicate washer id: ${setting.id}`);
       }
@@ -171,8 +171,8 @@ export default class Run extends BaseCommand {
       // since that's what the oclif parser is expecting. This is kind of janky
       // but it beats writing my own parser.
       const argv = Object.keys(setting)
-        .filter(key => key !== "name")
-        .map(key => {
+        .filter((key) => key !== "name")
+        .map((key) => {
           const val = setting[key];
           if (typeof val === "boolean") {
             return val ? `--${key}` : `--no-${key}`;
@@ -186,7 +186,7 @@ export default class Run extends BaseCommand {
             return `--${key}=${JSON.stringify(val)}`;
           }
         })
-        .filter(s => s);
+        .filter((s) => s);
 
       // Create and set up the washer
       let washer;
@@ -247,15 +247,15 @@ export default class Run extends BaseCommand {
    * @param washer a "fix" washer requesting to run an exclusive task
    */
   async runExclusive(washer: Fix): Promise<void> {
-    const washers = Object.values(this.washers).filter(w => w != washer);
+    const washers = Object.values(this.washers).filter((w) => w != washer);
 
     // Pause all washers
-    washers.forEach(w => (w.paused = true));
+    washers.forEach((w) => (w.paused = true));
 
     // Wait for anything running to finish
     const exclusive = new Promise((resolve, reject) => {
       const wait = (): void => {
-        if (!washers.some(w => w.running)) {
+        if (!washers.some((w) => w.running)) {
           resolve();
         } else {
           setTimeout(wait, 1000);
@@ -269,6 +269,6 @@ export default class Run extends BaseCommand {
     await washer.run();
 
     // Unpause
-    washers.forEach(w => (w.paused = false));
+    washers.forEach((w) => (w.paused = false));
   }
 }

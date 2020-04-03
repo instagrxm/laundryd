@@ -7,7 +7,7 @@ export class Stdout extends Dry {
   static readonly info = new WasherInfo({
     title: "stdout",
     description: "output items to the console",
-    memory: false
+    memory: false,
   });
 
   static settings = {
@@ -15,13 +15,13 @@ export class Stdout extends Dry {
 
     color: Settings.boolean({
       default: false,
-      description: "output in color"
+      description: "output in color",
     }),
 
     compact: Settings.boolean({
       default: false,
-      description: "false to output each object to a single line"
-    })
+      description: "false to output each object to a single line",
+    }),
   };
 
   config!: OutputFlags<typeof Stdout.settings>;
@@ -31,7 +31,7 @@ export class Stdout extends Dry {
     this.inspectOptions = {
       colors: this.config.color,
       compact: this.config.compact,
-      breakLength: Number.POSITIVE_INFINITY
+      breakLength: Number.POSITIVE_INFINITY,
     };
   }
 

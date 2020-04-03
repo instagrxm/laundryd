@@ -30,7 +30,8 @@
     "postpack": "rm -f oclif.manifest.json",
     "test": "echo NO TESTS",
     "posttest": "eslint . --ext .ts --config .eslintrc.js",
-    "version": "cd docs/cli && oclif-dev readme"
+    "version": "cd docs/cli && oclif-dev readme",
+    "pretty": "prettier --write \"./**/*.{js,jsx,json,ts,tsx}\""
   },
   "dependencies": {
     "@oclif/command": "^1.5.19",

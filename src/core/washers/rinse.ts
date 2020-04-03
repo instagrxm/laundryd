@@ -14,14 +14,14 @@ export class Rinse extends Washer {
     title: "rinse base class",
     description:
       "accept normalized data on a schedule or as it arrives, analyze it, and return new data",
-    abstract: true
+    abstract: true,
   });
 
   static settings = {
     ...Washer.settings,
     subscribe: Settings.subscribe(),
     filter: Settings.filter(),
-    download: Settings.download()
+    download: Settings.download(),
   };
 
   config!: OutputFlags<typeof Rinse.settings>;
@@ -46,7 +46,7 @@ export class Rinse extends Washer {
       Shared.initRealtimeSubscriptions(
         this,
         sources,
-        async item => await this.exec([item])
+        async (item) => await this.exec([item])
       );
     }
   }

@@ -12,7 +12,7 @@ import {
   Log,
   Shared,
   Wash,
-  Washer
+  Washer,
 } from "../../core";
 
 export class SoundCloud {
@@ -26,38 +26,38 @@ export class SoundCloud {
   static url = "https://soundcloud.com";
 
   static filter = {
-    url: { $regex: "^http(s)?:\\/\\/(www.)?soundcloud.com", $options: "i" }
+    url: { $regex: "^http(s)?:\\/\\/(www.)?soundcloud.com", $options: "i" },
   };
 
   static authSettings = {
     clientId: flags.string({
       required: true,
       description:
-        "the client ID for the SoundCloud application, which can be created at https://soundcloud.com/you/apps"
+        "the client ID for the SoundCloud application, which can be created at https://soundcloud.com/you/apps",
     }),
 
     clientSecret: flags.string({
       required: true,
-      description: "the client secret for the SoundCloud application"
+      description: "the client secret for the SoundCloud application",
     }),
 
     code: flags.string({
       hidden: true,
-      description: "the oauth code used to get an access token"
+      description: "the oauth code used to get an access token",
     }),
 
     token: flags.string({
-      description: "the access token for the SoundCloud API"
-    })
+      description: "the access token for the SoundCloud API",
+    }),
   };
 
   static querySettings = {
     minDuration: flags.integer({
-      description: "Only get tracks longer than this many minutes"
+      description: "Only get tracks longer than this many minutes",
     }),
     maxDuration: flags.integer({
-      description: "Only get tracks shorter than this many minutes"
-    })
+      description: "Only get tracks shorter than this many minutes",
+    }),
   };
 
   /**
@@ -79,7 +79,7 @@ export class SoundCloud {
       client_secret: auth.clientSecret,
       redirect_uri: redirectUrl,
       response_type: "code",
-      scope: "non-expiring"
+      scope: "non-expiring",
     });
     const authUrl = `https://soundcloud.com/connect?${params}`;
 
@@ -92,20 +92,20 @@ export class SoundCloud {
           redirect_uri: redirectUrl,
           client_secret: auth.clientSecret,
           grant_type: "authorization_code",
-          code: auth.code
-        }
+          code: auth.code,
+        },
       });
       const t = response.data.access_token;
       if (t) {
         await Log.error(washer, {
-          msg: `Token acquired. Use --token=${t} or set SOUNDCLOUD_TOKEN for this washer.`
+          msg: `Token acquired. Use --token=${t} or set SOUNDCLOUD_TOKEN for this washer.`,
         });
       }
     }
 
     if (!auth.token) {
       await Log.error(washer, {
-        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the washer again with --code=[code]`
+        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the washer again with --code=[code]`,
       });
     }
 
@@ -113,7 +113,7 @@ export class SoundCloud {
     if (auth.token) {
       const me = await SoundCloud.callAPI(washer, {
         url: `${SoundCloud.api}/me/`,
-        params: { oauth_token: auth.token }
+        params: { oauth_token: auth.token },
       });
       return me.data;
     }
@@ -150,7 +150,7 @@ export class SoundCloud {
     // https://developers.soundcloud.com/docs/api/reference#tracks
     const req: AxiosRequestConfig = {
       url: `${SoundCloud.api}/users/${userId}/tracks/`,
-      params: { client_id: auth.clientId, limit: 50, linked_partitioning: 1 }
+      params: { client_id: auth.clientId, limit: 50, linked_partitioning: 1 },
     };
 
     if (query.minDuration) {
@@ -163,7 +163,7 @@ export class SoundCloud {
 
     const data = await SoundCloud.getTrackList(washer, req);
 
-    return Promise.all(data.map(d => SoundCloud.parseData(washer, d)));
+    return Promise.all(data.map((d) => SoundCloud.parseData(washer, d)));
   }
 
   /**
@@ -226,7 +226,7 @@ export class SoundCloud {
     // https://developers.soundcloud.com/docs/api/reference#oembed
     const res = await SoundCloud.callAPI(washer, {
       url: "https://soundcloud.com/oembed",
-      params: { format: "json", url: item.url }
+      params: { format: "json", url: item.url },
     });
 
     item.embed = res.data.html;
@@ -241,7 +241,7 @@ export class SoundCloud {
       let tags: string[] = [];
       const spaced = list.match(/"[^"]+"/g);
       if (spaced) {
-        spaced.forEach(t => {
+        spaced.forEach((t) => {
           list = list.replace(t, "");
           tags.push(t.replace(/"/g, "").trim());
         });
@@ -255,7 +255,7 @@ export class SoundCloud {
       item.source = {
         title: data.user.username,
         image: data.user.avatar_url.replace("large.jpg", "t500x500.jpg"),
-        url: data.user.permalink_url
+        url: data.user.permalink_url,
       };
     }
 
@@ -273,10 +273,10 @@ export class SoundCloud {
             file: `${result.url}/${result.media}`,
             size: result.size as number,
             type: result.type as string,
-            duration: Math.ceil(data.duration / 1000 / 60)
+            duration: Math.ceil(data.duration / 1000 / 60),
           };
         }
-      })
+      }),
     ];
 
     return item;

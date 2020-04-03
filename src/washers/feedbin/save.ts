@@ -5,12 +5,12 @@ import { Feedbin } from "./feedbin";
 export class Save extends Dry {
   static readonly info = new WasherInfo({
     title: "Feedbin save",
-    description: "save any URL to Feedbin as a page"
+    description: "save any URL to Feedbin as a page",
   });
 
   static settings = {
     ...Dry.settings,
-    ...Feedbin.authSettings
+    ...Feedbin.authSettings,
   };
 
   config!: OutputFlags<typeof Save.settings>;
@@ -28,10 +28,10 @@ export class Save extends Dry {
         method: "POST",
         auth: {
           username: this.config.username,
-          password: this.config.password
+          password: this.config.password,
         },
         headers: { "Content-Type": "application/json; charset=utf-8" },
-        data: JSON.stringify({ url: item.url })
+        data: JSON.stringify({ url: item.url }),
       });
     }
   }

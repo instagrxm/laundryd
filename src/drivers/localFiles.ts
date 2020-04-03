@@ -58,7 +58,7 @@ export class LocalFiles extends Files {
     const result: DownloadResult = {
       url: dir.replace(this.connection, this.url),
       item: download.item,
-      dir
+      dir,
     };
 
     try {
@@ -73,7 +73,7 @@ export class LocalFiles extends Files {
       }
 
       if (download.json) {
-        result.json = files.find(f => f === "data.json");
+        result.json = files.find((f) => f === "data.json");
         if (!result.json) {
           return;
         }
@@ -81,7 +81,7 @@ export class LocalFiles extends Files {
       }
 
       if (download.image) {
-        result.image = files.find(f => f.match(/^image/));
+        result.image = files.find((f) => f.match(/^image/));
         if (!result.image) {
           return;
         }
@@ -90,7 +90,7 @@ export class LocalFiles extends Files {
       if (download.media || download.isDirect) {
         result.media = files[0];
         if (!download.isDirect) {
-          result.media = files.find(f => !f.match(/^media/));
+          result.media = files.find((f) => !f.match(/^media/));
         }
 
         if (!result.media) {
@@ -169,7 +169,7 @@ export class LocalFiles extends Files {
     try {
       const cache = await fs.readdir(this.downloadsDir);
       const old = cache.filter(
-        c => parseInt(c, 10) < Math.floor(retainDate.toSeconds())
+        (c) => parseInt(c, 10) < Math.floor(retainDate.toSeconds())
       );
       for (const dir of old) {
         await fs.remove(path.join(this.downloadsDir, dir));

@@ -9,7 +9,7 @@ import { Config, Dry, Item, WasherInfo } from "../../core";
 export class RSS extends Dry {
   static readonly info = new WasherInfo({
     title: "RSS",
-    description: "write items to an RSS feed"
+    description: "write items to an RSS feed",
   });
 
   static settings = {
@@ -17,25 +17,25 @@ export class RSS extends Dry {
 
     days: flags.integer({
       default: 7,
-      description: "include items from this many days in the past"
+      description: "include items from this many days in the past",
     }),
 
     title: flags.string({
-      description: "the title of the feed"
+      description: "the title of the feed",
     }),
 
     siteUrl: flags.string({
-      description: "URL to a web page containing the contents of the feed"
+      description: "URL to a web page containing the contents of the feed",
     }),
 
     imageUrl: flags.string({
-      description: "URL to an image representing the contents of the feed"
+      description: "URL to an image representing the contents of the feed",
     }),
 
     titleLength: flags.integer({
       default: 40,
-      description: "truncate titles to this many characters"
-    })
+      description: "truncate titles to this many characters",
+    }),
   };
 
   config!: OutputFlags<typeof RSS.settings>;
@@ -54,7 +54,7 @@ export class RSS extends Dry {
       buildDate: new Date(),
       docs: Config.config.pjson.homepage,
       generator: Config.config.pjson.name,
-      feed_url: `${this.files.url}/${this.config.id}/${this.files.stringsPrefix}/rss.xml`
+      feed_url: `${this.files.url}/${this.config.id}/${this.files.stringsPrefix}/rss.xml`,
     };
   }
 
@@ -85,13 +85,13 @@ export class RSS extends Dry {
       author: item.author?.name,
       date: item.created.toJSDate(),
       lat: item.location?.coord?.lat,
-      long: item.location?.coord?.lng
+      long: item.location?.coord?.lng,
     };
   }
 
   buildFeed(items: Item[]): string {
     // Build new items from this run of the washer
-    let feedItems = items.map(i => this.buildItem(i));
+    let feedItems = items.map((i) => this.buildItem(i));
 
     // Add items from last time
     feedItems = feedItems.concat(this.memory.lastItems || []);
@@ -99,7 +99,7 @@ export class RSS extends Dry {
     // Remove any old items
     const now = DateTime.utc();
     feedItems = feedItems.filter(
-      i =>
+      (i) =>
         now.diff(DateTime.fromJSDate(i.date), "days").days <= this.config.days
     );
 
@@ -108,8 +108,8 @@ export class RSS extends Dry {
 
     // Remove duplicate URLs
     const unique: any[] = [];
-    feedItems.forEach(i => {
-      if (!unique.find(u => u.url === i.url)) {
+    feedItems.forEach((i) => {
+      if (!unique.find((u) => u.url === i.url)) {
         unique.push(i);
       }
     });
@@ -136,7 +136,7 @@ export class RSS extends Dry {
     );
 
     // Build the items
-    feedItems.forEach(i => feed.item(i));
+    feedItems.forEach((i) => feed.item(i));
 
     // Return the XML
     return feed.xml({ indent: "  " });
