@@ -138,6 +138,9 @@ export class Shared {
    * @param washer the washer making the item
    */
   static createItem(url: string, created: DateTime, washer: Washer): Item {
+    if (!url || !created.isValid || !washer) {
+      throw new Error("invalid item");
+    }
     return {
       washer: { id: washer.config.id, name: washer.info.name },
       created,
