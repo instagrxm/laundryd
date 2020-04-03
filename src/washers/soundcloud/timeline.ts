@@ -1,5 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { SoundCloud } from "./soundcloud";
 
 export default class Timeline extends Wash {
@@ -18,9 +18,15 @@ export default class Timeline extends Wash {
   config!: OutputFlags<typeof Timeline.settings>;
 
   protected me!: any;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     this.me = await SoundCloud.auth(this, this.config);
+    this.itemSource = {
+      image: SoundCloud.icon,
+      url: this.me.permalink_url,
+      title: this.info.title,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -46,25 +52,24 @@ export default class Timeline extends Wash {
       req.url = res.data.next_href;
     }
 
-    // Load shows for each user
-    const data = await Promise.all(
-      userIds.map((u) =>
-        SoundCloud.getUserTracks(this, this.config, this.config, u)
-      )
-    );
+    // Load tracks for each user
+    let data: Item[] = [];
+    for (const userId of userIds) {
+      const tracks = await SoundCloud.getUserTracks(
+        this,
+        this.config,
+        this.config,
+        userId
+      );
+      data = data.concat(tracks);
+    }
 
-    return Promise.all(data.map((d) => this.parseData(d)));
+    return data;
   }
 
   async parseData(data: any): Promise<Item> {
     const item = await SoundCloud.parseData(this, data);
-
-    item.source = {
-      image: SoundCloud.icon,
-      url: this.me.data.url,
-      title: this.info.title,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }
