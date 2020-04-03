@@ -97,11 +97,13 @@ export class RSS extends Dry {
     feedItems = feedItems.concat(this.memory.lastItems || []);
 
     // Remove any old items
-    const now = DateTime.utc();
-    feedItems = feedItems.filter(
-      (i) =>
-        now.diff(DateTime.fromJSDate(i.date), "days").days <= this.config.days
-    );
+    if (this.config.days) {
+      const now = DateTime.utc();
+      feedItems = feedItems.filter(
+        (i) =>
+          now.diff(DateTime.fromJSDate(i.date), "days").days <= this.config.days
+      );
+    }
 
     // Sort so newest is first
     feedItems.sort((a, b) => b.date.getTime() - a.date.getTime());
