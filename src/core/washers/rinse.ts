@@ -58,6 +58,7 @@ export class Rinse extends Washer {
 
     try {
       this.startTime = DateTime.utc();
+      this.memory = await this.database.loadMemory(this);
       await Log.info(this, { msg: "start" });
       let items = await this.run(input);
       items = items || [];

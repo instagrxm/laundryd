@@ -39,6 +39,7 @@ export class Fix extends Washer {
 
     try {
       this.startTime = DateTime.utc();
+      this.memory = await this.database.loadMemory(this);
       await Log.info(this, { msg: "start" });
       await this.runExclusive(this);
       await this.database.saveMemory(this);

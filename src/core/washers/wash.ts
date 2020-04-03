@@ -54,6 +54,7 @@ export class Wash extends Washer {
       this.memory.lastRun = beginDate;
     }
 
+    await this.database.saveMemory(this);
     await this.init();
 
     Shared.startSchedule(this, async () => await this.exec());
@@ -66,6 +67,7 @@ export class Wash extends Washer {
 
     try {
       this.startTime = DateTime.utc();
+      this.memory = await this.database.loadMemory(this);
       await Log.info(this, { msg: "start" });
       let items = await this.run();
       items = items || [];

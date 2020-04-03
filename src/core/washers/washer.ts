@@ -74,6 +74,7 @@ export class Washer {
   /**
    * Perform internal initialization in washer base classes. Should not be extended
    * by plugins.
+   * @param files the fileStore
    * @param sources washers that can be subscribed to
    */
   async preInit(files: Files, sources?: Sources): Promise<void> {
