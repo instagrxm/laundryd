@@ -124,10 +124,12 @@ export class RSS extends Dry {
     const imageUrl = this.config.imageUrl || items[0]?.source?.image || "";
     let siteUrl = this.config.siteUrl;
     if (!siteUrl && items[0]) {
-      const { protocol, host } = urlUtils.parse(
-        items[0].source?.url || items[0].url
-      );
-      siteUrl = `${protocol}//${host}`;
+      if (items[0].source && items[0].source.url) {
+        siteUrl = items[0].source.url;
+      } else {
+        const { protocol, host } = urlUtils.parse(items[0].url);
+        siteUrl = `${protocol}//${host}`;
+      }
     }
     const feed = new RSSFactory(
       this.buildChannel(title, pubDate, siteUrl, imageUrl)
