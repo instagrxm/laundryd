@@ -1,7 +1,6 @@
 import { flags } from "@oclif/command";
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { AxiosResponse } from "axios";
-import { Item, Shared, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Shared, Wash, WasherInfo } from "../../core";
 import { Feedbin } from "./feedbin";
 
 export default class Search extends Wash {
@@ -20,38 +19,36 @@ export default class Search extends Wash {
   };
 
   config!: OutputFlags<typeof Search.settings>;
-  searchId!: number;
+  protected searchId!: number;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     await Feedbin.auth(this, this.config);
+
+    // Get the saved searches to find one that matches the query
+    const res = await Shared.queueHttp(this, undefined, {
+      url: `${Feedbin.api}/saved_searches.json`,
+      responseType: "json",
+      auth: {
+        username: this.config.username,
+        password: this.config.password,
+      },
+    });
+
+    const search = res.data.find((s: any) => s.name === this.config.search);
+    if (!search) {
+      throw new Error(`couldn't find saved search for ${this.config.search}`);
+    }
+    this.searchId = search.id;
+
+    this.itemSource = {
+      image: Feedbin.icon,
+      url: Feedbin.url,
+      title: `Feedbin: ${this.config.search}`,
+    };
   }
 
   async run(): Promise<Item[]> {
-    // https://github.com/feedbin/feedbin-api/blob/master/content/saved-searches.md
-    // You can't just search, you have to create a saved search and run it
-    let res: AxiosResponse<any>;
-
-    if (!this.searchId) {
-      // Get the saved searches to find one that matches the query
-      res = await Shared.queueHttp(this, undefined, {
-        url: `${Feedbin.api}/saved_searches.json`,
-        responseType: "json",
-        auth: {
-          username: this.config.username,
-          password: this.config.password,
-        },
-      });
-      const searches = res.data as any[];
-      const search = searches.find((s) => s.name === this.config.search);
-      if (search) {
-        this.searchId = search.id;
-      }
-    }
-
-    if (!this.searchId) {
-      return [];
-    }
-
     // Get the search results
     const entryIds = await Feedbin.getPagedList(this, {
       url: `${Feedbin.api}/saved_searches/${this.searchId}.json`,
@@ -68,13 +65,7 @@ export default class Search extends Wash {
 
   async parseData(data: any): Promise<Item> {
     const item = await Feedbin.parseData(this, data);
-
-    item.source = {
-      image: Feedbin.icon,
-      url: Feedbin.url,
-      title: `Feedbin: ${this.config.search}`,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }

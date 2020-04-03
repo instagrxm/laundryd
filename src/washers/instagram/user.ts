@@ -4,7 +4,7 @@ import {
   IgApiClient,
   UserRepositorySearchResponseUsersItem,
 } from "instagram-private-api";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { IgFeedItem, Instagram } from "./instagram";
 
 export default class User extends Wash {
@@ -23,13 +23,18 @@ export default class User extends Wash {
   };
 
   config!: OutputFlags<typeof User.settings>;
-
-  client!: IgApiClient;
-  user!: UserRepositorySearchResponseUsersItem;
+  protected client!: IgApiClient;
+  protected user!: UserRepositorySearchResponseUsersItem;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     this.client = await Instagram.auth(this, this.config);
     this.user = await this.client.user.searchExact(this.config.user);
+    this.itemSource = {
+      image: this.user.profile_pic_url,
+      url: `${Instagram.url}/p/${this.user.username}/`,
+      title: `Instagram: ${this.user.username}`,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -40,13 +45,7 @@ export default class User extends Wash {
 
   async parseData(data: IgFeedItem): Promise<Item> {
     const item = await Instagram.parseData(this, data);
-
-    item.source = {
-      image: this.user.profile_pic_url,
-      url: `${Instagram.url}/p/${this.user.username}/`,
-      title: `Instagram: ${this.user.username}`,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }

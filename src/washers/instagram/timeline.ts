@@ -1,6 +1,6 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import { IgApiClient } from "instagram-private-api";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { IgFeedItem, Instagram } from "./instagram";
 
 export default class Timeline extends Wash {
@@ -15,11 +15,16 @@ export default class Timeline extends Wash {
   };
 
   config!: OutputFlags<typeof Timeline.settings>;
-
-  client!: IgApiClient;
+  protected client!: IgApiClient;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     this.client = await Instagram.auth(this, this.config);
+    this.itemSource = {
+      image: Instagram.icon,
+      url: Instagram.url,
+      title: this.info.title,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -42,13 +47,7 @@ export default class Timeline extends Wash {
 
   async parseData(data: IgFeedItem): Promise<Item> {
     const item = await Instagram.parseData(this, data);
-
-    item.source = {
-      image: Instagram.icon,
-      url: Instagram.url,
-      title: this.info.title,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }

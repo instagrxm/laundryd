@@ -1,5 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { SoundCloud } from "./soundcloud";
 
 export default class Liked extends Wash {
@@ -15,11 +15,16 @@ export default class Liked extends Wash {
   };
 
   config!: OutputFlags<typeof Liked.settings>;
-
-  me!: any;
+  protected itemSource!: ItemSource;
+  protected me!: any;
 
   async init(): Promise<void> {
     this.me = await SoundCloud.auth(this, this.config);
+    this.itemSource = {
+      image: this.me.avatar_url.replace("large.jpg", "t500x500.jpg"),
+      url: `${SoundCloud.url}/${this.me.username}/likes`,
+      title: this.info.title,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -44,13 +49,7 @@ export default class Liked extends Wash {
 
   async parseData(data: any): Promise<Item> {
     const item = await SoundCloud.parseData(this, data);
-
-    item.source = {
-      image: this.me.avatar_url.replace("large.jpg", "t500x500.jpg"),
-      url: `${SoundCloud.url}/${this.me.username}/likes`,
-      title: this.info.title,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }

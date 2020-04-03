@@ -1,5 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { Mixcloud } from "./mixcloud";
 
 export default class Timeline extends Wash {
@@ -16,9 +16,15 @@ export default class Timeline extends Wash {
   config!: OutputFlags<typeof Timeline.settings>;
 
   protected me!: any;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     this.me = await Mixcloud.auth(this, this.config);
+    this.itemSource = {
+      image: Mixcloud.icon,
+      url: this.me.data.url,
+      title: this.info.title,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -54,13 +60,7 @@ export default class Timeline extends Wash {
 
   parseData(data: any): Item {
     const item = Mixcloud.parseData(this, data);
-
-    item.source = {
-      image: Mixcloud.icon,
-      url: this.me.data.url,
-      title: this.info.title,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }

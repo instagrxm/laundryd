@@ -21,8 +21,8 @@ export default class Playlist extends Wash {
   };
 
   config!: OutputFlags<typeof Playlist.settings>;
-  playlistId!: number;
-  itemSource!: ItemSource;
+  protected playlistId!: number;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     // Find the user

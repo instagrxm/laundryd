@@ -1,5 +1,5 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
-import { Item, Wash, WasherInfo } from "../../core";
+import { Item, ItemSource, Wash, WasherInfo } from "../../core";
 import { Mixcloud } from "./mixcloud";
 
 export default class Liked extends Wash {
@@ -14,11 +14,16 @@ export default class Liked extends Wash {
   };
 
   config!: OutputFlags<typeof Liked.settings>;
-
-  me!: any;
+  protected me!: any;
+  protected itemSource!: ItemSource;
 
   async init(): Promise<void> {
     this.me = await Mixcloud.auth(this, this.config);
+    this.itemSource = {
+      image: this.me.data.pictures.extra_large,
+      url: `${this.me.data.url}/favorites`,
+      title: this.info.title,
+    };
   }
 
   async run(): Promise<Item[]> {
@@ -59,13 +64,7 @@ export default class Liked extends Wash {
 
   parseData(data: any): Item {
     const item = Mixcloud.parseData(this, data);
-
-    item.source = {
-      image: this.me.data.pictures.extra_large,
-      url: `${this.me.data.url}/favorites`,
-      title: this.info.title,
-    };
-
+    item.source = this.itemSource;
     return item;
   }
 }
