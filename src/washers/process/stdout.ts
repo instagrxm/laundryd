@@ -32,6 +32,7 @@ export class Stdout extends Dry {
       colors: this.config.color,
       compact: this.config.compact,
       breakLength: Number.POSITIVE_INFINITY,
+      depth: 5,
     };
   }
 

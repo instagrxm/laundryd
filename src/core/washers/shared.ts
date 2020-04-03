@@ -6,7 +6,6 @@ import { JSDOM } from "jsdom";
 import { DateTime } from "luxon";
 import PQueue from "p-queue";
 import pRetry, { FailedAttemptError } from "p-retry";
-import { stringify } from "querystring";
 import { parse as urlParse } from "url";
 import { Handlebars } from "../../core/formatting";
 import { Config } from "../config";
@@ -260,11 +259,8 @@ export class Shared {
     retry?: (error: FailedAttemptError) => void | Promise<void>,
     retries = 1
   ): Promise<AxiosResponse<any>> {
-    const params = config.params ? `?${stringify(config.params)}` : "";
-    const url = `${config.baseURL || ""}${config.url}${params}`;
-
     const http = async (): Promise<AxiosResponse<any>> => {
-      await Log.debug(washer, { msg: "http", url });
+      await Log.debug(washer, { msg: "http", config });
       return washer.http.request(config);
     };
 
