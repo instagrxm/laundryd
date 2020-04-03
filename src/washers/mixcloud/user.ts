@@ -20,6 +20,21 @@ export default class User extends Wash {
 
   config!: OutputFlags<typeof User.settings>;
 
+  async init(): Promise<void> {
+    const res = await Mixcloud.callAPI(this, {
+      url: `${Mixcloud.api}/search/`,
+      params: { type: "user", q: this.config.user },
+    });
+
+    const user = res.data.data.find(
+      (d: any) => d.username.toLowerCase() === this.config.user.toLowerCase()
+    );
+
+    if (!user) {
+      throw new Error(`username ${this.config.user} not found`);
+    }
+  }
+
   async run(): Promise<Item[]> {
     const items = await Mixcloud.getUserShows(this, this.config.user);
     return items;
