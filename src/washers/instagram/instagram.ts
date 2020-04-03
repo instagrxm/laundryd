@@ -153,7 +153,7 @@ export class Instagram {
       await Log.debug(washer, { msg: "http", page: ++page });
       const posts = await feed.items();
       for (const post of posts) {
-        if (await Instagram.valid(washer, post)) {
+        if (await Instagram.valid(washer, data, post)) {
           data.push(post);
         }
       }
@@ -170,13 +170,22 @@ export class Instagram {
   /**
    * Examine an Instagram post to see if it should be saved.
    * @param washer the washer making the request
+   * @param loaded already loaded posts
    * @param post the post to examine
    */
-  private static async valid(washer: Wash, post: IgFeedItem): Promise<boolean> {
+  private static async valid(
+    washer: Wash,
+    loaded: any[],
+    post: IgFeedItem
+  ): Promise<boolean> {
     // Skip old things
     const taken = DateTime.fromSeconds(post.taken_at);
     const old = taken.diff(washer.memory.lastRun, "days").days <= 0;
     if (old) {
+      return false;
+    }
+
+    if (loaded.find((d) => d.pk === post.pk)) {
       return false;
     }
 
