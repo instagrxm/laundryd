@@ -42,12 +42,12 @@ export default class User extends Wash {
   }
 
   async run(): Promise<Item[]> {
-    const items = await SoundCloud.getUserTracks(
+    const data = await SoundCloud.getUserTracks(
       this,
       this.config,
       this.config,
       this.userId
     );
-    return items;
+    return Promise.all(data.map((d) => SoundCloud.parseData(this, d)));
   }
 }

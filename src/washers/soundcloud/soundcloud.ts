@@ -145,7 +145,7 @@ export class SoundCloud {
     auth: OutputFlags<typeof SoundCloud.authSettings>,
     query: OutputFlags<typeof SoundCloud.querySettings>,
     userId: number
-  ): Promise<Item[]> {
+  ): Promise<any[]> {
     // Set up the first request.
     // https://developers.soundcloud.com/docs/api/reference#tracks
     const req: AxiosRequestConfig = {
@@ -162,8 +162,7 @@ export class SoundCloud {
     }
 
     const data = await SoundCloud.getTrackList(washer, req);
-
-    return Promise.all(data.map((d) => SoundCloud.parseData(washer, d)));
+    return data;
   }
 
   /**

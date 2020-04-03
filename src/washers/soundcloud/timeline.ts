@@ -64,7 +64,7 @@ export default class Timeline extends Wash {
       data = data.concat(tracks);
     }
 
-    return data;
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: any): Promise<Item> {
