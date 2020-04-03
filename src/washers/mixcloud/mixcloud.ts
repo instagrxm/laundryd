@@ -70,7 +70,7 @@ export class Mixcloud {
     const authUrl = `https://www.mixcloud.com/oauth/authorize?${params}`;
 
     if (auth.code) {
-      const response = await Mixcloud.callAPI(washer, {
+      const res = await Mixcloud.callAPI(washer, {
         url: "https://www.mixcloud.com/oauth/access_token",
         params: {
           client_id: auth.clientId,
@@ -79,7 +79,7 @@ export class Mixcloud {
           code: auth.code,
         },
       });
-      const t = response.data.access_token;
+      const t = res.data.access_token;
       if (t) {
         await Log.error(washer, {
           msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this washer.`,
@@ -178,12 +178,12 @@ export class Mixcloud {
    * @param show the show to add a description to
    */
   static async getShowDescription(washer: Wash, show: any): Promise<void> {
-    const response = await Mixcloud.callAPI(washer, {
+    const res = await Mixcloud.callAPI(washer, {
       url: `${Mixcloud.api}${show.key}`,
     });
 
-    show.text = response.data.description;
-    show.html = Mixcloud.htmlTemplate(response.data);
+    show.text = res.data.description;
+    show.html = Mixcloud.htmlTemplate(res.data);
   }
 
   /**

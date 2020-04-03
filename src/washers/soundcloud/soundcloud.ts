@@ -84,7 +84,7 @@ export class SoundCloud {
     const authUrl = `https://soundcloud.com/connect?${params}`;
 
     if (auth.code) {
-      const response = await SoundCloud.callAPI(washer, {
+      const res = await SoundCloud.callAPI(washer, {
         url: "https://api.soundcloud.com/oauth2/token",
         method: "POST",
         params: {
@@ -95,7 +95,7 @@ export class SoundCloud {
           code: auth.code,
         },
       });
-      const t = response.data.access_token;
+      const t = res.data.access_token;
       if (t) {
         await Log.error(washer, {
           msg: `Token acquired. Use --token=${t} or set SOUNDCLOUD_TOKEN for this washer.`,

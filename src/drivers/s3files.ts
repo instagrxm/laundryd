@@ -183,13 +183,13 @@ export class S3Files extends Files {
         ACL: "public-read",
       };
 
-      const response = await this.s3.upload(params).promise();
+      const res = await this.s3.upload(params).promise();
       await Log.debug(this.washer, {
         msg: "s3-upload",
         connection: this.connection,
-        response,
+        response: res,
       });
-      return response;
+      return res;
     };
 
     try {
