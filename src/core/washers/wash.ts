@@ -23,7 +23,7 @@ export class Wash extends Washer {
     download: Settings.download(),
 
     begin: flags.integer({
-      default: 0,
+      default: 7,
       description:
         "the number of days of past items to load in the first run, 0 to load all",
     }),
