@@ -6,7 +6,7 @@ import { SoundCloud } from "./soundcloud";
 export default class User extends Wash {
   static readonly info = new WasherInfo({
     title: "SoundCloud user",
-    description: "load tracks from a SoundCloud user"
+    description: "load tracks from a SoundCloud user",
   });
 
   static settings = {
@@ -15,8 +15,8 @@ export default class User extends Wash {
     ...SoundCloud.querySettings,
     user: flags.string({
       description: "the username to load sounds from",
-      required: true
-    })
+      required: true,
+    }),
   };
 
   config!: OutputFlags<typeof User.settings>;
@@ -27,7 +27,7 @@ export default class User extends Wash {
     // https://developers.soundcloud.com/docs/api/reference#users
     const res = await SoundCloud.callAPI(this, {
       url: `${SoundCloud.api}/users`,
-      params: { client_id: this.config.clientId, q: this.config.user }
+      params: { client_id: this.config.clientId, q: this.config.user },
     });
 
     const user = res.data.find(

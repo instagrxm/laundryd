@@ -1,7 +1,7 @@
 import { OutputFlags } from "@oclif/parser/lib/parse";
 import {
   AccountRepositoryCurrentUserResponseUser,
-  IgApiClient
+  IgApiClient,
 } from "instagram-private-api";
 import { Dry, Item, Log, Settings, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
@@ -10,7 +10,7 @@ export class Save extends Dry {
   static readonly info = new WasherInfo({
     title: "Instagram save",
     description: "save Instagram posts",
-    filter: Instagram.filter
+    filter: Instagram.filter,
   });
 
   static settings = {
@@ -18,8 +18,8 @@ export class Save extends Dry {
     ...Instagram.authSettings,
     state: Settings.boolean({
       default: true,
-      description: "false to unsave the post"
-    })
+      description: "false to unsave the post",
+    }),
   };
 
   config!: OutputFlags<typeof Save.settings>;
@@ -43,7 +43,7 @@ export class Save extends Dry {
 
       await Log.debug(this, {
         msg: this.config.state ? "save" : "unsave",
-        url: item.url
+        url: item.url,
       });
       if (this.config.state) {
         await this.client.media.save(mediaId);

@@ -7,7 +7,7 @@ import { Feedbin } from "./feedbin";
 export default class Search extends Wash {
   static readonly info = new WasherInfo({
     title: "Feedbin search",
-    description: "search for posts on Feedbin"
+    description: "search for posts on Feedbin",
   });
 
   static settings = {
@@ -15,8 +15,8 @@ export default class Search extends Wash {
     ...Feedbin.authSettings,
     search: flags.string({
       required: true,
-      description: "the name of the saved search"
-    })
+      description: "the name of the saved search",
+    }),
   };
 
   config!: OutputFlags<typeof Search.settings>;
@@ -36,10 +36,13 @@ export default class Search extends Wash {
       res = await Shared.queueHttp(this, undefined, {
         url: `${Feedbin.api}/saved_searches.json`,
         responseType: "json",
-        auth: { username: this.config.username, password: this.config.password }
+        auth: {
+          username: this.config.username,
+          password: this.config.password,
+        },
       });
       const searches = res.data as any[];
-      const search = searches.find(s => s.name === this.config.search);
+      const search = searches.find((s) => s.name === this.config.search);
       if (search) {
         this.searchId = search.id;
       }
@@ -53,14 +56,14 @@ export default class Search extends Wash {
     const entryIds = await Feedbin.getPagedList(this, {
       url: `${Feedbin.api}/saved_searches/${this.searchId}.json`,
       responseType: "json",
-      auth: { username: this.config.username, password: this.config.password }
+      auth: { username: this.config.username, password: this.config.password },
     });
 
     // Load the entries
     const data = await Feedbin.getEntriesById(this, this.config, entryIds);
 
     // Convert entries to Items
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: any): Promise<Item> {
@@ -69,7 +72,7 @@ export default class Search extends Wash {
     item.source = {
       image: Feedbin.icon,
       url: Feedbin.url,
-      title: `Feedbin: ${this.config.search}`
+      title: `Feedbin: ${this.config.search}`,
     };
 
     return item;

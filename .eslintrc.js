@@ -4,8 +4,8 @@ module.exports = {
     ecmaVersion: 6,
     sourceType: "module",
     ecmaFeatures: {
-      jsx: true
-    }
+      jsx: true,
+    },
   },
   parser: "@typescript-eslint/parser",
   plugins: ["@typescript-eslint"],
@@ -15,6 +15,6 @@ module.exports = {
     "@typescript-eslint/ban-ts-ignore": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-unused-vars": "off",
-    "@typescript-eslint/camelcase": "off" // lots of APIs seem to use underscores
-  }
+    "@typescript-eslint/camelcase": "off", // lots of APIs seem to use underscores
+  },
 };

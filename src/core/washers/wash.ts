@@ -14,7 +14,7 @@ export class Wash extends Washer {
     title: "wash base class",
     description:
       "retrieve data on a schedule and parse it into a normalized format",
-    abstract: true
+    abstract: true,
   });
 
   static settings = {
@@ -25,8 +25,8 @@ export class Wash extends Washer {
     begin: flags.integer({
       default: 0,
       description:
-        "the number of days of past items to load in the first run, 0 to load all"
-    })
+        "the number of days of past items to load in the first run, 0 to load all",
+    }),
   };
 
   config!: OutputFlags<typeof Wash.settings>;

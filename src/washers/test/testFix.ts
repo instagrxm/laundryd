@@ -3,7 +3,7 @@ import { Fix, Log, WasherInfo } from "../../core";
 export class TestFix extends Fix {
   static readonly info = new WasherInfo({
     title: "test-fix",
-    description: "test-fix"
+    description: "test-fix",
   });
 
   async run(): Promise<void> {

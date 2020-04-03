@@ -5,12 +5,12 @@ import { Feedbin } from "./feedbin";
 export default class Saved extends Wash {
   static readonly info = new WasherInfo({
     title: "Feedbin likes",
-    description: "load posts you've saved in Feedbin"
+    description: "load posts you've saved in Feedbin",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Feedbin.authSettings
+    ...Feedbin.authSettings,
   };
 
   config!: OutputFlags<typeof Saved.settings>;
@@ -23,7 +23,7 @@ export default class Saved extends Wash {
     const res = await Shared.queueHttp(this, undefined, {
       url: `${Feedbin.api}/subscriptions.json`,
       responseType: "json",
-      auth: { username: this.config.username, password: this.config.password }
+      auth: { username: this.config.username, password: this.config.password },
     });
 
     const subscription = res.data.find(
@@ -41,14 +41,14 @@ export default class Saved extends Wash {
       params: {
         since: this.memory.lastRun.toISO(),
         include_enclosure: true,
-        mode: "extended"
+        mode: "extended",
       },
-      auth: { username: this.config.username, password: this.config.password }
+      auth: { username: this.config.username, password: this.config.password },
     });
 
     data = Feedbin.filterOldEntries(this, data);
 
     // Convert entries to Items
-    return Promise.all(data.map(d => Feedbin.parseData(this, d)));
+    return Promise.all(data.map((d) => Feedbin.parseData(this, d)));
   }
 }

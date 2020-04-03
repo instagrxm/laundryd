@@ -5,7 +5,7 @@ import {
   Item,
   Rinse,
   Settings,
-  WasherInfo
+  WasherInfo,
 } from "../../core";
 
 export class Handlebars extends Rinse {
@@ -13,7 +13,7 @@ export class Handlebars extends Rinse {
     title: "format with handlebars",
     description:
       "apply handlebars templates to items that format them differently",
-    memory: false
+    memory: false,
   });
 
   static templateSetting = (
@@ -25,7 +25,7 @@ export class Handlebars extends Rinse {
         template({}); // throw error if the template is bad
         return template;
       },
-      description
+      description,
     })();
   };
 
@@ -35,13 +35,13 @@ export class Handlebars extends Rinse {
     title: Handlebars.templateSetting("format an item's title field"),
     text: Handlebars.templateSetting("format an item's text field"),
     html: Handlebars.templateSetting("format an item's html field"),
-    summary: Handlebars.templateSetting("format an item's summary field")
+    summary: Handlebars.templateSetting("format an item's summary field"),
   };
 
   config!: OutputFlags<typeof Handlebars.settings>;
 
   async run(items: Item[]): Promise<Item[]> {
-    return items.map(i => this.renderItem(i));
+    return items.map((i) => this.renderItem(i));
   }
 
   renderItem(item: Item): Item {

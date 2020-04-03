@@ -5,7 +5,7 @@ import {
   Db,
   FilterQuery,
   FindOneOptions,
-  MongoClient
+  MongoClient,
 } from "mongodb";
 import {
   Database,
@@ -15,7 +15,7 @@ import {
   Memory,
   Rinse,
   Wash,
-  Washer
+  Washer,
 } from "../core";
 
 /**
@@ -29,7 +29,7 @@ export class MongoDB extends Database {
   async init(connection: string): Promise<void> {
     const client = await new MongoClient(connection, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
     }).connect();
     this.db = client.db();
 
@@ -37,18 +37,18 @@ export class MongoDB extends Database {
     const memory = this.db.collection("memory");
     await memory.createIndexes([
       { name: "washer.id", key: { "washer.id": 1 }, unique: true },
-      { name: "washer.name", key: { "washer.name": 1 }, unique: false }
+      { name: "washer.name", key: { "washer.name": 1 }, unique: false },
     ]);
     this.memory = memory;
 
     // A collection to save logs
     this.log = await this.db.createCollection(Log.collection, {
       capped: true,
-      size: 1048576 * 10 // 10MB
+      size: 1048576 * 10, // 10MB
     });
     await this.log.createIndexes([
       { name: "created", key: { created: -1 } },
-      { name: "saved", key: { saved: -1 } }
+      { name: "saved", key: { saved: -1 } },
     ]);
   }
 
@@ -72,7 +72,7 @@ export class MongoDB extends Database {
   async loadMemory(washer: Washer): Promise<Memory> {
     let memory = await this.memory.findOne({
       "washer.id": washer.config.id,
-      "washer.name": washer.info.name
+      "washer.name": washer.info.name,
     });
     memory = memory || {};
 
@@ -85,7 +85,7 @@ export class MongoDB extends Database {
     memory.config = memory.config || washer.config;
     memory.washer = memory.washer || {
       name: washer.info.name,
-      id: washer.config.id
+      id: washer.config.id,
     };
 
     return memory;
@@ -132,7 +132,7 @@ export class MongoDB extends Database {
       .find(filter, options)
       .toArray();
 
-    const items = docs.map(i => this.hydrateItem(i));
+    const items = docs.map((i) => this.hydrateItem(i));
 
     return items;
   }
@@ -157,7 +157,7 @@ export class MongoDB extends Database {
 
         if (Array.isArray(val)) {
           // Recursively process arrays
-          out[key] = val.map(i => process(i));
+          out[key] = val.map((i) => process(i));
         } else if (typeof val === "object") {
           // Recursively process objects
           out[key] = process(val);
@@ -186,16 +186,16 @@ export class MongoDB extends Database {
       {
         name: "text",
         key: { title: "text", tags: "text", author: "text", text: "text" },
-        weights: { title: 10, tags: 10, author: 10, text: 5 }
-      }
+        weights: { title: 10, tags: 10, author: 10, text: 5 },
+      },
     ]);
 
     // Prepare the items for saving
-    const saveItems: any[] = items.map(i => this.dehydrateItem(i));
+    const saveItems: any[] = items.map((i) => this.dehydrateItem(i));
 
     // Save the items
     await Promise.all(
-      saveItems.map(i =>
+      saveItems.map((i) =>
         collection.replaceOne({ url: i.url }, { $set: i }, { upsert: true })
       )
     );
@@ -251,7 +251,7 @@ export class MongoDB extends Database {
     const pipeline = [{ $match: filter }];
     const changeStream = this.db.collection(collection).watch(pipeline);
 
-    changeStream.on("change", change => {
+    changeStream.on("change", (change) => {
       callback(change);
     });
   }

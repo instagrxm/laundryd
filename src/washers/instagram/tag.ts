@@ -7,7 +7,7 @@ import { IgFeedItem, Instagram } from "./instagram";
 export default class Tag extends Wash {
   static readonly info = new WasherInfo({
     title: "Instagram tag",
-    description: "load new posts from a tag on Instagram"
+    description: "load new posts from a tag on Instagram",
   });
 
   static settings = {
@@ -15,8 +15,8 @@ export default class Tag extends Wash {
     ...Instagram.authSettings,
     tag: flags.string({
       required: true,
-      description: "the tag to load posts from"
-    })
+      description: "the tag to load posts from",
+    }),
   };
 
   config!: OutputFlags<typeof Tag.settings>;
@@ -30,7 +30,7 @@ export default class Tag extends Wash {
   async run(): Promise<Item[]> {
     const feed = this.client.feed.tags(this.config.tag, "recent");
     const data = await Instagram.readFeed(this, feed);
-    return Promise.all(data.map(d => this.parseData(d)));
+    return Promise.all(data.map((d) => this.parseData(d)));
   }
 
   async parseData(data: IgFeedItem): Promise<Item> {
@@ -39,7 +39,7 @@ export default class Tag extends Wash {
     item.source = {
       image: Instagram.icon,
       url: `${Instagram.url}/explore/tags/${this.config.tag}/`,
-      title: `Instagram: ${this.config.tag}`
+      title: `Instagram: ${this.config.tag}`,
     };
 
     return item;

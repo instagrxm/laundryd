@@ -11,7 +11,7 @@ export class JSX extends Rinse {
   static readonly info = new WasherInfo({
     title: "format JSX",
     description: "apply JSX templates to items that format them differently",
-    memory: false
+    memory: false,
   });
 
   static settings = {
@@ -20,33 +20,33 @@ export class JSX extends Rinse {
     retain: Settings.retain(-1),
 
     title: flags.string({
-      description: "format an item's title field"
+      description: "format an item's title field",
     }),
 
     text: flags.string({
-      description: "format an item's text field"
+      description: "format an item's text field",
     }),
 
     html: flags.string({
-      description: "format an item's html field"
+      description: "format an item's html field",
     }),
 
     summary: flags.string({
-      description: "format an item's summary field"
-    })
+      description: "format an item's summary field",
+    }),
   };
 
   config!: OutputFlags<typeof JSX.settings>;
 
   async run(items: Item[]): Promise<Item[]> {
-    return items.map(i => this.renderItem(i));
+    return items.map((i) => this.renderItem(i));
   }
 
   renderItem(item: Item): Item {
     const props = {
       jsx: "",
       renderInWrapper: false,
-      bindings: { item }
+      bindings: { item },
     };
 
     if (item.title && this.config.title) {

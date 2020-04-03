@@ -18,13 +18,13 @@ export class Feedbin {
   static authSettings = {
     username: flags.string({
       required: true,
-      description: "Feedbin username"
+      description: "Feedbin username",
     }),
 
     password: flags.string({
       required: true,
-      description: "Feedbin password"
-    })
+      description: "Feedbin password",
+    }),
   };
 
   static filter = { "washer.name": { $regex: "^feedbin" } };
@@ -43,7 +43,7 @@ export class Feedbin {
     try {
       await Shared.queueHttp(washer, undefined, {
         url: `${Feedbin.api}/authentication.json`,
-        auth: { username: auth.username, password: auth.password }
+        auth: { username: auth.username, password: auth.password },
       });
     } catch (error) {
       await Log.error(washer, { msg: "auth failed", error: error.message });
@@ -69,7 +69,7 @@ export class Feedbin {
     item.source = {
       image: Feedbin.icon,
       url: Feedbin.url,
-      title: washer.info.title
+      title: washer.info.title,
     };
 
     if (data.author) {
@@ -83,14 +83,14 @@ export class Feedbin {
     ) {
       try {
         const extract = await Shared.queueHttp(washer, undefined, {
-          url: data.extracted_content_url
+          url: data.extracted_content_url,
         });
         item.html = extract.data.content;
         item.image = extract.data.lead_image_url;
       } catch (error) {
         await Log.warn(washer, {
           msg: "couldn't get extracted content",
-          url: item.url
+          url: item.url,
         });
       }
     }
@@ -129,7 +129,7 @@ export class Feedbin {
         // looking at the header in between.
         // https://github.com/feedbin/feedbin-api/issues/45
         const links: string[] = res.headers.links.split(",");
-        const next = links.find(l => l.includes("next"));
+        const next = links.find((l) => l.includes("next"));
         if (next) {
           const match = next.match(/<(.+)>/);
           if (match && match.length) {
@@ -137,7 +137,7 @@ export class Feedbin {
           }
         }
 
-        const last = links.find(l => l.includes("last"));
+        const last = links.find((l) => l.includes("last"));
         if (last) {
           const match = last.match(/page=(\d+)/);
           if (match && match.length) {
@@ -171,7 +171,9 @@ export class Feedbin {
     // request the same ones again.
     let getEntries = entryIds;
     if (washer.memory.entryIds) {
-      getEntries = entryIds.filter(id => !washer.memory.entryIds.includes(id));
+      getEntries = entryIds.filter(
+        (id) => !washer.memory.entryIds.includes(id)
+      );
     }
     washer.memory.entryIds = clone(entryIds);
 
@@ -183,7 +185,7 @@ export class Feedbin {
         url: `${Feedbin.api}/entries.json`,
         responseType: "json",
         params: { ids: page.join(",") },
-        auth: { username: auth.username, password: auth.password }
+        auth: { username: auth.username, password: auth.password },
       });
       data = data.concat(res.data);
     }
@@ -205,7 +207,7 @@ export class Feedbin {
 
     const now = DateTime.utc();
     entries = entries.filter(
-      e =>
+      (e) =>
         now.diff(DateTime.fromISO(e.created_at).toUTC(), "days").days <=
         washer.config.begin
     );

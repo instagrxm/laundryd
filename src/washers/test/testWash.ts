@@ -6,14 +6,14 @@ import {
   Log,
   Shared,
   Wash,
-  WasherInfo
+  WasherInfo,
 } from "../../core";
 
 export class TestWash extends Wash {
   static readonly info = new WasherInfo({
     title: "test-wash",
     description: "test-wash",
-    abstract: false
+    abstract: false,
   });
 
   async run(): Promise<Item[]> {
@@ -47,10 +47,10 @@ export class TestWash extends Wash {
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
           item1.meta = {
-            url: `${result.url}/${result.image}`
+            url: `${result.url}/${result.image}`,
           };
         }
-      )
+      ),
     ];
 
     item2.downloads = [
@@ -59,10 +59,10 @@ export class TestWash extends Wash {
         "https://soundcloud.com/complexion/tfbs228",
         (result: DownloadResult) => {
           item2.meta = {
-            url: `${result.url}/${result.image}`
+            url: `${result.url}/${result.image}`,
           };
         }
-      )
+      ),
     ];
 
     return [item1, item2];

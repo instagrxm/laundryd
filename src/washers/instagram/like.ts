@@ -2,7 +2,7 @@ import { OutputFlags } from "@oclif/parser/lib/parse";
 import {
   AccountRepositoryCurrentUserResponseUser,
   IgApiClient,
-  LikeModuleInfoOption
+  LikeModuleInfoOption,
 } from "instagram-private-api";
 import { Dry, Item, Log, Settings, WasherInfo } from "../../core";
 import { Instagram } from "./instagram";
@@ -11,7 +11,7 @@ export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Instagram like",
     description: "like Instagram posts",
-    filter: Instagram.filter
+    filter: Instagram.filter,
   });
 
   static settings = {
@@ -19,8 +19,8 @@ export class Like extends Dry {
     ...Instagram.authSettings,
     state: Settings.boolean({
       default: true,
-      description: "false to unlike the post"
-    })
+      description: "false to unlike the post",
+    }),
   };
 
   config!: OutputFlags<typeof Like.settings>;
@@ -45,12 +45,12 @@ export class Like extends Dry {
       const moduleInfo: LikeModuleInfoOption = {
         module_name: "media_view_profile",
         user_id: this.user.pk,
-        username: this.user.username
+        username: this.user.username,
       };
 
       await Log.debug(this, {
         msg: this.config.state ? "like" : "unlike",
-        url: item.url
+        url: item.url,
       });
       if (this.config.state) {
         await this.client.media.like({ mediaId, moduleInfo, d: 1 });

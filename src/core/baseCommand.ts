@@ -19,14 +19,14 @@ export default class BaseCommand extends Command {
       required: true,
       default: () =>
         process.env.LAUNDRY_DB || "mongodb://localhost:27017/laundry",
-      description: "database connection string\n(env: LAUNDRY_DB)"
+      description: "database connection string\n(env: LAUNDRY_DB)",
     }),
 
     files: flags.string({
       required: true,
       default: () => process.env.LAUNDRY_FILES || BaseCommand.filesHelp,
       description:
-        "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)"
+        "where to store downloaded files, either a local path or an s3:// location\n(env: LAUNDRY_FILES)",
     }),
 
     fileUrl: flags.string({
@@ -34,7 +34,7 @@ export default class BaseCommand extends Command {
       default: () =>
         process.env.LAUNDRY_FILES_URL || "http://localhost:3000/files",
       description:
-        "a URL which maps to the file location\n(env: LAUNDRY_FILES_URL)"
+        "a URL which maps to the file location\n(env: LAUNDRY_FILES_URL)",
     }),
 
     downloadPool: flags.integer({
@@ -51,8 +51,8 @@ export default class BaseCommand extends Command {
       },
       hidden: true,
       description:
-        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)"
-    })
+        "how many downloads to perform simultaneously\n(env: LAUNDRY_DOWNLOAD_POOL)",
+    }),
   };
 
   static args = [];

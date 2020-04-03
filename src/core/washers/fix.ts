@@ -11,13 +11,13 @@ export class Fix extends Washer {
   static readonly info = new WasherInfo({
     title: "fix base class",
     description: "perform a task that requires all other washers to pause",
-    abstract: true
+    abstract: true,
   });
 
   static settings = {
     ...Washer.settings,
     schedule: Settings.schedule(true, "0 0 0 * * *"),
-    retain: Settings.retain(7)
+    retain: Settings.retain(7),
   };
 
   config!: OutputFlags<typeof Fix.settings>;

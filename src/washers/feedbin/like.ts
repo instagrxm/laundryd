@@ -6,7 +6,7 @@ export class Like extends Dry {
   static readonly info = new WasherInfo({
     title: "Feedbin like",
     description: "like Feedbin entries",
-    filter: Feedbin.filter
+    filter: Feedbin.filter,
   });
 
   static settings = {
@@ -14,8 +14,8 @@ export class Like extends Dry {
     ...Feedbin.authSettings,
     state: Settings.boolean({
       default: true,
-      description: "false to unlike the entry"
-    })
+      description: "false to unlike the entry",
+    }),
   };
 
   config!: OutputFlags<typeof Like.settings>;
@@ -26,8 +26,8 @@ export class Like extends Dry {
 
   async run(items: Item[]): Promise<void> {
     const ids: number[] = items
-      .filter(i => i.meta?.entry_id)
-      .map(i => i.meta?.entry_id);
+      .filter((i) => i.meta?.entry_id)
+      .map((i) => i.meta?.entry_id);
 
     // https://github.com/feedbin/feedbin-api/blob/master/content/starred-entries.md
     await Shared.queueHttp(this, undefined, {
@@ -35,7 +35,7 @@ export class Like extends Dry {
       method: this.config.state ? "POST" : "DELETE",
       auth: { username: this.config.username, password: this.config.password },
       headers: { "Content-Type": "application/json; charset=utf-8" },
-      data: JSON.stringify({ starred_entries: ids })
+      data: JSON.stringify({ starred_entries: ids }),
     });
   }
 }

@@ -55,7 +55,7 @@ export class Downloader {
     let result: DownloadResult = {
       url: download.url,
       dir: tmp,
-      item: download.item
+      item: download.item,
     };
 
     if (!isUrl(download.url)) {
@@ -101,7 +101,7 @@ export class Downloader {
 
     await new Promise((resolve, reject) => {
       axios({ url, responseType: "stream" })
-        .then(response => {
+        .then((response) => {
           result.size = response.headers["content-length"];
           result.type = response.headers["content-type"];
           result.media = "media." + mime.getExtension(result.type as string);
@@ -110,7 +110,7 @@ export class Downloader {
           response.data.pipe(stream);
           stream.on("close", resolve);
         })
-        .catch(error => reject(error));
+        .catch((error) => reject(error));
     });
 
     return result;
@@ -134,7 +134,7 @@ export class Downloader {
     const args: string[] = [
       `--ffmpeg-location=${ffmpegPath}`,
       "--restrict-filenames",
-      "--socket-timeout=10"
+      "--socket-timeout=10",
     ];
 
     if (download.json) {
@@ -179,9 +179,9 @@ export class Downloader {
     // Find the files
 
     const files = await fs.readdir(dir);
-    const json = files.find(f => f.match(/\.json$/));
-    const thumbnail = files.find(f => f.match(/\.(jpg|png)$/));
-    const media = files.find(f => !f.match(/\.(jpg|png|json)$/));
+    const json = files.find((f) => f.match(/\.json$/));
+    const thumbnail = files.find((f) => f.match(/\.(jpg|png)$/));
+    const media = files.find((f) => !f.match(/\.(jpg|png|json)$/));
 
     // Assemble the result
 
@@ -245,7 +245,7 @@ export class Downloader {
       platform: ffbinaries.detectPlatform(),
       destination: ffmpegPath,
       force: true,
-      quiet: true
+      quiet: true,
     };
 
     try {
@@ -275,14 +275,14 @@ export class Downloader {
     try {
       await Log.debug(this.washer, {
         msg: "cache-clean",
-        dir: this.tempRoot
+        dir: this.tempRoot,
       });
       await fs.remove(this.tempRoot);
     } catch (error) {
       await Log.error(this.washer, {
         msg: "cache-clean",
         dir: this.tempRoot,
-        error
+        error,
       });
     }
   }

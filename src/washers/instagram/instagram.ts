@@ -15,7 +15,7 @@ import {
   TimelineFeed,
   TimelineFeedResponseMedia_or_ad,
   UserFeed,
-  UserFeedResponseItemsItem
+  UserFeedResponseItemsItem,
 } from "instagram-private-api";
 import { DateTime } from "luxon";
 import path from "path";
@@ -26,7 +26,7 @@ import {
   Log,
   Shared,
   Wash,
-  Washer
+  Washer,
 } from "../../core";
 import { Handlebars } from "../../core/formatting";
 
@@ -58,7 +58,7 @@ export const InstagramLinker = new Autolinker({
   newWindow: false,
   stripPrefix: true,
   stripTrailingSlash: true,
-  truncate: undefined
+  truncate: undefined,
 });
 
 Handlebars.registerHelper("instagramLinker", (context: any) => {
@@ -80,24 +80,24 @@ export class Instagram {
   static urlPattern = /^http(s)?:\/\/(www.)?instagram.com/i;
 
   static filter = {
-    url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
+    url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" },
   };
 
   // Settings used by all washers to auth
   static authSettings = {
     username: flags.string({
       required: true,
-      description: "Instagram username"
+      description: "Instagram username",
     }),
 
     password: flags.string({
       required: true,
-      description: "Instagram password"
+      description: "Instagram password",
     }),
 
     code: flags.string({
-      description: "the challenge code sent for login"
-    })
+      description: "the challenge code sent for login",
+    }),
   };
 
   private static clients: Record<string, IgApiClient> = {};
@@ -126,7 +126,7 @@ export class Instagram {
       if (!auth.code) {
         await Log.error(washer, {
           msg:
-            "an auth code should have been sent to you, add that to the washer config"
+            "an auth code should have been sent to you, add that to the washer config",
         });
       } else {
         await client.challenge.sendSecurityCode(auth.code);
@@ -210,7 +210,7 @@ export class Instagram {
     item.source = {
       image: Instagram.icon,
       url: Instagram.url,
-      title: washer.info.title
+      title: washer.info.title,
     };
 
     if (data.caption) {
@@ -238,7 +238,7 @@ export class Instagram {
       // Parse location
       item.location = {
         coord: { lat: location.lat, lng: location.lng },
-        name: location.name
+        name: location.name,
       };
     }
 
@@ -288,7 +288,7 @@ export class Instagram {
     if (!data.user.is_private) {
       const embed = await Shared.queueHttp(washer, undefined, {
         url: "https://api.instagram.com/oembed/",
-        params: { url: item.url, omitscript: true }
+        params: { url: item.url, omitscript: true },
       });
       item.embed = embed.data.html;
     }

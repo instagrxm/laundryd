@@ -42,7 +42,7 @@ export class S3Files extends Files {
     this.s3 = new AWS.S3({
       endpoint,
       accessKeyId: key,
-      secretAccessKey: secret
+      secretAccessKey: secret,
     });
   }
 
@@ -52,7 +52,7 @@ export class S3Files extends Files {
       .promise();
     if (
       !permissions.Grants ||
-      !permissions.Grants.find(g => g.Permission === "FULL_CONTROL")
+      !permissions.Grants.find((g) => g.Permission === "FULL_CONTROL")
     ) {
       throw new Error(
         `improper bucket permissions for ${this.connection}: ${permissions}`
@@ -70,7 +70,7 @@ export class S3Files extends Files {
     const result: DownloadResult = {
       item: download.item,
       dir: key,
-      url: `${this.url}/${key}`
+      url: `${this.url}/${key}`,
     };
 
     try {
@@ -81,10 +81,10 @@ export class S3Files extends Files {
         return;
       }
 
-      const keys = files.Contents.map(f => f.Key as string);
+      const keys = files.Contents.map((f) => f.Key as string);
 
       if (download.json) {
-        result.json = keys.find(f => path.parse(f).base === "data.json");
+        result.json = keys.find((f) => path.parse(f).base === "data.json");
         if (!result.json) {
           return;
         }
@@ -96,7 +96,7 @@ export class S3Files extends Files {
       }
 
       if (download.image) {
-        result.image = keys.find(f => path.parse(f).base.match(/^image/));
+        result.image = keys.find((f) => path.parse(f).base.match(/^image/));
         if (!result.image) {
           return;
         }
@@ -106,7 +106,7 @@ export class S3Files extends Files {
       if (download.media || download.isDirect) {
         result.media = keys[0];
         if (!download.isDirect) {
-          result.media = keys.find(f => path.parse(f).base.match(/^media/));
+          result.media = keys.find((f) => path.parse(f).base.match(/^media/));
         }
 
         if (!result.media) {
@@ -180,14 +180,14 @@ export class S3Files extends Files {
         Key: file,
         ContentType: mime.getType(file) || undefined,
         Body: fs.createReadStream(local),
-        ACL: "public-read"
+        ACL: "public-read",
       };
 
       const response = await this.s3.upload(params).promise();
       await Log.debug(this.washer, {
         msg: "s3-upload",
         connection: this.connection,
-        response
+        response,
       });
       return response;
     };
@@ -198,7 +198,7 @@ export class S3Files extends Files {
       await Log.error(this.washer, {
         msg: "s3-upload",
         connection: this.connection,
-        error
+        error,
       });
     }
 
@@ -213,7 +213,7 @@ export class S3Files extends Files {
 
     const params: ListObjectsV2Request = {
       Bucket: this.bucket,
-      Prefix: this.downloadsDir
+      Prefix: this.downloadsDir,
     };
 
     let token;
@@ -235,8 +235,8 @@ export class S3Files extends Files {
         break;
       }
 
-      const oldKeys = existing.Contents.map(c => c.Key as string).filter(
-        key =>
+      const oldKeys = existing.Contents.map((c) => c.Key as string).filter(
+        (key) =>
           parseInt(key.replace(this.downloadsDir, "").split("/")[1], 10) <
           Math.floor(retainDate.toSeconds())
       );
@@ -280,7 +280,7 @@ export class S3Files extends Files {
           Key: key,
           Body: data,
           ACL: "public-read",
-          ContentType: mime.getType(file) || ""
+          ContentType: mime.getType(file) || "",
         })
         .promise();
     } catch (error) {
@@ -301,7 +301,7 @@ export class S3Files extends Files {
       await Log.debug(this.washer, {
         msg: "s3-read",
         connection: this.connection,
-        key
+        key,
       });
       return result.Body.toString();
     } catch (error) {
@@ -317,7 +317,7 @@ export class S3Files extends Files {
       await Log.debug(this.washer, {
         msg: "s3-delete",
         connection: this.connection,
-        key
+        key,
       });
     } catch (error) {
       return;

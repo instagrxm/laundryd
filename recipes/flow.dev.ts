@@ -1,23 +1,23 @@
 const schedule = {
   default: "*/5 * * * * *",
-  daily: "0 0 0 * * *"
+  daily: "0 0 0 * * *",
 };
 
 const washers: any[] = [
   {
-    name: "maintenance/mongoBackup"
+    name: "maintenance/mongoBackup",
   },
   {
-    name: "maintenance/upgradeTools"
+    name: "maintenance/upgradeTools",
   },
   {
-    name: "maintenance/clearCache"
+    name: "maintenance/clearCache",
   },
   {
     name: "process/stdout",
     color: true,
     subscribe: ["log"],
-    filter: { level: { $in: ["debug", "info", "warn", "error"] } }
+    filter: { level: { $in: ["debug", "info", "warn", "error"] } },
   },
   {
     name: "email/smtp",
@@ -28,7 +28,7 @@ const washers: any[] = [
     to: "josh@endquote.com",
     attachData: true,
     subscribe: ["log"],
-    filter: { level: "error" }
+    filter: { level: "error" },
   },
   {
     enabled: false,
@@ -37,7 +37,7 @@ const washers: any[] = [
     schedule: schedule.default,
     download: true,
     begin: 10,
-    retain: 0
+    retain: 0,
   },
   {
     enabled: false,
@@ -48,7 +48,7 @@ const washers: any[] = [
     retain: 0,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
-    token: process.env.MIXCLOUD_TOKEN
+    token: process.env.MIXCLOUD_TOKEN,
   },
   {
     enabled: false,
@@ -56,7 +56,7 @@ const washers: any[] = [
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
     token: process.env.MIXCLOUD_TOKEN,
-    subscribe: ["mixcloud/liked"]
+    subscribe: ["mixcloud/liked"],
   },
   {
     enabled: false,
@@ -67,14 +67,14 @@ const washers: any[] = [
     retain: 90,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
-    token: process.env.MIXCLOUD_TOKEN
+    token: process.env.MIXCLOUD_TOKEN,
   },
   {
     enabled: false,
     name: "feed/podcast",
     days: 400,
     schedule: schedule.default,
-    subscribe: ["mixcloud/timeline"]
+    subscribe: ["mixcloud/timeline"],
   },
   {
     enabled: false,
@@ -86,7 +86,7 @@ const washers: any[] = [
       <div><img src={item.image} /></div>
       <div dangerouslySetInnerHTML={{__html:item.html}} />
       <div>{item.meta.tags.join(',')}</div>
-    `
+    `,
   },
   {
     enabled: false,
@@ -98,7 +98,7 @@ const washers: any[] = [
       <div><img src="{{image}}" /></div>
       <div>{{{html}}}</div>
       <div>{{#each meta.tags}}{{name}}{{#unless @last}}, {{/unless}}{{/each}}</div>
-    `
+    `,
   },
   {
     enabled: false,
@@ -112,7 +112,7 @@ const washers: any[] = [
     attachData: true,
     attachImage: true,
     // schedule: schedule.default,
-    subscribe: ["mixcloud/handlebars"]
+    subscribe: ["mixcloud/handlebars"],
   },
   {
     enabled: false,
@@ -124,14 +124,14 @@ const washers: any[] = [
     begin: 14,
     schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
-    password: process.env.INSTAGRAM_PASS
+    password: process.env.INSTAGRAM_PASS,
   },
   {
     enabled: false,
     name: "feed/rss",
     id: "instagram/timeline/rss",
     schedule: schedule.default,
-    subscribe: ["instagram/timeline"]
+    subscribe: ["instagram/timeline"],
   },
   {
     enabled: false,
@@ -140,14 +140,14 @@ const washers: any[] = [
     username: process.env.INSTAGRAM_USER,
     password: process.env.INSTAGRAM_PASS,
     filter: { url: { $regex: "B-XdztZDTLq" } },
-    subscribe: ["feedbin/liked"]
+    subscribe: ["feedbin/liked"],
   },
   {
     enabled: false,
     name: "feedbin/liked",
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
-    password: process.env.FEEDBIN_PASS
+    password: process.env.FEEDBIN_PASS,
   },
   {
     enabled: false,
@@ -157,7 +157,7 @@ const washers: any[] = [
     filter: { url: { $regex: "vox.com" } },
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS,
-    subscribe: ["feedbin/search"]
+    subscribe: ["feedbin/search"],
   },
   {
     enabled: false,
@@ -165,7 +165,7 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS,
-    subscribe: ["feedbin/search"]
+    subscribe: ["feedbin/search"],
   },
   {
     enabled: false,
@@ -174,7 +174,7 @@ const washers: any[] = [
     schedule: schedule.default,
     search: "instagram",
     username: process.env.FEEDBIN_USER,
-    password: process.env.FEEDBIN_PASS
+    password: process.env.FEEDBIN_PASS,
   },
   {
     enabled: false,
@@ -182,7 +182,7 @@ const washers: any[] = [
     begin: 10,
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
-    password: process.env.FEEDBIN_PASS
+    password: process.env.FEEDBIN_PASS,
   },
   {
     // if i like an instagram post on feedbin, unlike it
@@ -190,11 +190,11 @@ const washers: any[] = [
     name: "feedbin/like",
     state: false,
     filter: {
-      url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
+      url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" },
     },
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS,
-    subscribe: ["feedbin/liked"]
+    subscribe: ["feedbin/liked"],
   },
   {
     enabled: false,
@@ -207,8 +207,8 @@ const washers: any[] = [
     begin: 200,
     clientId: process.env.SOUNDCLOUD_CLIENTID,
     clientSecret: process.env.SOUNDCLOUD_CLIENTSECRET,
-    token: process.env.SOUNDCLOUD_TOKEN
-  }
+    token: process.env.SOUNDCLOUD_TOKEN,
+  },
 ];
 
 export = washers;

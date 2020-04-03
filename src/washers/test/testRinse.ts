@@ -4,21 +4,21 @@ export class TestRinse extends Rinse {
   static readonly info = new WasherInfo({
     title: "test-rinse",
     description: "test-rinse",
-    abstract: false
+    abstract: false,
   });
 
   async run(items: Item[]): Promise<Item[]> {
     await Log.debug(this, {
       msg: `${this.config.id} got ${items.length} items from ${items.map(
-        i => i.washer.id
-      )}`
+        (i) => i.washer.id
+      )}`,
     });
     if (!this.memory.foo) {
       this.memory.foo = 1;
     } else {
       this.memory.foo++;
     }
-    items.forEach(i => {
+    items.forEach((i) => {
       i.meta = i.meta || {};
       i.meta.rinse = this.memory.foo;
     });

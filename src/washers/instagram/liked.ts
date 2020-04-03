@@ -6,12 +6,12 @@ import { Instagram } from "./instagram";
 export default class Liked extends Wash {
   static readonly info = new WasherInfo({
     title: "Instagram liked",
-    description: "load posts you've liked on Instagram"
+    description: "load posts you've liked on Instagram",
   });
 
   static settings = {
     ...Wash.settings,
-    ...Instagram.authSettings
+    ...Instagram.authSettings,
   };
 
   config!: OutputFlags<typeof Liked.settings>;
@@ -25,6 +25,6 @@ export default class Liked extends Wash {
   async run(): Promise<Item[]> {
     const feed = this.client.feed.liked();
     const data = await Instagram.readFeed(this, feed);
-    return Promise.all(data.map(d => Instagram.parseData(this, d)));
+    return Promise.all(data.map((d) => Instagram.parseData(this, d)));
   }
 }

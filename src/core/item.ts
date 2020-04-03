@@ -198,5 +198,5 @@ export enum MongoLanguage {
   russian = "russian",
   spanish = "spanish",
   swedish = "swedish",
-  turkish = "turkish"
+  turkish = "turkish",
 }

@@ -18,7 +18,7 @@ export const BasicLinker = new Autolinker({
   newWindow: false,
   stripPrefix: true,
   stripTrailingSlash: true,
-  truncate: undefined
+  truncate: undefined,
 });
 
 HB.registerHelper("basicLinker", (context: any) => {
