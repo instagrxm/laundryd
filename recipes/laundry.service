@@ -1,8 +1,12 @@
+ # https://www.freedesktop.org/software/systemd/man/systemd.service.html
+
 [Unit]
 Description=Laundry service
 
 [Service]
 ExecStart=/home/ubuntu/src/recipes/start.sh
+Restart=on-failure
+RestartSec=5s
 
 [Install]
 WantedBy=multi-user.target
