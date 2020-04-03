@@ -59,11 +59,11 @@ const washers: any[] = [
     subscribe: ["mixcloud/liked"]
   },
   {
-    // enabled: false,
+    enabled: false,
     name: "mixcloud/timeline",
     schedule: schedule.default,
     download: true,
-    begin: 1,
+    begin: 3,
     retain: 90,
     clientId: process.env.MIXCLOUD_CLIENTID,
     clientSecret: process.env.MIXCLOUD_CLIENTSECRET,
@@ -72,12 +72,8 @@ const washers: any[] = [
   {
     enabled: false,
     name: "feed/podcast",
-    title: "mixcloud combined",
+    days: 400,
     schedule: schedule.default,
-    ownerName: "Josh Santangelo",
-    ownerEmail: "josh@endquote.com",
-    category: "Music",
-    subcategory: "Music Commentary",
     subscribe: ["mixcloud/timeline"]
   },
   {
@@ -93,7 +89,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/handlebars",
     name: "format/handlebars",
     subscribe: ["mixcloud/timeline"],
@@ -105,7 +101,7 @@ const washers: any[] = [
     `
   },
   {
-    // enabled: false,
+    enabled: false,
     id: "mixcloud/email",
     name: "email/smtp",
     smtpHost: process.env.SMTP_HOST,
@@ -132,6 +128,13 @@ const washers: any[] = [
   },
   {
     enabled: false,
+    name: "feed/rss",
+    id: "instagram/timeline/rss",
+    schedule: schedule.default,
+    subscribe: ["instagram/timeline"]
+  },
+  {
+    enabled: false,
     name: "instagram/like",
     // schedule: schedule.default,
     username: process.env.INSTAGRAM_USER,
@@ -145,15 +148,6 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS
-  },
-  {
-    enabled: false,
-    name: "test/testDry",
-    // schedule: schedule.default,
-    filter: {
-      url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
-    },
-    subscribe: ["feedbin/liked"]
   },
   {
     enabled: false,
@@ -189,6 +183,31 @@ const washers: any[] = [
     schedule: schedule.default,
     username: process.env.FEEDBIN_USER,
     password: process.env.FEEDBIN_PASS
+  },
+  {
+    // if i like an instagram post on feedbin, unlike it
+    enabled: false,
+    name: "feedbin/like",
+    state: false,
+    filter: {
+      url: { $regex: "^http(s)?:\\/\\/(www.)?instagram.com", $options: "i" }
+    },
+    username: process.env.FEEDBIN_USER,
+    password: process.env.FEEDBIN_PASS,
+    subscribe: ["feedbin/liked"]
+  },
+  {
+    enabled: false,
+    name: "soundcloud/playlist",
+    // user: "Complexion",
+    playlist:
+      "https://soundcloud.com/poolsidefm/sets/poolside-fm-official-playlist",
+    schedule: schedule.default,
+    download: true,
+    begin: 200,
+    clientId: process.env.SOUNDCLOUD_CLIENTID,
+    clientSecret: process.env.SOUNDCLOUD_CLIENTSECRET,
+    token: process.env.SOUNDCLOUD_TOKEN
   }
 ];
 

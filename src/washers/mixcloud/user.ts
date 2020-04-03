@@ -21,11 +21,7 @@ export default class User extends Wash {
   config!: OutputFlags<typeof User.settings>;
 
   async run(): Promise<Item[]> {
-    const items = await Mixcloud.getUserShows(
-      this,
-      this.config.user,
-      this.memory.lastRun
-    );
+    const items = await Mixcloud.getUserShows(this, this.config.user);
     return items;
   }
 }

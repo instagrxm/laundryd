@@ -1,16 +1,9 @@
 - test in production
-  - mongobackup
-- ig gap: 10:17a-3:14p
-  - look at timeline feed and the seen-all marker again
-- soundcloud
-  - wash:timeline
-  - wash:user
-  - wash:liked
-  - dry:like
-  - dry:repost
-  - test in production
-    - soundcloud/timeline > podcast
-    - soundcloud/liked > save
+  - soundcloud/user > podcast - soulection
+  - soundcloud/liked > save
+- test ig/user, mixcloud/user with bad users
+- what is up with ig like
+- default begin
 - vimeo
   - wash:timeline
   - wash:user
@@ -57,6 +50,10 @@
     - twitter/liked > save
 - think of a better oauth flow?
 - don't crash on bad config or init, just disable
+- local smtp?
+- download source.image?
+- some sort of streaming to prevent memory issues
+  - instagram crashes after loading ~120 pages with 2GB of RAM
 - test on windows
   - can you edit/debug it
   - can you run it

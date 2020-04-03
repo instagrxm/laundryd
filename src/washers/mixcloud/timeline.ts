@@ -35,27 +35,18 @@ export default class Timeline extends Wash {
     // Get a paged list of people they're following
     let data: any[] = [];
     while (true) {
-      const response = await Mixcloud.callAPI(this, req);
+      const res = await Mixcloud.callAPI(this, req);
 
-      for (const user of response.data.data) {
-        // Pass each user to the user command
-        const shows = await Mixcloud.getUserShows(
-          this,
-          user.username,
-          this.memory.lastRun
-        );
+      for (const user of res.data.data) {
+        const shows = await Mixcloud.getUserShows(this, user.username);
         data = data.concat(shows);
       }
 
-      if (
-        !response.data.data.length ||
-        !response.data.paging ||
-        !response.data.paging.next
-      ) {
+      if (!res.data.data.length || !res.data.paging || !res.data.paging.next) {
         break;
       }
 
-      req.url = response.data.paging.next;
+      req.url = res.data.paging.next;
     }
 
     return data.map(d => this.parseData(d));
@@ -65,7 +56,7 @@ export default class Timeline extends Wash {
     const item = Mixcloud.parseData(this, data);
 
     item.source = {
-      image: "https://www.mixcloud.com/media/images/www/global/favicon-64.png",
+      image: Mixcloud.icon,
       url: this.me.data.url,
       title: this.info.title
     };

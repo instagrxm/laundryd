@@ -4,6 +4,7 @@ import { AxiosRequestConfig, AxiosResponse } from "axios";
 import delay from "delay";
 import { DateTime } from "luxon";
 import path from "path";
+import querystring from "querystring";
 import {
   Config,
   Download,
@@ -19,6 +20,9 @@ import { Repost } from "./repost";
 
 export class Mixcloud {
   static api = "https://api.mixcloud.com";
+
+  static icon =
+    "https://www.mixcloud.com/media/images/www/global/favicon-64.png";
 
   static urlPattern = /^http(s)?:\/\/(www.)?mixcloud.com/i;
 
@@ -38,13 +42,13 @@ export class Mixcloud {
       description: "the client secret for the Mixcloud application"
     }),
 
-    token: flags.string({
-      description: "the access token for the Mixcloud API"
-    }),
-
     code: flags.string({
       hidden: true,
       description: "the oauth code used to get an access token"
+    }),
+
+    token: flags.string({
+      description: "the access token for the Mixcloud API"
     })
   };
 
@@ -58,25 +62,34 @@ export class Mixcloud {
     auth: OutputFlags<typeof Mixcloud.authSettings>
   ): Promise<any> {
     const [user, repo] = Config.config.pjson.repository.split("/");
-    const redirectUrl = encodeURIComponent(
-      `https://${user}.github.io/${repo}/auth/mixcloud.html`
-    );
-    const authUrl = `https://www.mixcloud.com/oauth/authorize?client_id=${auth.clientId}&redirect_uri=${redirectUrl}`;
+    const redirectUrl = "https://${user}.github.io/${repo}/auth/mixcloud.html";
+    const params = querystring.stringify({
+      client_id: auth.clientId,
+      redirect_uri: redirectUrl
+    });
+    const authUrl = `https://www.mixcloud.com/oauth/authorize?${params}`;
 
     if (auth.code) {
-      const url = `https://www.mixcloud.com/oauth/access_token?client_id=${auth.clientId}&redirect_uri=${redirectUrl}&client_secret=${auth.clientSecret}&code=${auth.code}`;
-      const response = await Mixcloud.callAPI(washer, { url });
+      const response = await Mixcloud.callAPI(washer, {
+        url: "https://www.mixcloud.com/oauth/access_token",
+        params: {
+          client_id: auth.clientId,
+          redirect_uri: redirectUrl,
+          client_secret: auth.clientSecret,
+          code: auth.code
+        }
+      });
       const t = response.data.access_token;
       if (t) {
         await Log.error(washer, {
-          msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this command.`
+          msg: `Token acquired. Use --token=${t} or set MIXCLOUD_TOKEN for this washer.`
         });
       }
     }
 
     if (!auth.token) {
       await Log.error(washer, {
-        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the command again with --code=[code]`
+        msg: `You don't have an access token. Go to this URL in a browser:\n${authUrl} \n\nThen run the washer again with --code=[code]`
       });
     }
 
@@ -125,35 +138,27 @@ export class Mixcloud {
    * @param user the username to get shows from
    * @param since how far back to request shows for
    */
-  static async getUserShows(
-    washer: Wash,
-    user: string,
-    since: DateTime
-  ): Promise<Item[]> {
+  static async getUserShows(washer: Wash, user: string): Promise<Item[]> {
     // Set up the first request.
     const req = {
       url: `${Mixcloud.api}/${user}/cloudcasts/`,
       params: {
         limit: 50,
-        since: Math.floor(since.toSeconds())
+        since: Math.floor(washer.memory.lastRun.toSeconds())
       }
     };
 
     // Get a paged list of shows.
     let data: any[] = [];
     while (true) {
-      const response = await Mixcloud.callAPI(washer, req);
-      data = data.concat(response.data.data);
+      const res = await Mixcloud.callAPI(washer, req);
+      data = data.concat(res.data.data);
 
-      if (
-        !response.data.data.length ||
-        !response.data.paging ||
-        !response.data.paging.next
-      ) {
+      if (!res.data.data.length || !res.data.paging || !res.data.paging.next) {
         break;
       }
 
-      req.url = response.data.paging.next;
+      req.url = res.data.paging.next;
     }
 
     for (const d of data) {
@@ -229,6 +234,9 @@ export class Mixcloud {
       Download.audio(item, item.url, (result: DownloadResult) => {
         if (result.image) {
           item.image = `${result.url}/${result.image}`;
+          if (item.meta) {
+            item.meta.pictures.extra_large = item.image;
+          }
         }
 
         if (result.media) {
