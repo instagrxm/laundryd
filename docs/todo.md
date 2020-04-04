@@ -5,6 +5,7 @@
 - test ig/user, mixcloud/user with bad users
 - what is up with ig like
 - default begin
+- subscriptions without change streams?
 - vimeo
   - wash:timeline
   - wash:user
